@@ -66,3 +66,61 @@ describe('songStore (core 순수 함수 래핑)', () => {
     expect(store.getState().toast).toBe('쉼표로 변경');
   });
 });
+
+describe('songStore: 세션 상태 (설계 문서 §3, SPEC §3.1)', () => {
+  test('setTempo: 클램프 반영 + undo', () => {
+    const store = createSongStore();
+    store.getState().setTempo(300);
+    expect(store.getState().song.tempo).toBe(240);
+    store.getState().undoAction();
+    expect(store.getState().song.tempo).toBe(100);
+  });
+
+  test('setAccGlobal: 패턴 선택 = 반주 켬 + 전역 패턴, 끔 = accOn false (패턴 유지)', () => {
+    const store = createSongStore();
+    expect(store.getState().accOn).toBe(true);
+    store.getState().setAccGlobal('comp');
+    expect(store.getState().accOn).toBe(true);
+    expect(store.getState().song.accPat).toBe('comp');
+    store.getState().setAccGlobal('off');
+    expect(store.getState().accOn).toBe(false);
+    expect(store.getState().song.accPat).toBe('comp');
+  });
+
+  test('setAccGlobal: 같은 패턴 재선택은 undo를 쌓지 않음', () => {
+    const store = createSongStore();
+    store.getState().setAccGlobal('pad'); // 이미 pad
+    expect(store.getState().undo.past).toHaveLength(0);
+    store.getState().setAccGlobal('arp');
+    expect(store.getState().undo.past).toHaveLength(1);
+  });
+
+  test('toggleMetro: 세션 토글 (undo 무관)', () => {
+    const store = createSongStore();
+    expect(store.getState().metroOn).toBe(false);
+    store.getState().toggleMetro();
+    expect(store.getState().metroOn).toBe(true);
+    expect(store.getState().undo.past).toHaveLength(0);
+  });
+});
+
+describe('songStore: 소리 피드백 규칙 (SPEC §3.7)', () => {
+  test('입력·선택·pitch 변경 → preview 있음', () => {
+    const store = createSongStore();
+    store.getState().padTap(asMidi(60), 0); // 입력
+    expect(store.getState().preview).not.toBeNull();
+    store.getState().stepPitch(1); // 음높이
+    expect(store.getState().preview).not.toBeNull();
+    store.getState().selectDir(1); // 선택 이동
+    expect(store.getState().preview).not.toBeNull();
+  });
+
+  test('pos/len 변경 → preview 없음', () => {
+    const store = createSongStore();
+    store.getState().padTap(asMidi(60), 0);
+    store.getState().stepPos(1);
+    expect(store.getState().preview).toBeNull();
+    store.getState().stepLen(1);
+    expect(store.getState().preview).toBeNull();
+  });
+});

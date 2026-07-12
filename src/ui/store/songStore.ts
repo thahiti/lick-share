@@ -12,6 +12,7 @@ import {
   padTap,
   selectDir,
   setChord,
+  setTempo,
   stepLen,
   stepPitch,
   stepPos,
@@ -20,7 +21,14 @@ import {
 } from '../../core/editing';
 import { measCountAll } from '../../core/geometry';
 import { emptyUndo, pushUndo, redoStep, undoStep, type UndoStack } from '../../core/undo';
-import { asBar, type BarIndex, type Midi, type Note, type Song } from '../../core/types';
+import {
+  asBar,
+  type AccPattern,
+  type BarIndex,
+  type Midi,
+  type Note,
+  type Song,
+} from '../../core/types';
 
 export interface SongStore {
   readonly song: Song;
@@ -29,6 +37,10 @@ export interface SongStore {
   readonly undo: UndoStack;
   readonly toast: string | null;
   readonly preview: Note | null;
+  /** 반주 켜짐 (세션, SPEC §3.1) */
+  readonly accOn: boolean;
+  /** 메트로놈 켜짐 (세션) */
+  readonly metroOn: boolean;
 
   padTap(pv: Midi | 'rest', st: number): void;
   stepPitch(dir: 1 | -1): void;
@@ -40,6 +52,10 @@ export interface SongStore {
   addMeasure(): void;
   setChord(beatKey: number, chord: string | null): void;
   cycleMeasureAcc(): void;
+  setTempo(v: number): void;
+  /** 헤더 반주 팝오버: 패턴 = 켬 + 전역 패턴 설정, 'off' = 끔 (패턴 유지) */
+  setAccGlobal(v: AccPattern | 'off'): void;
+  toggleMetro(): void;
   undoAction(): void;
   redoAction(): void;
 }
@@ -72,6 +88,8 @@ export const createSongStore = (initial: Song = demoSong) =>
       undo: emptyUndo,
       toast: null,
       preview: null,
+      accOn: true,
+      metroOn: false,
 
       padTap: (pv, st) => apply((c) => padTap(c, pv, st)),
       stepPitch: (dir) => apply((c) => stepPitch(c, dir)),
@@ -83,6 +101,19 @@ export const createSongStore = (initial: Song = demoSong) =>
       addMeasure: () => apply(addMeasure),
       setChord: (beatKey, chord) => apply((c) => setChord(c, beatKey, chord)),
       cycleMeasureAcc: () => apply(cycleMeasureAcc),
+      setTempo: (v) => apply((c) => setTempo(c, v)),
+
+      setAccGlobal: (v) =>
+        set((s) => {
+          if (v === 'off') return { accOn: false };
+          if (s.song.accPat === v) return { accOn: true };
+          return {
+            accOn: true,
+            song: { ...s.song, accPat: v },
+            undo: pushUndo(s.undo, s.song),
+          };
+        }),
+      toggleMetro: () => set((s) => ({ metroOn: !s.metroOn })),
 
       undoAction: () =>
         set((s) => {

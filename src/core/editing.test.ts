@@ -8,6 +8,7 @@ import {
   padTap,
   selectDir,
   setChord,
+  setTempo,
   stepLen,
   stepPitch,
   stepPos,
@@ -258,5 +259,24 @@ describe('setChord / cycleMeasureAcc (SPEC §3.3~3.4)', () => {
       c = ctx(out.song);
     }
     expect(seen).toEqual(['pad', 'comp', 'arp', 'off', undefined]);
+  });
+});
+
+describe('setTempo (SPEC §3.1)', () => {
+  test('40~240 클램프 + 반올림', () => {
+    expect(setTempo(ctx(demoSong), 300).song.tempo).toBe(240);
+    expect(setTempo(ctx(demoSong), 10).song.tempo).toBe(40);
+    expect(setTempo(ctx(demoSong), 104.4).song.tempo).toBe(104);
+  });
+
+  test('숫자가 아니면 기존 값 유지 (no-op)', () => {
+    const out = setTempo(ctx(demoSong), Number.NaN);
+    expect(out.song.tempo).toBe(100);
+    expect(out.changed).toBe(false);
+  });
+
+  test('같은 값이면 changed=false', () => {
+    expect(setTempo(ctx(demoSong), 100).changed).toBe(false);
+    expect(setTempo(ctx(demoSong), 104).changed).toBe(true);
   });
 });

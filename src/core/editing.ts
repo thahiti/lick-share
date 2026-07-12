@@ -277,6 +277,15 @@ export const setChord = (ctx: EditCtx, beatKey: number, chord: string | null): E
   return { ...ctx, song: { ...ctx.song, chords }, changed: true };
 };
 
+/** 템포 설정: 40~240 클램프 + 반올림. 숫자가 아니면 유지 (SPEC §3.1) */
+export const setTempo = (ctx: EditCtx, v: number): EditOut => {
+  const rounded = Math.round(v);
+  if (!Number.isFinite(rounded)) return keep(ctx);
+  const tempo = Math.max(40, Math.min(240, rounded));
+  if (tempo === ctx.song.tempo) return keep(ctx);
+  return { ...ctx, song: { ...ctx.song, tempo }, changed: true };
+};
+
 const ACC_CYCLE: readonly (MeasureAcc | undefined)[] = [undefined, 'pad', 'comp', 'arp', 'off'];
 
 /** 현재 마디 반주 오버라이드 순환: 기본→pad→comp→arp→off→기본 */

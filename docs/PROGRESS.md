@@ -15,9 +15,11 @@
 - **명세 공백 해소**: 코드가 없는 구간(첫 코드 이전)의 반주 = **완전 무음**. 근거: 프로토타입 line 947 `if(!ch||pat==="off"){ flush(st); ... continue; }`. SPEC §5.5에 이 규칙을 추가하기로 함(아직 미반영).
 - **작업 규칙**: TDD 필수(superpowers:test-driven-development — RED 확인 후 구현), Phase 단위 커밋("Phase N: 요약"), 공통 게이트 = `npm run typecheck && npm run lint && npm test && npm run check-smp`.
 
-## 2. 현재 상태 (P6 완료)
+## 2. 현재 상태 (P7 완료)
 
-P0~P6 완료·커밋됨. 다음 작업: **P7 (Steppers + ButtonBar + MeasureBar + Header + Toast)** — DoD는 handoff IMPLEMENTATION_PLAN P5 (스테퍼 비활성/경계, bPrev/bNext 라벨 전환, 마디바 ＋ 전환, 템포 클램프, 반주 팝오버, 소리 피드백 훅 호출 검증).
+P0~P7 완료·커밋됨. 다음 작업: **P8 (조립: 편집 화면 통합 + 재생 연동 + 해시 자동 저장 500ms)** — DoD는 handoff IMPLEMENTATION_PLAN P7 (통합 테스트: 패드→악보→undo, 마디 탭 이동+선택+프리뷰, 전체 재생 curM 추적+줄 전환, 해시 저장/복원, 재생 아이콘 토글+정지 무음).
+
+- P7 산출물: core setTempo(클램프+undo), store 세션 확장(accOn/metroOn/setAccGlobal/toggleMetro/setTempo — setAccGlobal off는 패턴 유지하고 accOn만 끔), Icon(DESIGN §5 패스 전부)/Steppers/ButtonBar/MeasureBar/Header/Toast 컴포넌트 + DESIGN §4 스타일. 소리 피드백 규칙(preview: 입력·선택·pitch만) 스토어 테스트로 고정.
 
 - P4 산출물: `src/ports/{clock,hash-store}.ts`(+audio-sink에 now() 추가), `src/adapters/{web-audio-sink,player,raf-clock,location-hash-store}.ts`, fakes(fake-clock, memory-hash-store). WebAudioSink는 AudioCtxLike 구조적 타입으로 목 주입 — 게인 시퀀스 DoD·노드군별 cancel·epoch 검증. player는 onTick/el 클램프/실시간 토글(현재 이후만 재스케줄, off는 해당 노드군만 정지) 검증.
 - P5 산출물: `src/core/geometry.ts`에 pitchDia 추가, `src/ui/components/edit/Score.tsx`(edit/view 겸용, ClefPath·RestGlyph·NoteSeg 전부 SVG 패스, 색은 tokens.css 변수만). edit에서 음표는 pointer-events:none — SPEC "음표 개별 탭 불가"를 프로토타입보다 정확히 구현. 테스트용 data-* 속성: data-m/data-shade/data-rest/data-ledger/data-note/data-tie.

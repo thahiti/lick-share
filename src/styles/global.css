@@ -241,3 +241,284 @@ body {
   outline: 1.5px solid var(--ink);
   outline-offset: -1.5px;
 }
+
+/* ── 헤더 (DESIGN §4) ── */
+.header {
+  padding: 10px 8px 6px;
+  position: relative;
+}
+
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.eyebrow {
+  font-size: 8.5px;
+  letter-spacing: 0.12em;
+  color: var(--mut2);
+}
+
+.title {
+  font-size: 17px;
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+
+.header-btns {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff;
+  cursor: pointer;
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.chip {
+  height: 32px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff;
+  padding: 5px 9px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.metaline {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9.5px;
+  color: var(--mut2);
+  margin-top: 6px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 6px;
+}
+
+.popover {
+  position: absolute;
+  right: 8px;
+  top: 46px;
+  z-index: 10;
+  display: flex;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow-popover);
+}
+
+.popover button {
+  border: none;
+  border-left: 1px solid var(--line2);
+  background: #fff;
+  padding: 8px 10px;
+  font-size: 10.5px;
+  cursor: pointer;
+}
+
+.popover button:first-child {
+  border-left: none;
+}
+
+.popover button.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.popover input {
+  width: 56px;
+  border: none;
+  border-left: 1px solid var(--line2);
+  text-align: center;
+  font-size: 12px;
+}
+
+/* ── 마디 이동 바 / 스테퍼 (DESIGN §4) ── */
+.measure-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  margin: 6px 8px 0;
+}
+
+.measure-bar button {
+  border: none;
+  background: #fff;
+  padding: 7px 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
+.measure-bar button.dim {
+  opacity: 0.3;
+}
+
+.measure-bar span {
+  flex: 1;
+  text-align: center;
+  font-size: 11.5px;
+  border-left: 1px solid var(--line2);
+  border-right: 1px solid var(--line2);
+  padding: 7px 0;
+}
+
+.steppers {
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--bg-stepper-zone);
+}
+
+.stepper {
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff;
+}
+
+.stepper.dis {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.stepper.vert {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 96px;
+}
+
+.hsteppers {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.stepper.horiz {
+  display: flex;
+  align-items: stretch;
+}
+
+.stepper button {
+  border: none;
+  background: #fff;
+  cursor: pointer;
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.stepper button:disabled {
+  opacity: 0.3;
+}
+
+.stepper .lab {
+  font-size: 8.5px;
+  color: var(--mut2);
+}
+
+.stepper .cur {
+  flex: 1;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 6px 4px;
+  align-self: center;
+}
+
+.stepper.vert .cur {
+  border-top: 1.5px solid var(--red);
+  border-bottom: 1.5px solid var(--red);
+  align-self: stretch;
+}
+
+.stepper.horiz .cur {
+  border-left: 1.5px solid var(--red);
+  border-right: 1.5px solid var(--red);
+}
+
+.stepper .cap {
+  font-size: 8px;
+  color: var(--mut2);
+  text-align: center;
+  padding: 2px 0 3px;
+}
+
+/* ── 6버튼줄 (DESIGN §4) ── */
+.button-bar {
+  display: flex;
+  border-top: 2px solid var(--ink);
+  margin-top: auto;
+}
+
+.button-bar .bb {
+  flex: 1;
+  border: none;
+  border-left: 1px solid var(--line2);
+  background: #fff;
+  padding: 7px 0 6px;
+  font-size: 9.5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.button-bar .bb:first-child {
+  border-left: none;
+}
+
+.button-bar .bb.pri {
+  background: var(--ink);
+  color: #fff;
+}
+
+.button-bar .bb.warn {
+  color: var(--red);
+}
+
+.button-bar .bb.nav {
+  background: var(--bg-nav-btn);
+}
+
+.button-bar .bb.add {
+  color: var(--red);
+  font-weight: 700;
+}
+
+/* ── 토스트 (DESIGN §4) ── */
+.toast {
+  position: fixed;
+  bottom: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pad);
+  z-index: 20;
+}
