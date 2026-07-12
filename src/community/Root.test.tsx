@@ -9,11 +9,12 @@ vi.mock('./api/auth', () => ({
 }));
 
 // Feed(views/Feed.tsx)의 '../api/…' 임포트와 같은 모듈로 해석됨 — 실제 네트워크 차단
-// 주의: Feed가 쓰는 export만 구현 — 다른 뷰가 이 모듈을 임포트하게 되면 해당 export를 추가할 것
+// 주의: Feed·Publish가 쓰는 export만 구현 — 다른 뷰가 이 모듈을 임포트하게 되면 해당 export를 추가할 것
 vi.mock('./api/licks', () => ({
   PAGE_SIZE: 20,
   fetchFeedPage: () => Promise.resolve([]),
   deleteLick: () => Promise.resolve(),
+  publishLick: vi.fn(),
 }));
 
 // 주의: Feed가 쓰는 export만 구현 — 다른 뷰가 이 모듈을 임포트하게 되면 해당 export를 추가할 것

@@ -129,3 +129,48 @@
   border-color: var(--red);
   color: var(--red);
 }
+
+.c-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.c-textarea {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 8px;
+  min-height: 72px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--paper);
+  resize: vertical;
+}
+
+.c-input {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 8px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.c-btn {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 10px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--paper);
+  background: var(--ink);
+  cursor: pointer;
+}
+
+.c-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
