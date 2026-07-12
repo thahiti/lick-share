@@ -12,6 +12,7 @@ export interface ViewerProps {
   readonly song: Song;
   readonly playing: boolean;
   readonly playheadStep?: number;
+  readonly width?: number;
   readonly onPlayAll: () => void;
   readonly onNoteTap: (id: number) => void;
   readonly onCopyLink: () => void;
@@ -22,6 +23,7 @@ export const Viewer = ({
   song,
   playing,
   playheadStep,
+  width = 384,
   onPlayAll,
   onNoteTap,
   onCopyLink,
@@ -44,6 +46,7 @@ export const Viewer = ({
         <Score
           song={song}
           mode="view"
+          width={width}
           {...(playheadStep !== undefined ? { playheadStep } : {})}
           onNoteTap={onNoteTap}
         />

@@ -169,3 +169,45 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     vi.unstubAllGlobals();
   });
 });
+
+describe('App: 접근성 (IMPLEMENTATION_PLAN P9 DoD)', () => {
+  const accessibleName = (btn: Element): string =>
+    (btn.getAttribute('aria-label') ?? '') || (btn.textContent ?? '').trim();
+
+  test('편집 화면: 모든 버튼에 접근 가능한 이름', () => {
+    const { container } = setup();
+    fireEvent.click(container.querySelector('[data-b="1"]') as Element); // 피커도 열어서 포함
+    const missing = [...container.querySelectorAll('button')].filter(
+      (b) => accessibleName(b) === '',
+    );
+    expect(missing.map((b) => b.outerHTML.slice(0, 80))).toEqual([]);
+  });
+
+  test('열람 화면: 모든 버튼에 접근 가능한 이름', () => {
+    const time = { t: 0 };
+    const { container } = render(
+      <App
+        store={createSongStore()}
+        player={createPlayer({ sink: createFakeAudioSink(() => time.t), clock: createFakeClock() })}
+        hashStore={createMemoryHashStore()}
+        initialMode="view"
+      />,
+    );
+    const missing = [...container.querySelectorAll('button')].filter(
+      (b) => accessibleName(b) === '',
+    );
+    expect(missing.map((b) => b.outerHTML.slice(0, 80))).toEqual([]);
+  });
+});
+
+describe('App: 리사이즈 재계산 (IMPLEMENTATION_PLAN P9)', () => {
+  test('resize 이벤트 후에도 지오메트리 재계산 렌더 (jsdom 폴백 384)', () => {
+    const { container } = setup();
+    act(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
+    expect(container.querySelector('svg[width="100%"]')?.getAttribute('viewBox')).toBe(
+      '0 0 384 126',
+    );
+  });
+});

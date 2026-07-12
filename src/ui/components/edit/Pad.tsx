@@ -84,6 +84,7 @@ export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
                 className={`pcell${i === 0 ? ' db' : ''}${empty ? ' on' : ''}`}
                 data-p="rest"
                 data-st={st}
+                aria-label={`쉼표 ${st + 1}칸`}
                 onClick={() => onCellTap('rest', st)}
               />
             );
@@ -98,6 +99,7 @@ export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
               className={`pcell${dk ? ' dk' : ''}${i === 0 ? ' db' : ''}${state}`}
               data-p={p}
               data-st={st}
+              aria-label={`${NOTE_KO[p % 12]}${Math.floor(p / 12 - 1)} ${st + 1}칸`}
               onClick={() => onCellTap(p, st)}
             >
               {hit?.tail && <span className="tie">⤳</span>}

@@ -15,12 +15,19 @@
 - **명세 공백 해소**: 코드가 없는 구간(첫 코드 이전)의 반주 = **완전 무음**. 근거: 프로토타입 line 947 `if(!ch||pat==="off"){ flush(st); ... continue; }`. SPEC §5.5에 이 규칙을 추가하기로 함(아직 미반영).
 - **작업 규칙**: TDD 필수(superpowers:test-driven-development — RED 확인 후 구현), Phase 단위 커밋("Phase N: 요약"), 공통 게이트 = `npm run typecheck && npm run lint && npm test && npm run check-smp`.
 
-## 2. 현재 상태 (P9 완료 — 전 기능 동작)
+## 2. 현재 상태 — **P0~P10 전체 완료 (재작성 종료)**
 
-P0~P9 완료·커밋됨. 다음 작업: **P10 (마감)** — DoD는 handoff IMPLEMENTATION_PLAN P9: 접근성(aria-label 전 버튼), `npm run build` 성공 + dist 로컬 서브 수동 시나리오 체크리스트(e2e-checklist.md로 저장), Lighthouse 참고치, 전체 스위트 최종 통과. 선택: lookahead 스케줄러, README(정적 호스팅 배포), 리사이즈 재계산, URL 해시 길이 iOS 실측(사용자 협조 필요).
+전 Phase 완료·커밋됨. 테스트 250개(+골든 스냅샷 16종) 전부 통과, `npm run build` 성공, dist 로컬 서브 확인.
 
-- P9 산출물: `src/ui/components/view/Viewer.tsx`(배지 4종·멀티라인 Score 재사용·큰 재생·링크 복사/복제해서 편집), App에 mode 라우팅(?mode=view 쿼리 또는 initialMode prop), view 재생은 멜로디만, 음표 탭 = 그 위치부터. copyShare = 클립보드(+prompt 폴백)+해시 갱신+토스트. 프로토타입 해시 3종 디코딩 렌더 테스트 통과(구버전 "r" 필터 포함). store.showToast 추가.
-- 잔여(사소): 패드 플레이헤드 미구현, Viewer 재생 중 스크롤 추적 미구현 — P10에서 판단.
+- P10 산출물: 전 버튼 접근 가능한 이름 검증 테스트(+패드 셀 aria-label), 리사이즈 재계산(컨테이너 폭 → Score width), `docs/e2e-checklist.md`(수동 시나리오 + 실측 항목), `README.md`(구조·명령·정적 호스팅 배포).
+- 사람이 해야 할 잔여 항목 (e2e-checklist.md §5): 실기기 수동 시나리오, **iOS Safari URL 해시 길이 실측**, Lighthouse 참고치, 오디오 청감 확인.
+- 의도적 보류: 패드 플레이헤드, 열람 재생 중 스크롤 자동 추적, lookahead 스케줄러(선택 항목). 필요해지면 골든 스냅샷·player 테스트 위에서 안전하게 추가 가능.
+
+## 2.1 이후 세션 참고
+
+- 게이트: `npm run typecheck && npm run lint && npm test && npm run check-smp`
+- 계기판: `npm run dump -- "#v1.…"`
+- 배포: `npm run build` 후 dist/를 정적 호스팅에 업로드.
 
 - P7 산출물: core setTempo(클램프+undo), store 세션 확장(accOn/metroOn/setAccGlobal/toggleMetro/setTempo — setAccGlobal off는 패턴 유지하고 accOn만 끔), Icon(DESIGN §5 패스 전부)/Steppers/ButtonBar/MeasureBar/Header/Toast 컴포넌트 + DESIGN §4 스타일. 소리 피드백 규칙(preview: 입력·선택·pitch만) 스토어 테스트로 고정.
 

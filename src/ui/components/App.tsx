@@ -48,6 +48,16 @@ export const App = ({
   /** 코드 피커가 열린 박 (닫힘=null) */
   const [cpBeat, setCpBeat] = useState<number | null>(null);
   const loaded = useRef(false);
+  const shellRef = useRef<HTMLDivElement>(null);
+  const [scoreW, setScoreW] = useState(384);
+
+  /* 리사이즈 시 지오메트리 재계산 (SPEC §8) */
+  useEffect(() => {
+    const update = (): void => setScoreW(shellRef.current?.clientWidth || 384);
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   /* 초기 해시 로드 (SPEC §7) */
   useEffect(() => {
@@ -161,10 +171,11 @@ export const App = ({
 
   if (mode === 'view') {
     return (
-      <div className="app">
+      <div className="app" ref={shellRef}>
         <Viewer
           song={s.song}
           playing={playing}
+          width={scoreW}
           {...(playing && playEl !== null ? { playheadStep: playEl } : {})}
           onPlayAll={viewTogglePlay}
           onNoteTap={viewNoteTap}
@@ -180,7 +191,7 @@ export const App = ({
   }
 
   return (
-    <div className="app">
+    <div className="app" ref={shellRef}>
       <Header
         song={s.song}
         accOn={s.accOn}
@@ -201,6 +212,7 @@ export const App = ({
         mode="edit"
         curM={s.curM}
         sel={s.sel}
+        width={scoreW}
         {...(playing && playEl !== null ? { playheadStep: playEl } : {})}
         onMeasureTap={(m) => {
           setCpBeat(null);
