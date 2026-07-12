@@ -1,0 +1,737 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`골든 스냅샷: demo 곡 > 반주=arp 메트로놈=off 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.000 acc m48 dur=0.285 vol=0.09
+t=0.300 acc m55 dur=0.285 vol=0.09
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.600 acc m64 dur=0.285 vol=0.09
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=0.900 acc m48 dur=0.285 vol=0.09
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.200 acc m55 dur=0.285 vol=0.09
+t=1.500 acc m64 dur=0.285 vol=0.09
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=1.800 acc m48 dur=0.285 vol=0.09
+t=2.100 acc m55 dur=0.285 vol=0.09
+t=2.400 acc m45 dur=0.285 vol=0.09
+t=2.700 acc m52 dur=0.285 vol=0.09
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.000 acc m60 dur=0.285 vol=0.09
+t=3.300 acc m45 dur=0.285 vol=0.09
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=3.600 acc m52 dur=0.285 vol=0.09
+t=3.900 acc m60 dur=0.285 vol=0.09
+t=4.200 acc m45 dur=0.285 vol=0.09
+t=4.500 acc m52 dur=0.285 vol=0.09
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=4.800 acc m53 dur=0.285 vol=0.09
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=5.400 acc m69 dur=0.285 vol=0.09
+t=5.700 acc m53 dur=0.285 vol=0.09
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=6.000 acc m60 dur=0.285 vol=0.09
+t=6.300 acc m69 dur=0.285 vol=0.09
+t=6.600 acc m53 dur=0.285 vol=0.09
+t=6.900 acc m60 dur=0.285 vol=0.09
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.200 acc m55 dur=0.285 vol=0.09
+t=7.500 acc m62 dur=0.285 vol=0.09
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=7.800 acc m71 dur=0.285 vol=0.09
+t=8.100 acc m77 dur=0.285 vol=0.09
+t=8.400 melody m64 dur=1.152 vol=0.24
+t=8.400 acc m55 dur=0.285 vol=0.09
+t=8.700 acc m62 dur=0.285 vol=0.09
+t=9.000 acc m71 dur=0.285 vol=0.09
+t=9.300 acc m77 dur=0.285 vol=0.09"
+`;
+
+exports[`골든 스냅샷: demo 곡 > 반주=arp 메트로놈=on 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.000 acc m48 dur=0.285 vol=0.09
+t=0.000 metro 1568Hz vol=0.16
+t=0.300 acc m55 dur=0.285 vol=0.09
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.600 acc m64 dur=0.285 vol=0.09
+t=0.600 metro 1047Hz vol=0.1
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=0.900 acc m48 dur=0.285 vol=0.09
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.200 acc m55 dur=0.285 vol=0.09
+t=1.200 metro 1047Hz vol=0.1
+t=1.500 acc m64 dur=0.285 vol=0.09
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=1.800 acc m48 dur=0.285 vol=0.09
+t=1.800 metro 1047Hz vol=0.1
+t=2.100 acc m55 dur=0.285 vol=0.09
+t=2.400 acc m45 dur=0.285 vol=0.09
+t=2.400 metro 1568Hz vol=0.16
+t=2.700 acc m52 dur=0.285 vol=0.09
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.000 acc m60 dur=0.285 vol=0.09
+t=3.000 metro 1047Hz vol=0.1
+t=3.300 acc m45 dur=0.285 vol=0.09
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=3.600 acc m52 dur=0.285 vol=0.09
+t=3.600 metro 1047Hz vol=0.1
+t=3.900 acc m60 dur=0.285 vol=0.09
+t=4.200 acc m45 dur=0.285 vol=0.09
+t=4.200 metro 1047Hz vol=0.1
+t=4.500 acc m52 dur=0.285 vol=0.09
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=4.800 acc m53 dur=0.285 vol=0.09
+t=4.800 metro 1568Hz vol=0.16
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=5.400 acc m69 dur=0.285 vol=0.09
+t=5.400 metro 1047Hz vol=0.1
+t=5.700 acc m53 dur=0.285 vol=0.09
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=6.000 acc m60 dur=0.285 vol=0.09
+t=6.000 metro 1047Hz vol=0.1
+t=6.300 acc m69 dur=0.285 vol=0.09
+t=6.600 acc m53 dur=0.285 vol=0.09
+t=6.600 metro 1047Hz vol=0.1
+t=6.900 acc m60 dur=0.285 vol=0.09
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.200 acc m55 dur=0.285 vol=0.09
+t=7.200 metro 1568Hz vol=0.16
+t=7.500 acc m62 dur=0.285 vol=0.09
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=7.800 acc m71 dur=0.285 vol=0.09
+t=7.800 metro 1047Hz vol=0.1
+t=8.100 acc m77 dur=0.285 vol=0.09
+t=8.400 melody m64 dur=1.152 vol=0.24
+t=8.400 acc m55 dur=0.285 vol=0.09
+t=8.400 metro 1047Hz vol=0.1
+t=8.700 acc m62 dur=0.285 vol=0.09
+t=9.000 acc m71 dur=0.285 vol=0.09
+t=9.000 metro 1047Hz vol=0.1
+t=9.300 acc m77 dur=0.285 vol=0.09"
+`;
+
+exports[`골든 스냅샷: demo 곡 > 반주=comp 메트로놈=off 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.000 acc m48 dur=0.345 vol=0.07
+t=0.000 acc m55 dur=0.345 vol=0.07
+t=0.000 acc m64 dur=0.345 vol=0.07
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.600 acc m48 dur=0.345 vol=0.07
+t=0.600 acc m55 dur=0.345 vol=0.07
+t=0.600 acc m64 dur=0.345 vol=0.07
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=0.345 vol=0.07
+t=1.200 acc m55 dur=0.345 vol=0.07
+t=1.200 acc m64 dur=0.345 vol=0.07
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=1.800 acc m48 dur=0.345 vol=0.07
+t=1.800 acc m55 dur=0.345 vol=0.07
+t=1.800 acc m64 dur=0.345 vol=0.07
+t=2.400 acc m45 dur=0.345 vol=0.07
+t=2.400 acc m52 dur=0.345 vol=0.07
+t=2.400 acc m60 dur=0.345 vol=0.07
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.000 acc m45 dur=0.345 vol=0.07
+t=3.000 acc m52 dur=0.345 vol=0.07
+t=3.000 acc m60 dur=0.345 vol=0.07
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=3.600 acc m45 dur=0.345 vol=0.07
+t=3.600 acc m52 dur=0.345 vol=0.07
+t=3.600 acc m60 dur=0.345 vol=0.07
+t=4.200 acc m45 dur=0.345 vol=0.07
+t=4.200 acc m52 dur=0.345 vol=0.07
+t=4.200 acc m60 dur=0.345 vol=0.07
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=4.800 acc m53 dur=0.345 vol=0.07
+t=4.800 acc m60 dur=0.345 vol=0.07
+t=4.800 acc m69 dur=0.345 vol=0.07
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=5.400 acc m53 dur=0.345 vol=0.07
+t=5.400 acc m60 dur=0.345 vol=0.07
+t=5.400 acc m69 dur=0.345 vol=0.07
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=6.000 acc m53 dur=0.345 vol=0.07
+t=6.000 acc m60 dur=0.345 vol=0.07
+t=6.000 acc m69 dur=0.345 vol=0.07
+t=6.600 acc m53 dur=0.345 vol=0.07
+t=6.600 acc m60 dur=0.345 vol=0.07
+t=6.600 acc m69 dur=0.345 vol=0.07
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.200 acc m55 dur=0.345 vol=0.07
+t=7.200 acc m62 dur=0.345 vol=0.07
+t=7.200 acc m71 dur=0.345 vol=0.07
+t=7.200 acc m77 dur=0.345 vol=0.07
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=7.800 acc m55 dur=0.345 vol=0.07
+t=7.800 acc m62 dur=0.345 vol=0.07
+t=7.800 acc m71 dur=0.345 vol=0.07
+t=7.800 acc m77 dur=0.345 vol=0.07
+t=8.400 melody m64 dur=1.152 vol=0.24
+t=8.400 acc m55 dur=0.345 vol=0.07
+t=8.400 acc m62 dur=0.345 vol=0.07
+t=8.400 acc m71 dur=0.345 vol=0.07
+t=8.400 acc m77 dur=0.345 vol=0.07
+t=9.000 acc m55 dur=0.345 vol=0.07
+t=9.000 acc m62 dur=0.345 vol=0.07
+t=9.000 acc m71 dur=0.345 vol=0.07
+t=9.000 acc m77 dur=0.345 vol=0.07"
+`;
+
+exports[`골든 스냅샷: demo 곡 > 반주=comp 메트로놈=on 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.000 acc m48 dur=0.345 vol=0.07
+t=0.000 acc m55 dur=0.345 vol=0.07
+t=0.000 acc m64 dur=0.345 vol=0.07
+t=0.000 metro 1568Hz vol=0.16
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.600 acc m48 dur=0.345 vol=0.07
+t=0.600 acc m55 dur=0.345 vol=0.07
+t=0.600 acc m64 dur=0.345 vol=0.07
+t=0.600 metro 1047Hz vol=0.1
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=0.345 vol=0.07
+t=1.200 acc m55 dur=0.345 vol=0.07
+t=1.200 acc m64 dur=0.345 vol=0.07
+t=1.200 metro 1047Hz vol=0.1
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=1.800 acc m48 dur=0.345 vol=0.07
+t=1.800 acc m55 dur=0.345 vol=0.07
+t=1.800 acc m64 dur=0.345 vol=0.07
+t=1.800 metro 1047Hz vol=0.1
+t=2.400 acc m45 dur=0.345 vol=0.07
+t=2.400 acc m52 dur=0.345 vol=0.07
+t=2.400 acc m60 dur=0.345 vol=0.07
+t=2.400 metro 1568Hz vol=0.16
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.000 acc m45 dur=0.345 vol=0.07
+t=3.000 acc m52 dur=0.345 vol=0.07
+t=3.000 acc m60 dur=0.345 vol=0.07
+t=3.000 metro 1047Hz vol=0.1
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=3.600 acc m45 dur=0.345 vol=0.07
+t=3.600 acc m52 dur=0.345 vol=0.07
+t=3.600 acc m60 dur=0.345 vol=0.07
+t=3.600 metro 1047Hz vol=0.1
+t=4.200 acc m45 dur=0.345 vol=0.07
+t=4.200 acc m52 dur=0.345 vol=0.07
+t=4.200 acc m60 dur=0.345 vol=0.07
+t=4.200 metro 1047Hz vol=0.1
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=4.800 acc m53 dur=0.345 vol=0.07
+t=4.800 acc m60 dur=0.345 vol=0.07
+t=4.800 acc m69 dur=0.345 vol=0.07
+t=4.800 metro 1568Hz vol=0.16
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=5.400 acc m53 dur=0.345 vol=0.07
+t=5.400 acc m60 dur=0.345 vol=0.07
+t=5.400 acc m69 dur=0.345 vol=0.07
+t=5.400 metro 1047Hz vol=0.1
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=6.000 acc m53 dur=0.345 vol=0.07
+t=6.000 acc m60 dur=0.345 vol=0.07
+t=6.000 acc m69 dur=0.345 vol=0.07
+t=6.000 metro 1047Hz vol=0.1
+t=6.600 acc m53 dur=0.345 vol=0.07
+t=6.600 acc m60 dur=0.345 vol=0.07
+t=6.600 acc m69 dur=0.345 vol=0.07
+t=6.600 metro 1047Hz vol=0.1
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.200 acc m55 dur=0.345 vol=0.07
+t=7.200 acc m62 dur=0.345 vol=0.07
+t=7.200 acc m71 dur=0.345 vol=0.07
+t=7.200 acc m77 dur=0.345 vol=0.07
+t=7.200 metro 1568Hz vol=0.16
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=7.800 acc m55 dur=0.345 vol=0.07
+t=7.800 acc m62 dur=0.345 vol=0.07
+t=7.800 acc m71 dur=0.345 vol=0.07
+t=7.800 acc m77 dur=0.345 vol=0.07
+t=7.800 metro 1047Hz vol=0.1
+t=8.400 melody m64 dur=1.152 vol=0.24
+t=8.400 acc m55 dur=0.345 vol=0.07
+t=8.400 acc m62 dur=0.345 vol=0.07
+t=8.400 acc m71 dur=0.345 vol=0.07
+t=8.400 acc m77 dur=0.345 vol=0.07
+t=8.400 metro 1047Hz vol=0.1
+t=9.000 acc m55 dur=0.345 vol=0.07
+t=9.000 acc m62 dur=0.345 vol=0.07
+t=9.000 acc m71 dur=0.345 vol=0.07
+t=9.000 acc m77 dur=0.345 vol=0.07
+t=9.000 metro 1047Hz vol=0.1"
+`;
+
+exports[`골든 스냅샷: demo 곡 > 반주=off 메트로놈=off 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=8.400 melody m64 dur=1.152 vol=0.24"
+`;
+
+exports[`골든 스냅샷: demo 곡 > 반주=off 메트로놈=on 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.000 metro 1568Hz vol=0.16
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.600 metro 1047Hz vol=0.1
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.200 metro 1047Hz vol=0.1
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=1.800 metro 1047Hz vol=0.1
+t=2.400 metro 1568Hz vol=0.16
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.000 metro 1047Hz vol=0.1
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=3.600 metro 1047Hz vol=0.1
+t=4.200 metro 1047Hz vol=0.1
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=4.800 metro 1568Hz vol=0.16
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=5.400 metro 1047Hz vol=0.1
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=6.000 metro 1047Hz vol=0.1
+t=6.600 metro 1047Hz vol=0.1
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.200 metro 1568Hz vol=0.16
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=7.800 metro 1047Hz vol=0.1
+t=8.400 melody m64 dur=1.152 vol=0.24
+t=8.400 metro 1047Hz vol=0.1
+t=9.000 metro 1047Hz vol=0.1"
+`;
+
+exports[`골든 스냅샷: demo 곡 > 반주=pad 메트로놈=off 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.000 acc m48 dur=2.352 vol=0.075
+t=0.000 acc m55 dur=2.352 vol=0.075
+t=0.000 acc m64 dur=2.352 vol=0.075
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=2.400 acc m45 dur=2.352 vol=0.075
+t=2.400 acc m52 dur=2.352 vol=0.075
+t=2.400 acc m60 dur=2.352 vol=0.075
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=4.800 acc m53 dur=2.352 vol=0.075
+t=4.800 acc m60 dur=2.352 vol=0.075
+t=4.800 acc m69 dur=2.352 vol=0.075
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.200 acc m55 dur=2.352 vol=0.075
+t=7.200 acc m62 dur=2.352 vol=0.075
+t=7.200 acc m71 dur=2.352 vol=0.075
+t=7.200 acc m77 dur=2.352 vol=0.075
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=8.400 melody m64 dur=1.152 vol=0.24"
+`;
+
+exports[`골든 스냅샷: demo 곡 > 반주=pad 메트로놈=on 1`] = `
+"t=0.000 melody m64 dur=0.576 vol=0.24
+t=0.000 acc m48 dur=2.352 vol=0.075
+t=0.000 acc m55 dur=2.352 vol=0.075
+t=0.000 acc m64 dur=2.352 vol=0.075
+t=0.000 metro 1568Hz vol=0.16
+t=0.600 melody m69 dur=0.288 vol=0.24
+t=0.600 metro 1047Hz vol=0.1
+t=0.900 melody m67 dur=0.288 vol=0.24
+t=1.200 melody m71 dur=0.576 vol=0.24
+t=1.200 metro 1047Hz vol=0.1
+t=1.800 melody m69 dur=0.864 vol=0.24
+t=1.800 metro 1047Hz vol=0.1
+t=2.400 acc m45 dur=2.352 vol=0.075
+t=2.400 acc m52 dur=2.352 vol=0.075
+t=2.400 acc m60 dur=2.352 vol=0.075
+t=2.400 metro 1568Hz vol=0.16
+t=3.000 melody m67 dur=0.576 vol=0.24
+t=3.000 metro 1047Hz vol=0.1
+t=3.600 melody m64 dur=1.152 vol=0.24
+t=3.600 metro 1047Hz vol=0.1
+t=4.200 metro 1047Hz vol=0.1
+t=4.800 melody m65 dur=0.576 vol=0.24
+t=4.800 acc m53 dur=2.352 vol=0.075
+t=4.800 acc m60 dur=2.352 vol=0.075
+t=4.800 acc m69 dur=2.352 vol=0.075
+t=4.800 metro 1568Hz vol=0.16
+t=5.400 melody m69 dur=0.576 vol=0.24
+t=5.400 metro 1047Hz vol=0.1
+t=6.000 melody m72 dur=1.152 vol=0.24
+t=6.000 metro 1047Hz vol=0.1
+t=6.600 metro 1047Hz vol=0.1
+t=7.200 melody m71 dur=0.576 vol=0.24
+t=7.200 acc m55 dur=2.352 vol=0.075
+t=7.200 acc m62 dur=2.352 vol=0.075
+t=7.200 acc m71 dur=2.352 vol=0.075
+t=7.200 acc m77 dur=2.352 vol=0.075
+t=7.200 metro 1568Hz vol=0.16
+t=7.800 melody m67 dur=0.576 vol=0.24
+t=7.800 metro 1047Hz vol=0.1
+t=8.400 melody m64 dur=1.152 vol=0.24
+t=8.400 metro 1047Hz vol=0.1
+t=9.000 metro 1047Hz vol=0.1"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=arp 메트로놈=off 1`] = `
+"t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=0.285 vol=0.09
+t=1.500 acc m55 dur=0.285 vol=0.09
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=1.800 acc m64 dur=0.285 vol=0.09
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.100 acc m48 dur=0.285 vol=0.09
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=2.400 acc m55 dur=0.285 vol=0.09
+t=2.700 acc m64 dur=0.285 vol=0.09
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=3.000 acc m48 dur=0.285 vol=0.09
+t=3.300 acc m55 dur=0.285 vol=0.09
+t=3.600 acc m45 dur=0.285 vol=0.09
+t=3.900 acc m52 dur=0.285 vol=0.09
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.200 acc m60 dur=0.285 vol=0.09
+t=4.500 acc m45 dur=0.285 vol=0.09
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=4.800 acc m52 dur=0.285 vol=0.09
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 acc m45 dur=0.285 vol=0.09
+t=5.700 acc m52 dur=0.285 vol=0.09
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=8.400 acc m55 dur=0.285 vol=0.09
+t=8.700 acc m62 dur=0.285 vol=0.09
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.000 acc m71 dur=0.285 vol=0.09
+t=9.300 acc m77 dur=0.285 vol=0.09
+t=9.600 melody m64 dur=1.152 vol=0.24
+t=9.600 acc m55 dur=0.285 vol=0.09
+t=9.900 acc m62 dur=0.285 vol=0.09
+t=10.200 acc m71 dur=0.285 vol=0.09
+t=10.500 acc m77 dur=0.285 vol=0.09"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=arp 메트로놈=on 1`] = `
+"t=0.000 metro 1047Hz vol=0.1
+t=0.600 metro 1047Hz vol=0.1
+t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=0.285 vol=0.09
+t=1.200 metro 1568Hz vol=0.16
+t=1.500 acc m55 dur=0.285 vol=0.09
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=1.800 acc m64 dur=0.285 vol=0.09
+t=1.800 metro 1047Hz vol=0.1
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.100 acc m48 dur=0.285 vol=0.09
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=2.400 acc m55 dur=0.285 vol=0.09
+t=2.400 metro 1047Hz vol=0.1
+t=2.700 acc m64 dur=0.285 vol=0.09
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=3.000 acc m48 dur=0.285 vol=0.09
+t=3.000 metro 1047Hz vol=0.1
+t=3.300 acc m55 dur=0.285 vol=0.09
+t=3.600 acc m45 dur=0.285 vol=0.09
+t=3.600 metro 1568Hz vol=0.16
+t=3.900 acc m52 dur=0.285 vol=0.09
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.200 acc m60 dur=0.285 vol=0.09
+t=4.200 metro 1047Hz vol=0.1
+t=4.500 acc m45 dur=0.285 vol=0.09
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=4.800 acc m52 dur=0.285 vol=0.09
+t=4.800 metro 1047Hz vol=0.1
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 acc m45 dur=0.285 vol=0.09
+t=5.400 metro 1047Hz vol=0.1
+t=5.700 acc m52 dur=0.285 vol=0.09
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.000 metro 1568Hz vol=0.16
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=6.600 metro 1047Hz vol=0.1
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=7.200 metro 1047Hz vol=0.1
+t=7.800 metro 1047Hz vol=0.1
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=8.400 acc m55 dur=0.285 vol=0.09
+t=8.400 metro 1568Hz vol=0.16
+t=8.700 acc m62 dur=0.285 vol=0.09
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.000 acc m71 dur=0.285 vol=0.09
+t=9.000 metro 1047Hz vol=0.1
+t=9.300 acc m77 dur=0.285 vol=0.09
+t=9.600 melody m64 dur=1.152 vol=0.24
+t=9.600 acc m55 dur=0.285 vol=0.09
+t=9.600 metro 1047Hz vol=0.1
+t=9.900 acc m62 dur=0.285 vol=0.09
+t=10.200 acc m71 dur=0.285 vol=0.09
+t=10.200 metro 1047Hz vol=0.1
+t=10.500 acc m77 dur=0.285 vol=0.09"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=comp 메트로놈=off 1`] = `
+"t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=0.345 vol=0.07
+t=1.200 acc m55 dur=0.345 vol=0.07
+t=1.200 acc m64 dur=0.345 vol=0.07
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=1.800 acc m48 dur=0.345 vol=0.07
+t=1.800 acc m55 dur=0.345 vol=0.07
+t=1.800 acc m64 dur=0.345 vol=0.07
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=2.400 acc m48 dur=0.345 vol=0.07
+t=2.400 acc m55 dur=0.345 vol=0.07
+t=2.400 acc m64 dur=0.345 vol=0.07
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=3.000 acc m48 dur=0.345 vol=0.07
+t=3.000 acc m55 dur=0.345 vol=0.07
+t=3.000 acc m64 dur=0.345 vol=0.07
+t=3.600 acc m45 dur=0.285 vol=0.09
+t=3.900 acc m52 dur=0.285 vol=0.09
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.200 acc m60 dur=0.285 vol=0.09
+t=4.500 acc m45 dur=0.285 vol=0.09
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=4.800 acc m52 dur=0.285 vol=0.09
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 acc m45 dur=0.285 vol=0.09
+t=5.700 acc m52 dur=0.285 vol=0.09
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=8.400 acc m55 dur=0.345 vol=0.07
+t=8.400 acc m62 dur=0.345 vol=0.07
+t=8.400 acc m71 dur=0.345 vol=0.07
+t=8.400 acc m77 dur=0.345 vol=0.07
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.000 acc m55 dur=0.345 vol=0.07
+t=9.000 acc m62 dur=0.345 vol=0.07
+t=9.000 acc m71 dur=0.345 vol=0.07
+t=9.000 acc m77 dur=0.345 vol=0.07
+t=9.600 melody m64 dur=1.152 vol=0.24
+t=9.600 acc m55 dur=0.345 vol=0.07
+t=9.600 acc m62 dur=0.345 vol=0.07
+t=9.600 acc m71 dur=0.345 vol=0.07
+t=9.600 acc m77 dur=0.345 vol=0.07
+t=10.200 acc m55 dur=0.345 vol=0.07
+t=10.200 acc m62 dur=0.345 vol=0.07
+t=10.200 acc m71 dur=0.345 vol=0.07
+t=10.200 acc m77 dur=0.345 vol=0.07"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=comp 메트로놈=on 1`] = `
+"t=0.000 metro 1047Hz vol=0.1
+t=0.600 metro 1047Hz vol=0.1
+t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=0.345 vol=0.07
+t=1.200 acc m55 dur=0.345 vol=0.07
+t=1.200 acc m64 dur=0.345 vol=0.07
+t=1.200 metro 1568Hz vol=0.16
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=1.800 acc m48 dur=0.345 vol=0.07
+t=1.800 acc m55 dur=0.345 vol=0.07
+t=1.800 acc m64 dur=0.345 vol=0.07
+t=1.800 metro 1047Hz vol=0.1
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=2.400 acc m48 dur=0.345 vol=0.07
+t=2.400 acc m55 dur=0.345 vol=0.07
+t=2.400 acc m64 dur=0.345 vol=0.07
+t=2.400 metro 1047Hz vol=0.1
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=3.000 acc m48 dur=0.345 vol=0.07
+t=3.000 acc m55 dur=0.345 vol=0.07
+t=3.000 acc m64 dur=0.345 vol=0.07
+t=3.000 metro 1047Hz vol=0.1
+t=3.600 acc m45 dur=0.285 vol=0.09
+t=3.600 metro 1568Hz vol=0.16
+t=3.900 acc m52 dur=0.285 vol=0.09
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.200 acc m60 dur=0.285 vol=0.09
+t=4.200 metro 1047Hz vol=0.1
+t=4.500 acc m45 dur=0.285 vol=0.09
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=4.800 acc m52 dur=0.285 vol=0.09
+t=4.800 metro 1047Hz vol=0.1
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 acc m45 dur=0.285 vol=0.09
+t=5.400 metro 1047Hz vol=0.1
+t=5.700 acc m52 dur=0.285 vol=0.09
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.000 metro 1568Hz vol=0.16
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=6.600 metro 1047Hz vol=0.1
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=7.200 metro 1047Hz vol=0.1
+t=7.800 metro 1047Hz vol=0.1
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=8.400 acc m55 dur=0.345 vol=0.07
+t=8.400 acc m62 dur=0.345 vol=0.07
+t=8.400 acc m71 dur=0.345 vol=0.07
+t=8.400 acc m77 dur=0.345 vol=0.07
+t=8.400 metro 1568Hz vol=0.16
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.000 acc m55 dur=0.345 vol=0.07
+t=9.000 acc m62 dur=0.345 vol=0.07
+t=9.000 acc m71 dur=0.345 vol=0.07
+t=9.000 acc m77 dur=0.345 vol=0.07
+t=9.000 metro 1047Hz vol=0.1
+t=9.600 melody m64 dur=1.152 vol=0.24
+t=9.600 acc m55 dur=0.345 vol=0.07
+t=9.600 acc m62 dur=0.345 vol=0.07
+t=9.600 acc m71 dur=0.345 vol=0.07
+t=9.600 acc m77 dur=0.345 vol=0.07
+t=9.600 metro 1047Hz vol=0.1
+t=10.200 acc m55 dur=0.345 vol=0.07
+t=10.200 acc m62 dur=0.345 vol=0.07
+t=10.200 acc m71 dur=0.345 vol=0.07
+t=10.200 acc m77 dur=0.345 vol=0.07
+t=10.200 metro 1047Hz vol=0.1"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=off 메트로놈=off 1`] = `
+"t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.600 melody m64 dur=1.152 vol=0.24"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=off 메트로놈=on 1`] = `
+"t=0.000 metro 1047Hz vol=0.1
+t=0.600 metro 1047Hz vol=0.1
+t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.200 metro 1568Hz vol=0.16
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=1.800 metro 1047Hz vol=0.1
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=2.400 metro 1047Hz vol=0.1
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=3.000 metro 1047Hz vol=0.1
+t=3.600 metro 1568Hz vol=0.16
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.200 metro 1047Hz vol=0.1
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=4.800 metro 1047Hz vol=0.1
+t=5.400 metro 1047Hz vol=0.1
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.000 metro 1568Hz vol=0.16
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=6.600 metro 1047Hz vol=0.1
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=7.200 metro 1047Hz vol=0.1
+t=7.800 metro 1047Hz vol=0.1
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=8.400 metro 1568Hz vol=0.16
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.000 metro 1047Hz vol=0.1
+t=9.600 melody m64 dur=1.152 vol=0.24
+t=9.600 metro 1047Hz vol=0.1
+t=10.200 metro 1047Hz vol=0.1"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=pad 메트로놈=off 1`] = `
+"t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=2.352 vol=0.075
+t=1.200 acc m55 dur=2.352 vol=0.075
+t=1.200 acc m64 dur=2.352 vol=0.075
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=3.600 acc m45 dur=0.285 vol=0.09
+t=3.900 acc m52 dur=0.285 vol=0.09
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.200 acc m60 dur=0.285 vol=0.09
+t=4.500 acc m45 dur=0.285 vol=0.09
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=4.800 acc m52 dur=0.285 vol=0.09
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 acc m45 dur=0.285 vol=0.09
+t=5.700 acc m52 dur=0.285 vol=0.09
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=8.400 acc m55 dur=2.352 vol=0.075
+t=8.400 acc m62 dur=2.352 vol=0.075
+t=8.400 acc m71 dur=2.352 vol=0.075
+t=8.400 acc m77 dur=2.352 vol=0.075
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.600 melody m64 dur=1.152 vol=0.24"
+`;
+
+exports[`골든 스냅샷: pickup 곡 > 반주=pad 메트로놈=on 1`] = `
+"t=0.000 metro 1047Hz vol=0.1
+t=0.600 metro 1047Hz vol=0.1
+t=1.200 melody m64 dur=0.576 vol=0.24
+t=1.200 acc m48 dur=2.352 vol=0.075
+t=1.200 acc m55 dur=2.352 vol=0.075
+t=1.200 acc m64 dur=2.352 vol=0.075
+t=1.200 metro 1568Hz vol=0.16
+t=1.800 melody m69 dur=0.288 vol=0.24
+t=1.800 metro 1047Hz vol=0.1
+t=2.100 melody m67 dur=0.288 vol=0.24
+t=2.400 melody m71 dur=0.576 vol=0.24
+t=2.400 metro 1047Hz vol=0.1
+t=3.000 melody m69 dur=0.864 vol=0.24
+t=3.000 metro 1047Hz vol=0.1
+t=3.600 acc m45 dur=0.285 vol=0.09
+t=3.600 metro 1568Hz vol=0.16
+t=3.900 acc m52 dur=0.285 vol=0.09
+t=4.200 melody m67 dur=0.576 vol=0.24
+t=4.200 acc m60 dur=0.285 vol=0.09
+t=4.200 metro 1047Hz vol=0.1
+t=4.500 acc m45 dur=0.285 vol=0.09
+t=4.800 melody m64 dur=1.152 vol=0.24
+t=4.800 acc m52 dur=0.285 vol=0.09
+t=4.800 metro 1047Hz vol=0.1
+t=5.100 acc m60 dur=0.285 vol=0.09
+t=5.400 acc m45 dur=0.285 vol=0.09
+t=5.400 metro 1047Hz vol=0.1
+t=5.700 acc m52 dur=0.285 vol=0.09
+t=6.000 melody m65 dur=0.576 vol=0.24
+t=6.000 metro 1568Hz vol=0.16
+t=6.600 melody m69 dur=0.576 vol=0.24
+t=6.600 metro 1047Hz vol=0.1
+t=7.200 melody m72 dur=1.152 vol=0.24
+t=7.200 metro 1047Hz vol=0.1
+t=7.800 metro 1047Hz vol=0.1
+t=8.400 melody m71 dur=0.576 vol=0.24
+t=8.400 acc m55 dur=2.352 vol=0.075
+t=8.400 acc m62 dur=2.352 vol=0.075
+t=8.400 acc m71 dur=2.352 vol=0.075
+t=8.400 acc m77 dur=2.352 vol=0.075
+t=8.400 metro 1568Hz vol=0.16
+t=9.000 melody m67 dur=0.576 vol=0.24
+t=9.000 metro 1047Hz vol=0.1
+t=9.600 melody m64 dur=1.152 vol=0.24
+t=9.600 metro 1047Hz vol=0.1
+t=10.200 metro 1047Hz vol=0.1"
+`;

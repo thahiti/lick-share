@@ -41,4 +41,20 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    /* 순수 레이어의 테스트 파일: 테스트 어댑터(fakes)만 예외 허용 */
+    files: ['src/core/**/*.test.ts', 'src/engine/**/*.test.ts', 'src/ports/**/*.test.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { group: ['react', 'react-dom', 'react/*'], message: '순수 레이어에서 React 금지' },
+            { group: ['**/ui/*'], message: '테스트에서도 UI 금지' },
+            { group: ['zustand', 'zustand/*'], message: '순수 레이어에서 상태 라이브러리 금지' },
+          ],
+        },
+      ],
+    },
+  },
 );

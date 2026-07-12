@@ -15,9 +15,12 @@
 - **명세 공백 해소**: 코드가 없는 구간(첫 코드 이전)의 반주 = **완전 무음**. 근거: 프로토타입 line 947 `if(!ch||pat==="off"){ flush(st); ... continue; }`. SPEC §5.5에 이 규칙을 추가하기로 함(아직 미반영).
 - **작업 규칙**: TDD 필수(superpowers:test-driven-development — RED 확인 후 구현), Phase 단위 커밋("Phase N: 요약"), 공통 게이트 = `npm run typecheck && npm run lint && npm test && npm run check-smp`.
 
-## 2. 현재 상태 (P2 완료)
+## 2. 현재 상태 (P3 완료)
 
-P0~P2 완료·커밋됨. 다음 작업: **P3 (engine: schedule() + buildAccEvents + FakeAudioSink 골든 스냅샷 + dump 계기판)** — DoD는 handoff IMPLEMENTATION_PLAN P6의 이벤트/카운트 수치를 이관 (무반주 N, pad=N+26, comp=N+104, arp=N+64).
+P0~P3 완료·커밋됨. 다음 작업: **P4 (adapters: WebAudioSink 게인 시퀀스 테스트 / RafClock / LocationHashStore / player 실시간 토글)** — DoD는 handoff IMPLEMENTATION_PLAN P6의 나머지 (pianoAt 게인 시퀀스, 재생 중 토글, stop 시 3노드군 정지, el 시작 클램프).
+
+- P3 산출물: `src/engine/{accompaniment,schedule}.ts`, `src/ports/audio-sink.ts`(SoundEvent에 melody/acc/metro 태그), `src/adapters/fakes/fake-audio-sink.ts`, 골든 스냅샷 16개(`src/engine/__snapshots__/golden.test.ts.snap` — demo·pickup 곡 × 반주 4종 × 메트로놈 2종). osc 카운트 DoD(N=26, pad=N+26, comp=N+104, arp=N+64) 통과.
+- `npm run dump -- "#v1.…" [--metro] [--no-acc] [--from=N]` 동작 (vite-node 실행, devDep 추가). 인자 없으면 데모 곡.
 
 - P1 산출물: `src/core/{constants,geometry,overlap,rests,chords,codec}.ts` + 테스트 52개. `fixtures/prototype-hashes.json` 해시 3종 — encode가 프로토타입과 바이트 단위 동일함을 테스트로 고정.
 - P2 산출물: `src/core/{editing,undo,demo-song}.ts` + `src/ui/store/songStore.ts`(Zustand vanilla, 순수 함수 래핑만). editing은 `(EditCtx)=>EditOut{changed,toast?,preview?}` 형태 — changed=true일 때만 스토어가 undo push. restore 후 sel/curM 정합 보정 포함. 테스트 누계 95개.
@@ -58,5 +61,5 @@ P0~P2 완료·커밋됨. 다음 작업: **P3 (engine: schedule() + buildAccEvent
 ## 4. 주의사항
 
 - 절대 규칙(handoff CLAUDE.md): SMP 유니코드 음악 기호 금지(SVG 패스만), 오디오 게인 불연속 점프 금지, 순수 레이어에서 react/DOM/Web Audio 금지, 조판 상수는 LAYOUT 한 곳, 구버전 URL 해시 하위 호환 유지, 쉼표는 저장하지 않고 파생.
-- `npm run dump` 스크립트는 `scripts/dump.test.ts`를 참조하나 파일은 P3에서 생성 예정 (현재 없음, vitest는 무시).
+- `npm run dump`는 `vite-node scripts/dump.ts`로 실행 (P3에서 vitest 방식 대체). 순수 레이어 테스트 파일만 adapters/fakes import 허용(eslint override).
 - 문서 우선순위: 설계 문서(구조) > SPEC.md(기능) > DESIGN.md(스타일) > 프로토타입(동작 참고).
