@@ -466,29 +466,39 @@ body {
   padding: 2px 0 3px;
 }
 
-/* ── 6버튼줄 (DESIGN §4) ── */
+/* ── 6버튼줄 (프로토타입 .btnbar/.bb 수치 그대로 — 스테퍼 바로 아래 배치) ── */
 .button-bar {
   display: flex;
+  background: #fff;
   border-top: 2px solid var(--ink);
-  margin-top: auto;
 }
 
 .button-bar .bb {
   flex: 1;
   border: none;
-  border-left: 1px solid var(--line2);
+  border-right: 1px solid var(--line2);
   background: #fff;
-  padding: 7px 0 6px;
+  padding: 11px 0 13px;
   font-size: 9.5px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  min-width: 0;
+  letter-spacing: 0.04em;
 }
 
-.button-bar .bb:first-child {
-  border-left: none;
+.button-bar .bb:last-child {
+  border-right: none;
+}
+
+.button-bar .bb:active {
+  background: #eee;
+}
+
+.button-bar .bb.pri:active {
+  background: #333;
 }
 
 .button-bar .bb.pri {
@@ -595,4 +605,15 @@ body {
 .viewer-actions button.dark {
   background: var(--ink);
   color: #fff;
+}
+
+.stepper .cur b {
+  display: block;
+}
+
+.stepper .ccap {
+  display: block;
+  font-size: 7.5px;
+  font-weight: 400;
+  color: var(--mut2);
 }

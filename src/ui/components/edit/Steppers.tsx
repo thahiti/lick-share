@@ -75,8 +75,9 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
             <Icon name="prev" size={12} />
             <span className="lab">앞으로</span>
           </button>
-          <div className="cur" data-cur="pos">
-            {posLabel()}
+          <div className="cur">
+            <b data-cur="pos">{posLabel()}</b>
+            <span className="ccap">위치 · 16분</span>
           </div>
           <button
             type="button"
@@ -99,8 +100,9 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
             <Icon name="prev" size={12} />
             <span className="lab">{lenPrev ?? '—'}</span>
           </button>
-          <div className="cur" data-cur="len">
-            {n ? (LEN_NAME[n.d] ?? `${n.d}×16분`) : '—'}
+          <div className="cur">
+            <b data-cur="len">{n ? (LEN_NAME[n.d] ?? `${n.d}×16분`) : '—'}</b>
+            <span className="ccap">길이</span>
           </div>
           <button
             type="button"
