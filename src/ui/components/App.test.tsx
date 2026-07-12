@@ -118,3 +118,54 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
     expect(melodies).toHaveLength(3); // 마디 1과 겹치는 노트 3개
   });
 });
+
+describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
+  const setupView = (initialHash = '') => {
+    const time = { t: 0 };
+    const sink = createFakeAudioSink(() => time.t);
+    const clock = createFakeClock();
+    const player = createPlayer({ sink, clock });
+    const hashStore = createMemoryHashStore(initialHash);
+    const store = createSongStore();
+    const utils = render(
+      <App store={store} player={player} hashStore={hashStore} initialMode="view" />,
+    );
+    return { ...utils, time, sink, clock, player, hashStore, store };
+  };
+
+  test('mode=view 라우팅: Viewer만 렌더', () => {
+    const { container } = setupView();
+    expect(container.textContent).toContain('공유된 악보');
+    expect(container.querySelector('.pad')).toBeNull();
+  });
+
+  test('view 재생: 반주·메트로놈 0건, 음표 탭 → 그 위치부터', () => {
+    const { container, sink } = setupView();
+    click(container, '[data-btn="playv"]');
+    expect(sink.events.length).toBeGreaterThan(0);
+    expect(sink.events.every((e) => e.kind === 'melody')).toBe(true);
+
+    click(container, '[data-note="3"]'); // s=6부터
+    expect(sink.events.every((e) => e.kind === 'melody')).toBe(true);
+    expect(sink.events).toHaveLength(11); // [6,64)와 겹치는 노트
+    expect(sink.events[0]?.t).toBe(0);
+  });
+
+  test('복제해서 편집 → edit 전환 + 데이터 유지', () => {
+    const { container } = setupView();
+    click(container, '[data-btn="toedit"]');
+    expect(container.querySelector('.pad')).not.toBeNull();
+    expect(container.textContent).toContain('봄날의 스케치');
+  });
+
+  test('공유: ?mode=view#v1. URL 클립보드 복사 + 현재 해시 갱신 + 토스트', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+    const { container, hashStore, findByText } = setup();
+    click(container, '[data-btn="share"]');
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('?mode=view#v1.'));
+    expect(hashStore.read().startsWith('v1.')).toBe(true);
+    expect(await findByText('열람 링크 복사됨')).toBeTruthy();
+    vi.unstubAllGlobals();
+  });
+});

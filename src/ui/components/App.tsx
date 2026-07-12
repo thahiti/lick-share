@@ -20,15 +20,29 @@ import { MeasureBar } from './edit/MeasureBar';
 import { Pad } from './edit/Pad';
 import { Score } from './edit/Score';
 import { Steppers } from './edit/Steppers';
+import { Viewer } from './view/Viewer';
+
+export type AppMode = 'edit' | 'view';
 
 export interface AppProps {
   readonly store?: StoreApi<SongStore>;
   readonly player: Player;
   readonly hashStore: HashStore;
+  /** 미지정 시 ?mode=view 쿼리로 결정 */
+  readonly initialMode?: AppMode;
 }
 
-export const App = ({ store = songStore, player, hashStore }: AppProps): JSX.Element => {
+const modeFromLocation = (): AppMode =>
+  new URLSearchParams(window.location.search).get('mode') === 'view' ? 'view' : 'edit';
+
+export const App = ({
+  store = songStore,
+  player,
+  hashStore,
+  initialMode,
+}: AppProps): JSX.Element => {
   const s = useStore(store);
+  const [mode, setMode] = useState<AppMode>(initialMode ?? modeFromLocation());
   const [playing, setPlaying] = useState(false);
   const [playEl, setPlayEl] = useState<number | null>(null);
   /** 코드 피커가 열린 박 (닫힘=null) */
@@ -113,6 +127,58 @@ export const App = ({ store = songStore, player, hashStore }: AppProps): JSX.Ele
 
   const chordKey = (b: number): number => measStart(s.song, s.curM) / 4 + b;
 
+  /** 공유: 열람 링크 클립보드 복사 + 현재 해시 갱신 (SPEC §3.1, §7) */
+  const copyShare = (): void => {
+    const hash = encodeSong(store.getState().song);
+    hashStore.write(hash);
+    const url = `${window.location.origin}${window.location.pathname}?mode=view#${hash}`;
+    const done = (): void => store.getState().showToast('열람 링크 복사됨');
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(url).then(done, () => window.prompt('링크를 복사하세요', url));
+    } else {
+      window.prompt('링크를 복사하세요', url);
+    }
+  };
+
+  /* 열람 재생: 멜로디만 (SPEC §4) */
+  const viewOpts = { melody: true, accomp: false, metro: false };
+
+  const viewTogglePlay = (): void => {
+    if (player.isPlaying()) {
+      player.stop();
+      return;
+    }
+    player.play(s.song, viewOpts, asStep(0), asStep(total(s.song)));
+    setPlaying(true);
+  };
+
+  const viewNoteTap = (id: number): void => {
+    const n = s.song.notes.find((x) => x.id === id);
+    if (!n) return;
+    player.play(s.song, viewOpts, n.s, asStep(total(s.song)));
+    setPlaying(true);
+  };
+
+  if (mode === 'view') {
+    return (
+      <div className="app">
+        <Viewer
+          song={s.song}
+          playing={playing}
+          {...(playing && playEl !== null ? { playheadStep: playEl } : {})}
+          onPlayAll={viewTogglePlay}
+          onNoteTap={viewNoteTap}
+          onCopyLink={copyShare}
+          onToEdit={() => {
+            player.stop();
+            setMode('edit');
+          }}
+        />
+        <Toast msg={s.toast} onDone={() => store.getState().clearToast()} />
+      </div>
+    );
+  }
+
   return (
     <div className="app">
       <Header
@@ -124,8 +190,11 @@ export const App = ({ store = songStore, player, hashStore }: AppProps): JSX.Ele
         onToggleMetro={metroToggle}
         onTogglePlay={togglePlay}
         onTempoApply={(v) => store.getState().setTempo(v)}
-        onShare={() => hashStore.write(encodeSong(s.song))}
-        onView={() => undefined}
+        onShare={copyShare}
+        onView={() => {
+          player.stop();
+          setMode('view');
+        }}
       />
       <Score
         song={s.song}

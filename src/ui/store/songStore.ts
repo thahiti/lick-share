@@ -63,6 +63,7 @@ export interface SongStore {
   setCurM(m: number): void;
   /** 해시 로드: 곡 교체 + undo/세션 초기화 */
   loadSong(song: Song): void;
+  showToast(msg: string): void;
   clearToast(): void;
   undoAction(): void;
   redoAction(): void;
@@ -133,6 +134,7 @@ export const createSongStore = (initial: Song = demoSong) =>
           toast: null,
           preview: null,
         }),
+      showToast: (msg) => set({ toast: msg }),
       clearToast: () => set({ toast: null }),
 
       undoAction: () =>

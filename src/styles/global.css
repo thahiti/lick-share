@@ -522,3 +522,77 @@ body {
   border-radius: var(--radius-pad);
   z-index: 20;
 }
+
+/* ── 열람 화면 (SPEC §4, DESIGN §4) ── */
+.viewer {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 12px 24px;
+  gap: 12px;
+}
+
+.viewer .hero .rule {
+  border: none;
+  border-top: 1.5px solid var(--ink);
+  margin: 10px 0;
+}
+
+.viewer .badges {
+  display: flex;
+  gap: 6px;
+}
+
+.viewer .badges span {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  font-size: 10px;
+  padding: 3px 7px;
+}
+
+.viewer .score-card {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-pad);
+  padding: 6px;
+}
+
+.viewer .score-scroll {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.viewer .big-play {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ink);
+  align-self: center;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.viewer-actions button {
+  flex: 1;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff;
+  padding: 10px 0;
+  font-size: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.viewer-actions button.dark {
+  background: var(--ink);
+  color: #fff;
+}

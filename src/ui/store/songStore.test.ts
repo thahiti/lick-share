@@ -163,3 +163,11 @@ describe('songStore: 조립용 액션 (P8)', () => {
     expect(store.getState().toast).toBeNull();
   });
 });
+
+describe('songStore: showToast (P9)', () => {
+  test('임의 토스트 표시', () => {
+    const store = createSongStore();
+    store.getState().showToast('열람 링크 복사됨');
+    expect(store.getState().toast).toBe('열람 링크 복사됨');
+  });
+});

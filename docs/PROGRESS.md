@@ -15,12 +15,12 @@
 - **명세 공백 해소**: 코드가 없는 구간(첫 코드 이전)의 반주 = **완전 무음**. 근거: 프로토타입 line 947 `if(!ch||pat==="off"){ flush(st); ... continue; }`. SPEC §5.5에 이 규칙을 추가하기로 함(아직 미반영).
 - **작업 규칙**: TDD 필수(superpowers:test-driven-development — RED 확인 후 구현), Phase 단위 커밋("Phase N: 요약"), 공통 게이트 = `npm run typecheck && npm run lint && npm test && npm run check-smp`.
 
-## 2. 현재 상태 (P8 완료 — 편집 화면 동작)
+## 2. 현재 상태 (P9 완료 — 전 기능 동작)
 
-P0~P8 완료·커밋됨. 다음 작업: **P9 (Viewer + 공유 + 구버전 해시 3종 하위 호환 검증)** — DoD는 handoff IMPLEMENTATION_PLAN P8 (view 배지 4종, 멀티라인 스크롤, 음표 탭 재생, view 재생 반주·메트로놈 0건, 공유 URL 형식, 해시 3종 디코딩 렌더, 복제해서 편집).
+P0~P9 완료·커밋됨. 다음 작업: **P10 (마감)** — DoD는 handoff IMPLEMENTATION_PLAN P9: 접근성(aria-label 전 버튼), `npm run build` 성공 + dist 로컬 서브 수동 시나리오 체크리스트(e2e-checklist.md로 저장), Lighthouse 참고치, 전체 스위트 최종 통과. 선택: lookahead 스케줄러, README(정적 호스팅 배포), 리사이즈 재계산, URL 해시 길이 iOS 실측(사용자 협조 필요).
 
-- P8 산출물: App 조립 완료(모든 편집 컴포넌트 + 해시 로드/자동 저장 500ms + 재생 연동 curM 추적·줄 전환·Score 플레이헤드 + 프리뷰/토스트). core gotoMeasure, store gotoMeasure/setCurM/loadSong/clearToast, player.onEnded 추가. main.tsx에 실제 어댑터 배선(AudioContext는 pointerdown에서 resume). dev 서버 기동 확인.
-- P8 잔여 스텁: Header의 onView(모드 전환)·onShare(클립보드 복사)는 P9에서 구현 (현재 onShare는 해시 갱신만). 패드 플레이헤드(재생 중 세로선)는 미구현 — P9/P10에서 필요 시 추가.
+- P9 산출물: `src/ui/components/view/Viewer.tsx`(배지 4종·멀티라인 Score 재사용·큰 재생·링크 복사/복제해서 편집), App에 mode 라우팅(?mode=view 쿼리 또는 initialMode prop), view 재생은 멜로디만, 음표 탭 = 그 위치부터. copyShare = 클립보드(+prompt 폴백)+해시 갱신+토스트. 프로토타입 해시 3종 디코딩 렌더 테스트 통과(구버전 "r" 필터 포함). store.showToast 추가.
+- 잔여(사소): 패드 플레이헤드 미구현, Viewer 재생 중 스크롤 추적 미구현 — P10에서 판단.
 
 - P7 산출물: core setTempo(클램프+undo), store 세션 확장(accOn/metroOn/setAccGlobal/toggleMetro/setTempo — setAccGlobal off는 패턴 유지하고 accOn만 끔), Icon(DESIGN §5 패스 전부)/Steppers/ButtonBar/MeasureBar/Header/Toast 컴포넌트 + DESIGN §4 스타일. 소리 피드백 규칙(preview: 입력·선택·pitch만) 스토어 테스트로 고정.
 
