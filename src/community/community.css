@@ -81,13 +81,13 @@
   border-radius: var(--radius);
   padding: 8px 12px;
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
   font-size: 11px;
 }
 
 .c-like.on {
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
 }
 
 .c-danger {
