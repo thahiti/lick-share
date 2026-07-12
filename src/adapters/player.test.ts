@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { demoSong } from '../core/demo-song';
 import { secPerStep } from '../engine/schedule';
 import { asStep } from '../core/types';
@@ -107,5 +107,28 @@ describe('player: 재생 중 실시간 토글 (SPEC §3.1, §6.2~6.3 DoD)', () =
     player.toggleMetro(true);
     player.toggleAcc(true);
     expect(sink.events).toHaveLength(0);
+  });
+});
+
+describe('player: 종료 알림 (P8 조립용)', () => {
+  test('toStep 도달 자동 정지 시 onEnded 호출', () => {
+    const ended = vi.fn();
+    player.onEnded(ended);
+    player.play(demoSong, { melody: true, accomp: false, metro: false }, asStep(0), asStep(16));
+    time.t = EPOCH + 16 * SPS + 0.01;
+    clock.frame();
+    expect(ended).toHaveBeenCalledTimes(1);
+  });
+
+  test('수동 stop 시에도 onEnded 호출, 해제 후 미호출', () => {
+    const ended = vi.fn();
+    const unsub = player.onEnded(ended);
+    player.play(demoSong, { melody: true, accomp: false, metro: false }, asStep(0));
+    player.stop();
+    expect(ended).toHaveBeenCalledTimes(1);
+    unsub();
+    player.play(demoSong, { melody: true, accomp: false, metro: false }, asStep(0));
+    player.stop();
+    expect(ended).toHaveBeenCalledTimes(1);
   });
 });

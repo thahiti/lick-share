@@ -3,7 +3,7 @@
  * changed=true인 결과만 스토어가 undo 스냅샷을 쌓는다.
  */
 import { INPUT_LEN, LEN_STEPS, PMAX, PMIN } from './constants';
-import { measOf, measStart, measCountAll, total } from './geometry';
+import { measLen, measOf, measStart, measCountAll, total } from './geometry';
 import { resolveOverlap } from './overlap';
 import {
   asBar,
@@ -275,6 +275,17 @@ export const setChord = (ctx: EditCtx, beatKey: number, chord: string | null): E
   }
   if (chord !== null) chords[beatKey] = chord;
   return { ...ctx, song: { ...ctx.song, chords }, changed: true };
+};
+
+/** 마디 탭/이동: 그 마디로 이동 + 첫 노트(걸친 음 포함, s 최소) 자동 선택 (SPEC §3.2) */
+export const gotoMeasure = (ctx: EditCtx, m: BarIndex): EditOut => {
+  const ms = measStart(ctx.song, m);
+  const me = ms + measLen(ctx.song, m);
+  const first = ctx.song.notes
+    .filter((n) => n.s < me && n.s + n.d > ms)
+    .reduce<Note | null>((best, n) => (best === null || n.s < best.s ? n : best), null);
+  const base = { ...keep(ctx), curM: m, sel: first?.id ?? null };
+  return first ? { ...base, preview: first } : base;
 };
 
 /** 템포 설정: 40~240 클램프 + 반올림. 숫자가 아니면 유지 (SPEC §3.1) */

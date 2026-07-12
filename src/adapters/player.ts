@@ -24,6 +24,8 @@ export interface Player {
   toggleAcc(on: boolean, song?: Song): void;
   /** 진행 스텝(el) 구독. 반환값은 해제 함수 */
   onTick(cb: (el: number) => void): () => void;
+  /** 세션 종료(자동/수동) 구독. 반환값은 해제 함수 */
+  onEnded(cb: () => void): () => void;
   /** 입력·선택 프리뷰 사운드 */
   preview(midi: number): void;
 }
@@ -41,6 +43,7 @@ interface Session {
 export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
   let session: Session | null = null;
   const tickCbs = new Set<(el: number) => void>();
+  const endedCbs = new Set<() => void>();
 
   /** 진행 스텝 — 시작 전에는 fromStep으로 클램프 (measOf 음수 방지) */
   const elapsed = (s: Session): number =>
@@ -51,6 +54,7 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
     session.unsubFrame();
     session = null;
     sink.stop();
+    endedCbs.forEach((cb) => cb());
   };
 
   /** 현재 위치 이후의 kind 이벤트만 다시 스케줄 (프로토타입 elFrom 필터와 동일) */
@@ -103,6 +107,11 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
     onTick(cb) {
       tickCbs.add(cb);
       return () => tickCbs.delete(cb);
+    },
+
+    onEnded(cb) {
+      endedCbs.add(cb);
+      return () => endedCbs.delete(cb);
     },
 
     preview(midi) {

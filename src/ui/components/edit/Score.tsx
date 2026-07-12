@@ -16,6 +16,7 @@ import {
   measX,
   pitchDia,
   posX,
+  total,
 } from '../../../core/geometry';
 import { deriveRests } from '../../../core/rests';
 import { asBar, asStep, type BarIndex, type Note, type Song } from '../../../core/types';
@@ -29,6 +30,8 @@ export interface ScoreProps {
   readonly curM?: BarIndex;
   /** edit 모드 선택 노트 (레드 강조) */
   readonly sel?: number | null;
+  /** 재생 진행 스텝 (정지 시 undefined) */
+  readonly playheadStep?: number;
   readonly width?: number;
   readonly onMeasureTap?: (m: number) => void;
   readonly onNoteTap?: (id: number) => void;
@@ -160,6 +163,7 @@ export const Score = ({
   mode,
   curM,
   sel = null,
+  playheadStep,
   width = 384,
   onMeasureTap,
   onNoteTap,
@@ -390,11 +394,26 @@ export const Score = ({
       );
     });
 
+  const playhead = (() => {
+    if (playheadStep === undefined) return null;
+    const m = measOf(song, asStep(Math.min(playheadStep, total(song) - 0.001)));
+    if (!inLine(m)) return null;
+    const top = topFor(m);
+    const x = posX(song, mw, m, (playheadStep - measStart(song, m)) / measLen(song, m));
+    return (
+      <g data-playhead="">
+        <line x1={x} y1={top - 34} x2={x} y2={top + 64} stroke="var(--red)" strokeWidth={2} />
+        <path d={`M ${x - 4} ${top - 34} L ${x + 4} ${top - 34} L ${x} ${top - 28} Z`} fill="var(--red)" />
+      </g>
+    );
+  })();
+
   return (
     <svg viewBox={`0 0 ${width} ${height}`} width="100%">
       {lineLayers}
       {noteLayers}
       {restLayers}
+      {playhead}
     </svg>
   );
 };

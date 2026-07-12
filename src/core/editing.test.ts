@@ -5,6 +5,7 @@ import {
   addPickup,
   cycleMeasureAcc,
   deleteSel,
+  gotoMeasure,
   padTap,
   selectDir,
   setChord,
@@ -278,5 +279,27 @@ describe('setTempo (SPEC §3.1)', () => {
   test('같은 값이면 changed=false', () => {
     expect(setTempo(ctx(demoSong), 100).changed).toBe(false);
     expect(setTempo(ctx(demoSong), 104).changed).toBe(true);
+  });
+});
+
+describe('gotoMeasure (SPEC §3.2)', () => {
+  test('마디 이동 + 그 마디 첫 노트 자동 선택 + 프리뷰', () => {
+    const out = gotoMeasure(ctx(demoSong), asBar(2));
+    expect(out.curM).toBe(2);
+    expect(out.sel).toBe(8); // s=32 노트
+    expect(out.preview).toBeDefined();
+    expect(out.changed).toBe(false);
+  });
+
+  test('마디에 걸친 음 포함 (n.s<me && n.s+n.d>ms 중 s 최소)', () => {
+    // 데모 id5: [12,18) — 마디 1에 걸침. 마디 1 자체 시작 노트 id7(s=20)보다 s가 작음
+    const out = gotoMeasure(ctx(demoSong), asBar(1));
+    expect(out.sel).toBe(5);
+  });
+
+  test('노트 없는 마디 → 선택 해제, 프리뷰 없음', () => {
+    const out = gotoMeasure(ctx(song({ meas: 2, notes: [note(1, 0, 4)] })), asBar(1));
+    expect(out.sel).toBeNull();
+    expect(out.preview).toBeUndefined();
   });
 });

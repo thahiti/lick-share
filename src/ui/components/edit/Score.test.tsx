@@ -113,3 +113,21 @@ describe('Score: 덧줄 (SPEC §3.2)', () => {
     expect(container.querySelectorAll('[data-tie]')).toHaveLength(1);
   });
 });
+
+describe('Score: 플레이헤드 (SPEC §3.2, DESIGN §4)', () => {
+  test('playheadStep이 현재 라인에 있으면 레드 세로선 렌더', () => {
+    const { container } = render(
+      <Score song={demoSong} mode="edit" curM={asBar(0)} playheadStep={8} />,
+    );
+    expect(container.querySelector('[data-playhead]')).not.toBeNull();
+  });
+
+  test('없으면(정지) 렌더하지 않음, 다른 라인 스텝도 렌더하지 않음', () => {
+    const none = render(<Score song={demoSong} mode="edit" curM={asBar(0)} />);
+    expect(none.container.querySelector('[data-playhead]')).toBeNull();
+    const other = render(
+      <Score song={{ ...demoSong, meas: 5 }} mode="edit" curM={asBar(4)} playheadStep={8} />,
+    );
+    expect(other.container.querySelector('[data-playhead]')).toBeNull();
+  });
+});

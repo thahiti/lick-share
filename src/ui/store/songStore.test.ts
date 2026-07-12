@@ -124,3 +124,42 @@ describe('songStore: 소리 피드백 규칙 (SPEC §3.7)', () => {
     expect(store.getState().preview).toBeNull();
   });
 });
+
+describe('songStore: 조립용 액션 (P8)', () => {
+  test('gotoMeasure: 이동 + 첫 노트 선택 + 프리뷰, undo 안 쌓임', () => {
+    const store = createSongStore();
+    store.getState().gotoMeasure(2);
+    expect(store.getState().curM).toBe(2);
+    expect(store.getState().sel).toBe(8);
+    expect(store.getState().preview).not.toBeNull();
+    expect(store.getState().undo.past).toHaveLength(0);
+  });
+
+  test('setCurM: 재생 추적 — 선택 유지, 프리뷰 없음', () => {
+    const store = createSongStore();
+    store.getState().padTap(asMidi(64), 0); // sel=1 (선택만)
+    store.getState().setCurM(3);
+    expect(store.getState().curM).toBe(3);
+    expect(store.getState().sel).toBe(1);
+    expect(store.getState().preview).toBeNull();
+  });
+
+  test('loadSong: 곡 교체 + undo/세션 초기화', () => {
+    const store = createSongStore();
+    store.getState().padTap(asMidi(60), 0);
+    store.getState().loadSong({ ...demoSong, tempo: 88 });
+    const s = store.getState();
+    expect(s.song.tempo).toBe(88);
+    expect(s.undo.past).toHaveLength(0);
+    expect(s.sel).toBeNull();
+    expect(s.curM).toBe(0);
+  });
+
+  test('clearToast', () => {
+    const store = createSongStore();
+    store.getState().padTap('rest', 3);
+    expect(store.getState().toast).not.toBeNull();
+    store.getState().clearToast();
+    expect(store.getState().toast).toBeNull();
+  });
+});

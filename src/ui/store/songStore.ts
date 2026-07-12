@@ -9,6 +9,7 @@ import {
   addPickup,
   cycleMeasureAcc,
   deleteSel,
+  gotoMeasure,
   padTap,
   selectDir,
   setChord,
@@ -56,6 +57,13 @@ export interface SongStore {
   /** 헤더 반주 팝오버: 패턴 = 켬 + 전역 패턴 설정, 'off' = 끔 (패턴 유지) */
   setAccGlobal(v: AccPattern | 'off'): void;
   toggleMetro(): void;
+  /** 마디 탭/이동: 첫 노트 자동 선택 + 프리뷰 (SPEC §3.2) */
+  gotoMeasure(m: number): void;
+  /** 재생 추적: 선택·프리뷰 없이 curM만 */
+  setCurM(m: number): void;
+  /** 해시 로드: 곡 교체 + undo/세션 초기화 */
+  loadSong(song: Song): void;
+  clearToast(): void;
   undoAction(): void;
   redoAction(): void;
 }
@@ -114,6 +122,18 @@ export const createSongStore = (initial: Song = demoSong) =>
           };
         }),
       toggleMetro: () => set((s) => ({ metroOn: !s.metroOn })),
+      gotoMeasure: (m) => apply((c) => gotoMeasure(c, asBar(m))),
+      setCurM: (m) => set({ curM: asBar(m), preview: null }),
+      loadSong: (song) =>
+        set({
+          song,
+          sel: null,
+          curM: asBar(0),
+          undo: emptyUndo,
+          toast: null,
+          preview: null,
+        }),
+      clearToast: () => set({ toast: null }),
 
       undoAction: () =>
         set((s) => {
