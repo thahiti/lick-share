@@ -44,6 +44,8 @@ export interface SongStore {
   readonly metroOn: boolean;
 
   padTap(pv: Midi | 'rest', st: number): void;
+  /** 지정 마디 기준 padTap — 전곡 피아노롤용 (단일 undo 엔트리) */
+  padTapAt(m: number, pv: Midi | 'rest', st: number): void;
   stepPitch(dir: 1 | -1): void;
   stepPos(dir: 1 | -1): void;
   stepLen(dir: 1 | -1): void;
@@ -101,6 +103,7 @@ export const createSongStore = (initial: Song = demoSong) =>
       metroOn: false,
 
       padTap: (pv, st) => apply((c) => padTap(c, pv, st)),
+      padTapAt: (m, pv, st) => apply((c) => padTap({ ...c, curM: asBar(m) }, pv, st)),
       stepPitch: (dir) => apply((c) => stepPitch(c, dir)),
       stepPos: (dir) => apply((c) => stepPos(c, dir)),
       stepLen: (dir) => apply((c) => stepLen(c, dir)),

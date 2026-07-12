@@ -16,6 +16,20 @@ describe('songStore (core 순수 함수 래핑)', () => {
     expect(s.undo.past).toHaveLength(1);
   });
 
+  test('padTapAt: 지정 마디에 입력 + curM 이동 + 단일 undo', () => {
+    const store = createSongStore();
+    store.getState().loadSong({ ...demoSong, notes: [] });
+    store.getState().padTapAt(2, asMidi(60), 4);
+    const s = store.getState();
+    expect(s.curM).toBe(2);
+    expect(s.song.notes).toHaveLength(1);
+    expect(s.song.notes[0]).toMatchObject({ s: 2 * 16 + 4, d: 4, p: 60 });
+    expect(s.sel).toBe(s.song.notes[0]?.id ?? null);
+    expect(s.undo.past).toHaveLength(1);
+    store.getState().undoAction();
+    expect(store.getState().song.notes).toHaveLength(0);
+  });
+
   test('변경 없는 조작(선택만)은 undo 스냅샷을 쌓지 않음', () => {
     const store = createSongStore();
     store.getState().padTap(asMidi(64), 0); // 기존 노트 선택
