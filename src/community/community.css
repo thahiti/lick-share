@@ -57,8 +57,9 @@
   background: var(--paper);
 }
 
-.c-card .c-title {
+.c-title {
   font-weight: 600;
+  font-size: 15px;
 }
 
 .c-cardhit {
@@ -120,6 +121,17 @@
   font-size: 11px;
 }
 
+.c-like {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  cursor: pointer;
+}
+
 .c-like.on {
   background: var(--ink);
   color: var(--paper);
@@ -128,6 +140,30 @@
 .c-danger {
   border-color: var(--red);
   color: var(--red);
+}
+
+.c-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.c-notice {
+  font-size: 11px;
+  color: var(--mut2);
+}
+
+.c-notice a {
+  color: var(--red);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.c-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .c-form {
