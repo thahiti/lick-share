@@ -4,8 +4,9 @@
  */
 import type { JSX } from 'react';
 import { LEN_NAME, LEN_STEPS, PMAX, PMIN, pName, pShort } from '../../../core/constants';
-import { measLabel, measOf, measStart, total } from '../../../core/geometry';
+import { total } from '../../../core/geometry';
 import type { Song } from '../../../core/types';
+import { lenLabel, posLabel } from '../../labels';
 import { Icon } from '../common/Icon';
 
 export interface SteppersProps {
@@ -18,14 +19,6 @@ export interface SteppersProps {
 
 export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: SteppersProps): JSX.Element => {
   const n = song.notes.find((x) => x.id === sel) ?? null;
-
-  const posLabel = (): string => {
-    if (!n) return '—';
-    const pm = measOf(song, n.s);
-    const rel = n.s - measStart(song, pm);
-    const beat = Math.floor(rel / 4) + (song.pickup && pm === 0 ? 3 : 1);
-    return `${measLabel(song, pm)} ${beat}.${(rel % 4) + 1}`;
-  };
 
   const li = n ? LEN_STEPS.indexOf(n.d) : -1;
   const lenPrev = n && li > 0 ? LEN_NAME[LEN_STEPS[li - 1] as number] : undefined;
@@ -76,7 +69,7 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
             <span className="lab">앞으로</span>
           </button>
           <div className="cur">
-            <b data-cur="pos">{posLabel()}</b>
+            <b data-cur="pos">{posLabel(song, n)}</b>
             <span className="ccap">위치 · 16분</span>
           </div>
           <button
@@ -101,7 +94,7 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
             <span className="lab">{lenPrev ?? '—'}</span>
           </button>
           <div className="cur">
-            <b data-cur="len">{n ? (LEN_NAME[n.d] ?? `${n.d}×16분`) : '—'}</b>
+            <b data-cur="len">{lenLabel(n)}</b>
             <span className="ccap">길이</span>
           </div>
           <button
