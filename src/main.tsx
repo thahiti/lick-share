@@ -4,7 +4,7 @@ import { createLocationHashStore } from './adapters/location-hash-store';
 import { createPlayer } from './adapters/player';
 import { createRafClock } from './adapters/raf-clock';
 import { createWebAudioSink } from './adapters/web-audio-sink';
-import { App } from './ui/components/App';
+import { Root } from './community/Root';
 import './styles/tokens.css';
 import './styles/global.css';
 
@@ -24,6 +24,6 @@ const root = document.getElementById('root');
 if (!root) throw new Error('#root 요소가 없습니다');
 createRoot(root).render(
   <StrictMode>
-    <App player={player} hashStore={hashStore} />
+    <Root player={player} hashStore={hashStore} />
   </StrictMode>,
 );

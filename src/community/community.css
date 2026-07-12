@@ -1,0 +1,96 @@
+/* 커뮤니티 레이아웃 — tokens.css 변수만 사용, c- 프리픽스로 기존 스타일과 분리 */
+
+.community {
+  max-width: var(--app-max-width);
+  margin: 0 auto;
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+.c-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 2px solid var(--ink);
+}
+
+.c-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.c-nav a {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.c-nav a.active {
+  color: var(--red);
+}
+
+.c-linkbtn {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.c-card {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-pad);
+  padding: 12px;
+}
+
+.c-card .c-title {
+  font-weight: 600;
+}
+
+.c-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--mut2);
+}
+
+.c-eyebrow {
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--mut2);
+}
+
+.c-state {
+  text-align: center;
+  font-size: 11px;
+  color: var(--mut);
+}
+
+.c-toast {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 11px;
+}
+
+.c-like.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.c-danger {
+  border-color: var(--red);
+  color: var(--red);
+}
