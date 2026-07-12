@@ -91,6 +91,28 @@ describe('Publish 게시 화면', () => {
     expect(publishLick).toHaveBeenCalledWith(otherSong.title, otherHash, expect.any(String));
   });
 
+  it('같은 해시를 다시 붙여넣으면(공백 차이) 타이핑한 제목을 유지한 채 게시한다', async () => {
+    publishLick.mockResolvedValue({ ok: true, id: 'xyz' });
+    render(<Publish user={fakeUser} />);
+    const textarea = screen.getByPlaceholderText('공유 URL 또는 해시를 붙여넣으세요');
+
+    // 해시 A 붙여넣기 → 커스텀 제목 타이핑
+    fireEvent.change(textarea, { target: { value: validHash } });
+    fireEvent.change(screen.getByDisplayValue(demoSong.title), {
+      target: { value: '내가 지은 제목' },
+    });
+
+    // 추출 결과가 여전히 A인 재입력 (앞 공백만 다른 같은 해시) — 제목 입력은 그대로
+    fireEvent.change(textarea, { target: { value: '  ' + validHash } });
+    expect(screen.getByDisplayValue('내가 지은 제목')).toBeTruthy();
+
+    fireEvent.click(screen.getByText('게시'));
+
+    await vi.waitFor(() => expect(publishLick).toHaveBeenCalledTimes(1));
+    // 화면에 남아 있는 커스텀 제목 그대로 게시 (song.title로 후퇴하지 않음)
+    expect(publishLick).toHaveBeenCalledWith('내가 지은 제목', validHash, expect.any(String));
+  });
+
   it('publishLick이 duplicate를 반환하면 "이미 게시한 릭이에요"를 보여준다', async () => {
     publishLick.mockResolvedValue({ ok: false, reason: 'duplicate' });
     render(<Publish user={fakeUser} />);

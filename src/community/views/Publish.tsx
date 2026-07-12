@@ -91,9 +91,9 @@ export const Publish = ({ user }: Props): JSX.Element => {
         value={input}
         onChange={(e) => {
           setInput(e.target.value);
-          // 해시가 바뀌면 이전 곡에 타이핑한 제목이 새 곡에 새어들지 않도록 리셋
-          // (TitleInput은 key 리마운트로 새 song.title을 보여주므로 화면·게시 데이터 일치)
-          setTitle('');
+          // 해시가 실제로 바뀔 때만 제목 리셋 — 같은 해시 재붙여넣기(공백 차이 등)는
+          // TitleInput이 리마운트되지 않아 타이핑한 제목이 화면에 남으므로 그대로 유지
+          if (extractHash(e.target.value) !== hash) setTitle('');
           setStatus({ kind: 'idle' });
         }}
         placeholder="공유 URL 또는 해시를 붙여넣으세요"
