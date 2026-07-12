@@ -104,4 +104,4 @@ top=42      (단일 줄 기준 보표 첫 선 y)
 - 앱 최대폭 420px 중앙 정렬, 흰 배경, 바깥 #f0f0f0.
 - 세로 흐름: 헤더(고정 높이) → 악보(내용 높이) → 패드 존(#fafafa) → 스테퍼 존(#f5f5f5) → 6버튼줄(flex 하단 고정, margin-top:auto).
 - 모바일 우선: user-scalable=no, tap-highlight 제거, 스크롤 영역 overscroll-behavior:contain.
-- 데스크톱(뷰포트 ≥900px): 편집은 `max-width:1120px` 2패널 그리드 `[1fr 악보 | 380px 컨트롤]`, 악보 pane 독립 스크롤. 열람은 `max-width:680px` 중앙 컬럼. 컨트롤 px 규격은 불변, padding/gap만 확대. 마우스 hover/focus 피드백 추가.
+- 데스크톱(뷰포트 ≥900px): 편집은 **다크 DAW 레이아웃**(`.daw`, `max-width:1200px`) — 트랜스포트 바 / 전곡 코드 레일 + 피아노롤 + 우측 248px 인스펙터 / 하단 오선 악보 / 상태 바. 색은 tokens.css의 `.daw` 스코프 토큰 재정의(잉크 반전 + 노트 인디고·선택 주황적·코드 틸, red는 플레이헤드·경고 유지). 열람은 `max-width:680px` 라이트 중앙 컬럼. 모바일(<900px)은 본 문서 원칙 그대로.
