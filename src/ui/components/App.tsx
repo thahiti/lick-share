@@ -11,6 +11,7 @@ import { measCountAll, measLen, measOf, measStart, total } from '../../core/geom
 import { asStep, type AccPattern } from '../../core/types';
 import type { HashStore } from '../../ports/hash-store';
 import { songStore, type SongStore } from '../store/songStore';
+import { useKeyboardShortcuts, type ShortcutAction } from '../hooks/useKeyboardShortcuts';
 import { Toast } from './common/Toast';
 import { ButtonBar } from './edit/ButtonBar';
 import { ChordPicker } from './edit/ChordPicker';
@@ -51,13 +52,16 @@ export const App = ({
   const shellRef = useRef<HTMLDivElement>(null);
   const [scoreW, setScoreW] = useState(384);
 
-  /* 리사이즈 시 지오메트리 재계산 (SPEC §8) */
+  /* 악보 pane 폭 측정 → 조판 재계산 (SPEC §8). mode 전환 시 대상 재부착 */
   useEffect(() => {
-    const update = (): void => setScoreW(shellRef.current?.clientWidth || 384);
+    const el = shellRef.current;
+    if (!el) return;
+    const update = (): void => setScoreW(el.clientWidth || 384);
     update();
-    window.addEventListener('resize', update);
-    return () => window.removeEventListener('resize', update);
-  }, []);
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [mode]);
 
   /* 초기 해시 로드 (SPEC §7) */
   useEffect(() => {
@@ -169,9 +173,29 @@ export const App = ({
     setPlaying(true);
   };
 
+  const shortcuts: Record<ShortcutAction, () => void> = {
+    selectPrev: () => store.getState().selectDir(-1),
+    selectNext: () => store.getState().selectDir(1),
+    pitchUp: () => store.getState().stepPitch(1),
+    pitchDown: () => store.getState().stepPitch(-1),
+    posBack: () => store.getState().stepPos(-1),
+    posFwd: () => store.getState().stepPos(1),
+    lenInc: () => store.getState().stepLen(1),
+    lenDec: () => store.getState().stepLen(-1),
+    playToggle: togglePlay,
+    playMeasure,
+    del: () => store.getState().deleteSel(),
+    measPrev: measurePrev,
+    measNext: measureNext,
+    undo: () => store.getState().undoAction(),
+    redo: () => store.getState().redoAction(),
+    escape: () => setCpBeat(null),
+  };
+  useKeyboardShortcuts(shortcuts, mode === 'edit');
+
   if (mode === 'view') {
     return (
-      <div className="app" ref={shellRef}>
+      <div className="app app--view" ref={shellRef}>
         <Viewer
           song={s.song}
           playing={playing}
@@ -191,72 +215,76 @@ export const App = ({
   }
 
   return (
-    <div className="app" ref={shellRef}>
-      <Header
-        song={s.song}
-        accOn={s.accOn}
-        metroOn={s.metroOn}
-        playing={playing}
-        onAccSelect={accSelect}
-        onToggleMetro={metroToggle}
-        onTogglePlay={togglePlay}
-        onTempoApply={(v) => store.getState().setTempo(v)}
-        onShare={copyShare}
-        onView={() => {
-          player.stop();
-          setMode('view');
-        }}
-      />
-      <Score
-        song={s.song}
-        mode="edit"
-        curM={s.curM}
-        sel={s.sel}
-        width={scoreW}
-        {...(playing && playEl !== null ? { playheadStep: playEl } : {})}
-        onMeasureTap={(m) => {
-          setCpBeat(null);
-          store.getState().gotoMeasure(m);
-        }}
-      />
-      <ChordRow
-        song={s.song}
-        curM={s.curM}
-        openBeat={cpBeat}
-        onSlotTap={(b) => setCpBeat((cur) => (cur === b ? null : b))}
-        onCycleAcc={() => store.getState().cycleMeasureAcc()}
-      />
-      {cpBeat !== null && (
-        <ChordPicker
+    <div className="app">
+      <div className="pane-score" ref={shellRef}>
+        <Header
+          song={s.song}
+          accOn={s.accOn}
+          metroOn={s.metroOn}
+          playing={playing}
+          onAccSelect={accSelect}
+          onToggleMetro={metroToggle}
+          onTogglePlay={togglePlay}
+          onTempoApply={(v) => store.getState().setTempo(v)}
+          onShare={copyShare}
+          onView={() => {
+            player.stop();
+            setMode('view');
+          }}
+        />
+        <Score
+          song={s.song}
+          mode="edit"
+          curM={s.curM}
+          sel={s.sel}
+          width={scoreW}
+          {...(playing && playEl !== null ? { playheadStep: playEl } : {})}
+          onMeasureTap={(m) => {
+            setCpBeat(null);
+            store.getState().gotoMeasure(m);
+          }}
+        />
+      </div>
+      <div className="pane-edit">
+        <ChordRow
           song={s.song}
           curM={s.curM}
-          beat={cpBeat}
-          onApply={(ch) => store.getState().setChord(chordKey(cpBeat), ch)}
-          onClear={() => {
-            store.getState().setChord(chordKey(cpBeat), null);
-            setCpBeat(null);
-          }}
-          onDone={() => setCpBeat(null)}
+          openBeat={cpBeat}
+          onSlotTap={(b) => setCpBeat((cur) => (cur === b ? null : b))}
+          onCycleAcc={() => store.getState().cycleMeasureAcc()}
         />
-      )}
-      <Pad song={s.song} curM={s.curM} sel={s.sel} onCellTap={(pv, st) => store.getState().padTap(pv, st)} />
-      <MeasureBar song={s.song} curM={s.curM} onPrev={measurePrev} onNext={measureNext} />
-      <Steppers
-        song={s.song}
-        sel={s.sel}
-        onStepPitch={(d) => store.getState().stepPitch(d)}
-        onStepPos={(d) => store.getState().stepPos(d)}
-        onStepLen={(d) => store.getState().stepLen(d)}
-      />
-      <ButtonBar
-        song={s.song}
-        sel={s.sel}
-        onSelectDir={(d) => store.getState().selectDir(d)}
-        onPlayMeasure={playMeasure}
-        onUndo={() => store.getState().undoAction()}
-        onRedo={() => store.getState().redoAction()}
-        onDelete={() => store.getState().deleteSel()}
-      />
+        {cpBeat !== null && (
+          <ChordPicker
+            song={s.song}
+            curM={s.curM}
+            beat={cpBeat}
+            onApply={(ch) => store.getState().setChord(chordKey(cpBeat), ch)}
+            onClear={() => {
+              store.getState().setChord(chordKey(cpBeat), null);
+              setCpBeat(null);
+            }}
+            onDone={() => setCpBeat(null)}
+          />
+        )}
+        <Pad song={s.song} curM={s.curM} sel={s.sel} onCellTap={(pv, st) => store.getState().padTap(pv, st)} />
+        <MeasureBar song={s.song} curM={s.curM} onPrev={measurePrev} onNext={measureNext} />
+        <Steppers
+          song={s.song}
+          sel={s.sel}
+          onStepPitch={(d) => store.getState().stepPitch(d)}
+          onStepPos={(d) => store.getState().stepPos(d)}
+          onStepLen={(d) => store.getState().stepLen(d)}
+        />
+        <ButtonBar
+          song={s.song}
+          sel={s.sel}
+          onSelectDir={(d) => store.getState().selectDir(d)}
+          onPlayMeasure={playMeasure}
+          onUndo={() => store.getState().undoAction()}
+          onRedo={() => store.getState().redoAction()}
+          onDelete={() => store.getState().deleteSel()}
+        />
+      </div>
       <Toast msg={s.toast} onDone={() => store.getState().clearToast()} />
     </div>
   );

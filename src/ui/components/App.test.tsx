@@ -47,6 +47,36 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
     expect(container.querySelector('[data-rest="16"]')).not.toBeNull();
   });
 
+  test('편집: 두 pane 구조 + 소속 컴포넌트', () => {
+    const { container } = setup();
+    const paneScore = container.querySelector('.pane-score');
+    const paneEdit = container.querySelector('.pane-edit');
+    expect(paneScore).not.toBeNull();
+    expect(paneEdit).not.toBeNull();
+    expect(paneScore?.querySelector('.header')).not.toBeNull();
+    expect(paneEdit?.querySelector('.button-bar')).not.toBeNull();
+    expect(paneEdit?.querySelector('.pad')).not.toBeNull();
+  });
+
+  test('키보드: l = 다음 음 선택', () => {
+    const { container } = setup();
+    click(container, '[data-m="0"]'); // 마디1 첫 노트 선택
+    const selKey = (): string | undefined => {
+      const el = container.querySelector('.pcell.sel');
+      return el ? `${el.getAttribute('data-p')}:${el.getAttribute('data-st')}` : undefined;
+    };
+    const before = selKey();
+    fireEvent.keyDown(window, { key: 'l' });
+    expect(selKey()).not.toBe(before);
+  });
+
+  test('키보드: Space = 재생 토글', () => {
+    const { player } = setup();
+    expect(player.isPlaying()).toBe(false);
+    fireEvent.keyDown(window, { key: ' ' });
+    expect(player.isPlaying()).toBe(true);
+  });
+
   test('마디 탭 → 이동 + 첫 노트 선택 + 프리뷰', () => {
     const { container, sink } = setup();
     click(container, '[data-m="2"]');

@@ -71,7 +71,9 @@ export const useKeyboardShortcuts = (
   enabled: boolean,
 ): void => {
   const ref = useRef(handlers);
-  ref.current = handlers;
+  useEffect(() => {
+    ref.current = handlers;
+  });
 
   useEffect(() => {
     if (!enabled) return;
