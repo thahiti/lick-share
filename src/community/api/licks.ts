@@ -43,12 +43,13 @@ export async function publishLick(
   blob: string,
   melodyHash: string,
 ): Promise<PublishResult> {
-  const { data: canonical } = await supabase
+  const { data: canonical, error: lookupError } = await supabase
     .from('licks')
     .select('id')
     .eq('melody_hash', melodyHash)
     .is('canonical_id', null)
     .maybeSingle();
+  if (lookupError) return { ok: false, reason: 'error', message: lookupError.message };
   const { data, error } = await supabase
     .from('licks')
     .insert({ title, blob, melody_hash: melodyHash, canonical_id: canonical?.id ?? null })
