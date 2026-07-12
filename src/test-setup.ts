@@ -1,3 +1,10 @@
+import { afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+
+// vitest globals가 꺼져 있으면 RTL 자동 cleanup이 등록되지 않아
+// 같은 파일의 테스트 간 DOM 트리가 누적된다 — 명시적으로 등록.
+afterEach(cleanup);
+
 // jsdom에 없는 브라우저 API 목 (App의 ResizeObserver/matchMedia 사용 대비)
 class ResizeObserverMock {
   observe(): void {}
