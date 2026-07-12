@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { asBar, asStep } from './types';
+import { asBar, asMidi, asStep } from './types';
 import {
   computeMw,
   lineOf,
@@ -10,6 +10,7 @@ import {
   measStart,
   measW,
   measX,
+  pitchDia,
   posX,
   total,
 } from './geometry';
@@ -108,5 +109,20 @@ describe('geometry: 가로 배치 (W=384 기준)', () => {
     const x0 = measX(withPickup, mw, asBar(0));
     expect(measX(withPickup, mw, asBar(1))).toBeCloseTo(x0 + mw * 0.7);
     expect(measX(withPickup, mw, asBar(5))).toBeCloseTo(x0); // 둘째 줄 첫 마디
+  });
+});
+
+describe('pitchDia: 온음계 좌표 (SPEC §3.2)', () => {
+  test('E4(64) = 보표 최하단 선 (step 0)', () => {
+    expect(pitchDia(asMidi(64))).toEqual({ step: 0, acc: false });
+  });
+  test('F3(53) = step -6 → 하단 덧줄 3개 영역', () => {
+    expect(pitchDia(asMidi(53))).toEqual({ step: -6, acc: false });
+  });
+  test('C6(84) = step 12 → 상단 덧줄 2개 영역', () => {
+    expect(pitchDia(asMidi(84))).toEqual({ step: 12, acc: false });
+  });
+  test('검은건반은 acc=true (♯ 표기)', () => {
+    expect(pitchDia(asMidi(66))).toEqual({ step: 1, acc: true }); // F♯4
   });
 });

@@ -3,7 +3,7 @@
  * 마디 ↔ 스텝 변환은 반드시 이 모듈만 사용한다 (오프셋 중복 계산 금지).
  */
 import { LAYOUT, SPM } from './constants';
-import { asBar, asStep, type BarIndex, type Song, type Step } from './types';
+import { asBar, asStep, type BarIndex, type Midi, type Song, type Step } from './types';
 
 /** 지오메트리에 필요한 최소 곡 정보 */
 export type BarSpec = Pick<Song, 'meas' | 'pickup'>;
@@ -58,6 +58,23 @@ export const measX = (song: BarSpec, mw: number, m: BarIndex): number => {
 /** 마디 폭 */
 export const measW = (song: BarSpec, mw: number, m: BarIndex): number =>
   song.pickup && m === 0 ? mw * LAYOUT.PICKW : mw;
+
+const DIA_MAP: readonly number[] = [0, 0, 1, 1, 2, 3, 3, 4, 4, 5, 5, 6];
+const BLACK = new Set([1, 3, 6, 8, 10]);
+
+export interface PitchDia {
+  /** 온음계 좌표: 0=보표 최하단 선(E4), 반 칸 단위 */
+  readonly step: number;
+  /** 검은건반 여부 (♯ 임시표 표기) */
+  readonly acc: boolean;
+}
+
+/** MIDI 피치 → 보표 온음계 좌표 (C장조 스펠링, 검은건반=♯) */
+export const pitchDia = (p: Midi): PitchDia => {
+  const oct = Math.floor(p / 12);
+  const pc = p % 12;
+  return { step: (DIA_MAP[pc] ?? 0) + (oct - 5) * 7 - 2, acc: BLACK.has(pc) };
+};
 
 /** 마디 내부 콘텐츠 x — 좌우 여백 제외 영역에 비례 배치 (마디선 넘침 방지) */
 export const posX = (song: BarSpec, mw: number, m: BarIndex, frac: number): number => {
