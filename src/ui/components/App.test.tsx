@@ -10,7 +10,24 @@ import { secPerStep } from '../../engine/schedule';
 import { createSongStore } from '../store/songStore';
 import { App } from './App';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
+
+/** 데스크톱(≥900px) matchMedia 스텁 */
+const stubDesktop = (): void => {
+  vi.stubGlobal('matchMedia', (q: string) => ({
+    matches: true,
+    media: q,
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false,
+  }));
+};
 
 const SPS = secPerStep(demoSong.tempo);
 const EPOCH = 0.06;
@@ -239,5 +256,43 @@ describe('App: 리사이즈 재계산 (IMPLEMENTATION_PLAN P9)', () => {
     expect(container.querySelector('svg[width="100%"]')?.getAttribute('viewBox')).toBe(
       '0 0 384 126',
     );
+  });
+});
+
+describe('DAW 데스크톱 편집 (P11 v2)', () => {
+  test('≥900px: DAW 구획 렌더 + 모바일 패드 없음', () => {
+    stubDesktop();
+    const { container } = setup();
+    expect(container.querySelector('.daw-shell')).not.toBeNull();
+    expect(container.querySelector('.roll-grid')).not.toBeNull();
+    expect(container.querySelector('.inspector')).not.toBeNull();
+    expect(container.querySelector('.chord-rail')).not.toBeNull();
+    expect(container.querySelector('.daw-score svg')).not.toBeNull();
+    expect(container.querySelector('.pad')).toBeNull();
+  });
+
+  test('빈 셀 클릭 → 다른 마디에 노트 입력 + curM 이동', () => {
+    stubDesktop();
+    const { container, store } = setup();
+    const before = store.getState().song.notes.length;
+    click(container, '[data-m="1"][data-p="84"][data-st="0"]');
+    expect(store.getState().song.notes.length).toBe(before + 1);
+    expect(store.getState().curM).toBe(1);
+  });
+
+  test('코드 슬롯 클릭 → 피커 열림 → Esc 닫힘', () => {
+    stubDesktop();
+    const { container } = setup();
+    click(container, '[data-rm-b="2:0"]');
+    expect(container.querySelector('.chord-pick')).not.toBeNull();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(container.querySelector('.chord-pick')).toBeNull();
+  });
+
+  test('키보드 Space 재생 유지', () => {
+    stubDesktop();
+    const { player } = setup();
+    fireEvent.keyDown(window, { key: ' ' });
+    expect(player.isPlaying()).toBe(true);
   });
 });

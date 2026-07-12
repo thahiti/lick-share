@@ -12,6 +12,8 @@ import { asStep, type AccPattern } from '../../core/types';
 import type { HashStore } from '../../ports/hash-store';
 import { songStore, type SongStore } from '../store/songStore';
 import { useKeyboardShortcuts, type ShortcutAction } from '../hooks/useKeyboardShortcuts';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { DawEdit } from './edit/daw/DawEdit';
 import { Toast } from './common/Toast';
 import { ButtonBar } from './edit/ButtonBar';
 import { ChordPicker } from './edit/ChordPicker';
@@ -51,8 +53,10 @@ export const App = ({
   const loaded = useRef(false);
   const shellRef = useRef<HTMLDivElement>(null);
   const [scoreW, setScoreW] = useState(384);
+  /* 데스크톱(≥900px) 편집은 DAW 레이아웃 (P11 v2) */
+  const desktop = useMediaQuery('(min-width: 900px)');
 
-  /* 악보 pane 폭 측정 → 조판 재계산 (SPEC §8). mode 전환 시 대상 재부착 */
+  /* 악보 pane 폭 측정 → 조판 재계산 (SPEC §8). 모드·레이아웃 전환 시 대상 재부착 */
   useEffect(() => {
     const el = shellRef.current;
     if (!el) return;
@@ -61,7 +65,7 @@ export const App = ({
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [mode]);
+  }, [mode, desktop]);
 
   /* 초기 해시 로드 (SPEC §7) */
   useEffect(() => {
@@ -207,6 +211,63 @@ export const App = ({
           onToEdit={() => {
             player.stop();
             setMode('edit');
+          }}
+        />
+        <Toast msg={s.toast} onDone={() => store.getState().clearToast()} />
+      </div>
+    );
+  }
+
+  if (desktop) {
+    return (
+      <div className="daw">
+        <DawEdit
+          song={s.song}
+          sel={s.sel}
+          curM={s.curM}
+          accOn={s.accOn}
+          metroOn={s.metroOn}
+          playing={playing}
+          playEl={playEl}
+          cpBeat={cpBeat}
+          scoreW={scoreW}
+          scoreRef={shellRef}
+          onCellTap={(m, pv, st) => store.getState().padTapAt(m, pv, st)}
+          onSlotTap={(m, b) => {
+            if (m === s.curM && cpBeat === b) {
+              setCpBeat(null);
+              return;
+            }
+            store.getState().setCurM(m);
+            setCpBeat(b);
+          }}
+          onPickerApply={(ch) => {
+            if (cpBeat !== null) store.getState().setChord(chordKey(cpBeat), ch);
+          }}
+          onPickerClear={() => {
+            if (cpBeat !== null) store.getState().setChord(chordKey(cpBeat), null);
+            setCpBeat(null);
+          }}
+          onPickerDone={() => setCpBeat(null)}
+          onMeasureTap={(m) => {
+            setCpBeat(null);
+            store.getState().gotoMeasure(m);
+          }}
+          onStepPitch={(d) => store.getState().stepPitch(d)}
+          onStepPos={(d) => store.getState().stepPos(d)}
+          onStepLen={(d) => store.getState().stepLen(d)}
+          onAccSelect={accSelect}
+          onCycleAcc={() => store.getState().cycleMeasureAcc()}
+          onTogglePlay={togglePlay}
+          onToggleMetro={metroToggle}
+          onTempoApply={(v) => store.getState().setTempo(v)}
+          onUndo={() => store.getState().undoAction()}
+          onRedo={() => store.getState().redoAction()}
+          onDelete={() => store.getState().deleteSel()}
+          onShare={copyShare}
+          onView={() => {
+            player.stop();
+            setMode('view');
           }}
         />
         <Toast msg={s.toast} onDone={() => store.getState().clearToast()} />
