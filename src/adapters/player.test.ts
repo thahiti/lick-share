@@ -132,3 +132,19 @@ describe('player: 종료 알림 (P8 조립용)', () => {
     expect(ended).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('player: 스테일 epoch 무음 버그 회귀 (프로토타입은 항상 즉시 재생)', () => {
+  test('play()는 이전 세션이 없어도 sink를 리셋 (프리뷰 잔여·스테일 epoch 제거)', () => {
+    player.preview(64);
+    expect(sink.events.some((e) => e.kind === 'melody' && e.vol === 0.22)).toBe(true);
+    player.play(demoSong, { melody: true, accomp: false, metro: false }, asStep(0));
+    // 리셋 후 세션 이벤트만 남아야 한다
+    expect(sink.events.some((e) => e.kind === 'melody' && e.vol === 0.22)).toBe(false);
+    expect(sink.events.length).toBeGreaterThan(0);
+  });
+
+  test('preview는 playNow 경로 사용 (세션 epoch 미오염)', () => {
+    player.preview(64);
+    expect(sink.playNowCount).toBe(1);
+  });
+});

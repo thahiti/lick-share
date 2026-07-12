@@ -143,6 +143,15 @@ export const createWebAudioSink = (ctx: AudioCtxLike): AudioSink => {
       }
     },
 
+    playNow(events: readonly SoundEvent[]) {
+      const base = ctx.currentTime + 0.01;
+      for (const e of events) {
+        const at = base + e.t;
+        if (e.kind === 'metro') clickAt(0, at, e.freq, e.vol);
+        else pianoAt(e.kind, 0, e.midi, at, e.dur, e.vol);
+      }
+    },
+
     cancelFrom(t: Sec, kinds?: readonly SoundKind[]) {
       const now = ctx.currentTime;
       nodes = nodes.filter((n) => {

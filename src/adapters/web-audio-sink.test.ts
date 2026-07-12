@@ -178,3 +178,15 @@ describe('WebAudioSink: 노드군 취소 (SPEC §6.2~6.3 DoD)', () => {
     expect(sink.now()).toBe(3);
   });
 });
+
+describe('WebAudioSink: playNow (스테일 epoch 무음 버그 회귀)', () => {
+  test('playNow는 세션 epoch과 무관하게 현재 시각 기준으로 스케줄', () => {
+    const { ctx, oscs } = createMockCtx();
+    const sink = createWebAudioSink(ctx);
+    sink.play([melody()]); // epoch = 0.06 고정
+    ctx.advance(10); // 시간이 흐름 — epoch은 스테일
+    sink.playNow([melody()]);
+    const last = oscs[oscs.length - 1];
+    expect(last?.started[0]).toBeGreaterThanOrEqual(10); // 과거 스케줄 금지
+  });
+});

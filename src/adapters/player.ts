@@ -69,6 +69,9 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
 
     play(song, opts, fromStep, toStep) {
       stop();
+      /* 세션이 없었어도 항상 리셋 — 프리뷰가 남긴 스테일 epoch로
+         과거 시각에 스케줄되면 무음이 된다 (회귀 테스트 참조) */
+      sink.stop();
       const sps = secPerStep(song.tempo);
       const t0 = sink.now() + 0.06; // sink epoch과 동일
       const unsubFrame = clock.onFrame(() => {
@@ -115,8 +118,8 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
     },
 
     preview(midi) {
-      sink.play([
-        { kind: 'melody', midi: asMidi(midi), t: asSec(0.01), dur: asSec(0.35), vol: 0.22 },
+      sink.playNow([
+        { kind: 'melody', midi: asMidi(midi), t: asSec(0), dur: asSec(0.35), vol: 0.22 },
       ]);
     },
   };

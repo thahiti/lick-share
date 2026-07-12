@@ -26,6 +26,8 @@ export interface AudioSink {
   /** 오디오 시계 (재생 진행 계산의 기준) */
   now(): Sec;
   play(events: readonly SoundEvent[]): void;
+  /** 세션 epoch과 무관하게 현재 시각 기준으로 즉시 발음 (프리뷰용 — 과거 스케줄 방지) */
+  playNow(events: readonly SoundEvent[]): void;
   /** t(스케줄 기준 상대 시각) 이후로 예약된 이벤트 취소. kinds를 주면 해당 종류만. t=0이면 전부 */
   cancelFrom(t: Sec, kinds?: readonly SoundKind[]): void;
   stop(): void;

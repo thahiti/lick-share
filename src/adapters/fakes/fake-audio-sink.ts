@@ -7,6 +7,8 @@ import type { Sec } from '../../core/types';
 
 export interface FakeAudioSink extends AudioSink {
   readonly events: readonly SoundEvent[];
+  /** playNow 호출 횟수 (프리뷰 경로 검증용) */
+  readonly playNowCount: number;
   dumpLines(): string[];
 }
 
@@ -19,6 +21,7 @@ const line = (e: SoundEvent): string =>
 
 export const createFakeAudioSink = (nowFn: () => number = () => 0): FakeAudioSink => {
   let events: SoundEvent[] = [];
+  let playNowCount = 0;
   return {
     now() {
       return nowFn() as Sec;
@@ -26,7 +29,14 @@ export const createFakeAudioSink = (nowFn: () => number = () => 0): FakeAudioSin
     get events() {
       return events;
     },
+    get playNowCount() {
+      return playNowCount;
+    },
     play(evs: readonly SoundEvent[]) {
+      events = [...events, ...evs];
+    },
+    playNow(evs: readonly SoundEvent[]) {
+      playNowCount++;
       events = [...events, ...evs];
     },
     cancelFrom(t: Sec, kinds?: readonly SoundKind[]) {
