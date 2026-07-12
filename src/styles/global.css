@@ -24,3 +24,220 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* ── 코드 행 (DESIGN §4) ── */
+.chord-row {
+  display: flex;
+  gap: 4px;
+  align-items: stretch;
+  padding: 4px 8px;
+}
+
+.chord-row .cslot {
+  flex: 1;
+  min-height: 32px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: #fff;
+  font-family: var(--font-chord);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.chord-row .cslot.empty {
+  border: 1px dashed var(--line2);
+  color: var(--mut);
+}
+
+.chord-row .cslot.open {
+  background: var(--ink);
+  color: #fff;
+}
+
+.chord-row .cacc {
+  height: 100%;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 8px;
+  color: var(--mut2);
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.chord-row .cacc b {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.chord-row .cacc.off b {
+  color: var(--mut);
+}
+
+/* ── 코드 피커 (DESIGN §4) ── */
+.chord-pick {
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  margin: 0 8px 4px;
+  background: #fff;
+}
+
+.chord-pick .cp-hd {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--ink);
+  font-size: 11px;
+}
+
+.chord-pick .cp-row {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+
+.chord-pick .cp-row button {
+  flex: 1;
+  border: none;
+  border-left: 1px solid var(--line);
+  background: #fff;
+  font-size: 12px;
+  padding: 7px 0;
+  cursor: pointer;
+}
+
+.chord-pick .cp-row button:first-child {
+  border-left: none;
+}
+
+.chord-pick .cp-row button.on {
+  background: var(--ink);
+  color: #fff;
+}
+
+.chord-pick .cp-ft {
+  display: flex;
+}
+
+.chord-pick .cp-ft button {
+  flex: 1;
+  border: none;
+  background: #fff;
+  padding: 8px 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.chord-pick .cp-ft button:first-child {
+  color: var(--red);
+  border-right: 1px solid var(--line);
+}
+
+/* ── 드럼 패드 (DESIGN §4) ── */
+.pad {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-pad);
+  padding: 8px;
+  margin: 0 8px;
+  background: var(--bg-pad-zone);
+}
+
+.pad .beat-head {
+  display: flex;
+  gap: 7px;
+  margin-left: 28px;
+}
+
+.pad .bh {
+  flex: 1;
+  border-top: 2px solid var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 0;
+}
+
+.pad-scroll {
+  height: 156px;
+  overflow-y: auto;
+}
+
+.pad .prow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 17px;
+}
+
+.pad .prow.rest {
+  border-top: 1px solid var(--ink);
+  height: 20px;
+  margin-top: 2px;
+  padding-top: 2px;
+}
+
+.pad .pl {
+  width: 21px;
+  font-size: 8.5px;
+  color: var(--mut2);
+  text-align: right;
+  flex: none;
+}
+
+.pad .pl.dk {
+  font-weight: 700;
+}
+
+.pad .grp {
+  flex: 1;
+  display: flex;
+  gap: 2px;
+}
+
+.pad .pcell {
+  flex: 1;
+  height: 15px;
+  border: none;
+  border-radius: var(--radius-cell);
+  background: var(--cell);
+  padding: 0;
+  cursor: pointer;
+  font-size: 9px;
+  line-height: 1;
+  color: #fff;
+}
+
+.pad .prow.rest .pcell {
+  height: 16px;
+  background: var(--cell);
+}
+
+.pad .pcell.db {
+  background: var(--celldb);
+}
+
+.pad .pcell.dk {
+  background: var(--celldk);
+}
+
+.pad .pcell.dk.db {
+  background: var(--celldkdb);
+}
+
+.pad .pcell.on {
+  background: var(--on);
+}
+
+.pad .prow.rest .pcell.on {
+  background: var(--rest);
+}
+
+.pad .pcell.sel {
+  background: var(--red);
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+}
