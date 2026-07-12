@@ -5,10 +5,17 @@ interface Props {
   readonly liked: boolean;
   readonly count: number;
   readonly onToggle: () => void;
+  /** 요청 진행 중 중복 토글 방지 (single-flight) */
+  readonly disabled?: boolean;
 }
 
-export const LikeButton = ({ liked, count, onToggle }: Props): JSX.Element => (
-  <button type="button" className={liked ? 'c-like on' : 'c-like'} onClick={onToggle}>
+export const LikeButton = ({ liked, count, onToggle, disabled = false }: Props): JSX.Element => (
+  <button
+    type="button"
+    className={liked ? 'c-like on' : 'c-like'}
+    disabled={disabled}
+    onClick={onToggle}
+  >
     ♥ {count}
   </button>
 );

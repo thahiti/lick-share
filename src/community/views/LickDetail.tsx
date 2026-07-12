@@ -32,6 +32,7 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
   const [phase, setPhase] = useState<Phase>({ kind: 'loading' });
   const [count, setCount] = useState(0);
   const [liked, setLiked] = useState(false);
+  const [likeBusy, setLikeBusy] = useState(false);
   const [likeMsg, setLikeMsg] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const started = useRef(false);
@@ -109,21 +110,30 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
     setPlaying(true);
   };
 
+  /* 낙관적 토글 — single-flight: 요청 진행 중에는 버튼을 비활성화해 중복 토글의
+     롤백 경합(늦게 실패한 요청이 다른 토글의 카운트를 되돌리는 문제)을 원천 차단 */
   const onToggleLike = (): void => {
+    if (likeBusy) return;
     if (!user) {
       setLikeMsg('좋아요는 로그인 후에 누를 수 있어요');
       return;
     }
     const target = likeTargetId(lick);
     const next = !liked;
+    setLikeBusy(true);
     setLiked(next);
     setCount((c) => c + (next ? 1 : -1));
     setLikeMsg(null);
-    void (next ? addLike(target) : removeLike(target)).catch(() => {
-      setLiked(!next);
-      setCount((c) => c + (next ? -1 : 1));
-      setLikeMsg('좋아요 처리에 실패했어요');
-    });
+    void (next ? addLike(target) : removeLike(target))
+      .catch(() => {
+        if (!alive.current) return;
+        setLiked(!next);
+        setCount((c) => c + (next ? -1 : 1));
+        setLikeMsg('좋아요 처리에 실패했어요');
+      })
+      .finally(() => {
+        if (alive.current) setLikeBusy(false);
+      });
   };
 
   const onDeleteClick = async (): Promise<void> => {
@@ -144,7 +154,7 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
 
   return (
     <div className="c-detail">
-      <div className="c-title">{lick.title}</div>
+      <div className="c-detail-title">{lick.title}</div>
       <div className="c-meta">
         {profiles && (
           <a href={'/user/' + profiles.public_id} onClick={toUser(profiles.public_id)}>
@@ -167,7 +177,7 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
         <button type="button" className="c-btn" onClick={onTogglePlay}>
           {playing ? '정지' : '전곡 재생'}
         </button>
-        <LikeButton liked={liked} count={count} onToggle={onToggleLike} />
+        <LikeButton liked={liked} count={count} onToggle={onToggleLike} disabled={likeBusy} />
       </div>
       {likeMsg && <p className="c-state">{likeMsg}</p>}
       {isAuthor && (

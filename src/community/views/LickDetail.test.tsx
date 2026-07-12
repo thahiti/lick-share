@@ -120,6 +120,40 @@ describe('LickDetail 릭 상세', () => {
     expect(likeBtn.textContent).toContain('♥ 4');
   });
 
+  it('좋아요 요청 진행 중 재클릭은 무시된다 (single-flight — 롤백 경합 방지)', async () => {
+    fetchLick.mockResolvedValue(original);
+    let resolveAdd: (() => void) | undefined;
+    // once: clearAllMocks는 구현을 지우지 않으므로 pending promise가 다른 테스트로 새지 않게 한다
+    addLike.mockReturnValueOnce(
+      new Promise<void>((resolve) => {
+        resolveAdd = resolve;
+      }),
+    );
+    const { container } = render(
+      <LickDetail id="orig-1" user={user2} player={fakePlayer()} />,
+    );
+
+    await screen.findByText('오리지널 릭');
+    const likeBtn = container.querySelector<HTMLButtonElement>('.c-like');
+    if (!likeBtn) throw new Error('좋아요 버튼 없음');
+    await waitFor(() => expect(likeBtn.textContent).toContain('♥ 3'));
+
+    fireEvent.click(likeBtn); // addLike pending — 낙관적 반영 + 버튼 비활성화
+    expect(addLike).toHaveBeenCalledTimes(1);
+    expect(likeBtn.disabled).toBe(true);
+    expect(likeBtn.textContent).toContain('♥ 4');
+
+    fireEvent.click(likeBtn); // 진행 중 재클릭 — 무시되어야 함
+    expect(removeLike).not.toHaveBeenCalled();
+    expect(addLike).toHaveBeenCalledTimes(1);
+    expect(likeBtn.textContent).toContain('♥ 4');
+
+    resolveAdd?.();
+    await waitFor(() => expect(likeBtn.disabled).toBe(false));
+    expect(likeBtn.textContent).toContain('♥ 4');
+    expect(likeBtn.className).toContain('on');
+  });
+
   it('비로그인 상태에서 좋아요 클릭 → 로그인 안내, addLike는 호출되지 않는다', async () => {
     fetchLick.mockResolvedValue(original);
     const { container } = render(
@@ -162,6 +196,20 @@ describe('LickDetail 릭 상세', () => {
       expect(deleteLick).toHaveBeenCalledWith('orig-1');
       expect(navigate).toHaveBeenCalledWith('/');
     });
+    confirmSpy.mockRestore();
+  });
+
+  it('확인 대화상자에서 취소하면 deleteLick·navigate 모두 호출되지 않는다', async () => {
+    fetchLick.mockResolvedValue(original);
+    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
+    render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
+
+    const deleteBtn = await screen.findByText('삭제');
+    fireEvent.click(deleteBtn);
+
+    expect(confirmSpy).toHaveBeenCalled();
+    expect(deleteLick).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
     confirmSpy.mockRestore();
   });
 
