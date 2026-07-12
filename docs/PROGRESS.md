@@ -15,9 +15,11 @@
 - **명세 공백 해소**: 코드가 없는 구간(첫 코드 이전)의 반주 = **완전 무음**. 근거: 프로토타입 line 947 `if(!ch||pat==="off"){ flush(st); ... continue; }`. SPEC §5.5에 이 규칙을 추가하기로 함(아직 미반영).
 - **작업 규칙**: TDD 필수(superpowers:test-driven-development — RED 확인 후 구현), Phase 단위 커밋("Phase N: 요약"), 공통 게이트 = `npm run typecheck && npm run lint && npm test && npm run check-smp`.
 
-## 2. 현재 상태 (P3 완료)
+## 2. 현재 상태 (P4 완료)
 
-P0~P3 완료·커밋됨. 다음 작업: **P4 (adapters: WebAudioSink 게인 시퀀스 테스트 / RafClock / LocationHashStore / player 실시간 토글)** — DoD는 handoff IMPLEMENTATION_PLAN P6의 나머지 (pianoAt 게인 시퀀스, 재생 중 토글, stop 시 3노드군 정지, el 시작 클램프).
+P0~P4 완료·커밋됨. 다음 작업: **P5 (Score 컴포넌트: edit 단일 라인 / view 멀티라인, SVG 패스 직접 드로잉)** — DoD는 handoff IMPLEMENTATION_PLAN P3 (viewBox 126, curM 줄 렌더, RestGlyph, 마디 탭, pickup 폭 0.7, F3/C6 덧줄 수).
+
+- P4 산출물: `src/ports/{clock,hash-store}.ts`(+audio-sink에 now() 추가), `src/adapters/{web-audio-sink,player,raf-clock,location-hash-store}.ts`, fakes(fake-clock, memory-hash-store). WebAudioSink는 AudioCtxLike 구조적 타입으로 목 주입 — 게인 시퀀스 DoD·노드군별 cancel·epoch 검증. player는 onTick/el 클램프/실시간 토글(현재 이후만 재스케줄, off는 해당 노드군만 정지) 검증.
 
 - P3 산출물: `src/engine/{accompaniment,schedule}.ts`, `src/ports/audio-sink.ts`(SoundEvent에 melody/acc/metro 태그), `src/adapters/fakes/fake-audio-sink.ts`, 골든 스냅샷 16개(`src/engine/__snapshots__/golden.test.ts.snap` — demo·pickup 곡 × 반주 4종 × 메트로놈 2종). osc 카운트 DoD(N=26, pad=N+26, comp=N+104, arp=N+64) 통과.
 - `npm run dump -- "#v1.…" [--metro] [--no-acc] [--from=N]` 동작 (vite-node 실행, devDep 추가). 인자 없으면 데모 곡.

@@ -17,9 +17,12 @@ const line = (e: SoundEvent): string =>
     ? `t=${fmt(e.t)} metro ${e.freq}Hz vol=${e.vol}`
     : `t=${fmt(e.t)} ${e.kind} m${e.midi} dur=${fmt(e.dur)} vol=${e.vol}`;
 
-export const createFakeAudioSink = (): FakeAudioSink => {
+export const createFakeAudioSink = (nowFn: () => number = () => 0): FakeAudioSink => {
   let events: SoundEvent[] = [];
   return {
+    now() {
+      return nowFn() as Sec;
+    },
     get events() {
       return events;
     },
