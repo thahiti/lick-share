@@ -49,6 +49,32 @@ describe('resolveShortcut', () => {
     expect(resolveShortcut(ev('a', { metaKey: true }))).toBeNull();
     expect(resolveShortcut(ev('x'))).toBeNull();
   });
+
+  test('한글 모드: ㅗㅓㅏㅣ(hjkl 물리 위치) → 동일 동작', () => {
+    expect(resolveShortcut(ev('ㅗ', { code: 'KeyH' }))).toBe('selectPrev');
+    expect(resolveShortcut(ev('ㅓ', { code: 'KeyJ' }))).toBe('pitchDown');
+    expect(resolveShortcut(ev('ㅏ', { code: 'KeyK' }))).toBe('pitchUp');
+    expect(resolveShortcut(ev('ㅣ', { code: 'KeyL' }))).toBe('selectNext');
+  });
+
+  test('한글 모드 + Shift → 위치/길이', () => {
+    expect(resolveShortcut(ev('ㅗ', { code: 'KeyH', shiftKey: true }))).toBe('posBack');
+    expect(resolveShortcut(ev('ㅏ', { code: 'KeyK', shiftKey: true }))).toBe('lenInc');
+    expect(resolveShortcut(ev('ㅓ', { code: 'KeyJ', shiftKey: true }))).toBe('lenDec');
+  });
+
+  test('한글 모드 Cmd+Z(ㅋ) → 실행취소/재실행', () => {
+    expect(resolveShortcut(ev('ㅋ', { code: 'KeyZ', metaKey: true }))).toBe('undo');
+    expect(resolveShortcut(ev('ㅋ', { code: 'KeyZ', metaKey: true, shiftKey: true }))).toBe('redo');
+  });
+
+  test('Windows IME Process 키 → 물리 코드로 보정', () => {
+    expect(resolveShortcut(ev('Process', { code: 'KeyJ' }))).toBe('pitchDown');
+  });
+
+  test('영문 자판 의미는 유지 (미지정 비라틴 키는 null)', () => {
+    expect(resolveShortcut(ev('ㅁ', { code: 'KeyA' }))).toBeNull();
+  });
 });
 
 const noop = (): void => {};

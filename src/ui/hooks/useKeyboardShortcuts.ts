@@ -19,9 +19,25 @@ export type ShortcutAction =
   | 'redo'
   | 'escape';
 
-/** 키 이벤트 → 액션. 화살표와 Vim hjkl은 동일 동작. */
+/** 물리 키 위치 보정 — 한글 등 비라틴 자판에서도 hjkl·z가 같은 자리로 동작 */
+const CODE_KEYS: Readonly<Record<string, string>> = {
+  KeyH: 'h',
+  KeyJ: 'j',
+  KeyK: 'k',
+  KeyL: 'l',
+  KeyZ: 'z',
+};
+
+/** e.key가 비라틴 문자(ㅗ 등)거나 IME 'Process'면 e.code로 보정 */
+const normalizedKey = (e: KeyboardEvent): string => {
+  const k = e.key.toLowerCase();
+  const nonLatin = (k.length === 1 && k.charCodeAt(0) > 127) || e.key === 'Process';
+  return nonLatin ? (CODE_KEYS[e.code] ?? k) : k;
+};
+
+/** 키 이벤트 → 액션. 화살표와 Vim hjkl은 동일 동작 (한글 자판 포함). */
 export const resolveShortcut = (e: KeyboardEvent): ShortcutAction | null => {
-  const lower = e.key.toLowerCase();
+  const lower = normalizedKey(e);
 
   // Cmd/Ctrl 조합: z만 처리(실행취소/재실행), 나머지는 브라우저에 양보
   if (e.metaKey || e.ctrlKey) {
