@@ -63,20 +63,24 @@ export const Publish = ({ user }: Props): JSX.Element => {
   const onPublish = async (): Promise<void> => {
     if (!song || !hash) return;
     setStatus({ kind: 'submitting' });
-    const mh = await melodyHash(song.notes);
-    const result = await publishLick(title.trim() || song.title, hash, mh);
-    if (result.ok) {
-      navigate('/lick/' + result.id);
-      return;
-    }
-    if (result.reason === 'duplicate') {
-      setStatus({ kind: 'duplicate' });
-    } else {
-      setStatus(
-        result.message === undefined
-          ? { kind: 'error' }
-          : { kind: 'error', message: result.message },
-      );
+    try {
+      const mh = await melodyHash(song.notes);
+      const result = await publishLick(title.trim() || song.title, hash, mh);
+      if (result.ok) {
+        navigate('/lick/' + result.id);
+        return;
+      }
+      if (result.reason === 'duplicate') {
+        setStatus({ kind: 'duplicate' });
+      } else {
+        setStatus(
+          result.message === undefined
+            ? { kind: 'error' }
+            : { kind: 'error', message: result.message },
+        );
+      }
+    } catch {
+      setStatus({ kind: 'error', message: '게시에 실패했어요' });
     }
   };
 
@@ -87,6 +91,9 @@ export const Publish = ({ user }: Props): JSX.Element => {
         value={input}
         onChange={(e) => {
           setInput(e.target.value);
+          // 해시가 바뀌면 이전 곡에 타이핑한 제목이 새 곡에 새어들지 않도록 리셋
+          // (TitleInput은 key 리마운트로 새 song.title을 보여주므로 화면·게시 데이터 일치)
+          setTitle('');
           setStatus({ kind: 'idle' });
         }}
         placeholder="공유 URL 또는 해시를 붙여넣으세요"

@@ -21,6 +21,10 @@ import { Publish } from './Publish';
 const fakeUser = { id: 'user-1' } as unknown as User;
 const validHash = encodeSong(demoSong);
 
+// 해시 교체 회귀 테스트용 두 번째 곡 — 제목·멜로디 모두 다름
+const otherSong = { ...demoSong, title: '다른 릭', notes: demoSong.notes.slice(0, 3) };
+const otherHash = encodeSong(otherSong);
+
 describe('Publish 게시 화면', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -61,6 +65,30 @@ describe('Publish 게시 화면', () => {
 
     await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/lick/abc'));
     expect(publishLick).toHaveBeenCalledTimes(1);
+  });
+
+  it('해시 A에 제목을 타이핑한 뒤 해시 B로 교체하면 B의 곡 제목으로 게시한다 (stale title 회귀)', async () => {
+    publishLick.mockResolvedValue({ ok: true, id: 'xyz' });
+    render(<Publish user={fakeUser} />);
+    const textarea = screen.getByPlaceholderText('공유 URL 또는 해시를 붙여넣으세요');
+
+    // 해시 A 붙여넣기 → 커스텀 제목 타이핑
+    fireEvent.change(textarea, { target: { value: validHash } });
+    const titleA = screen.getByDisplayValue(demoSong.title);
+    fireEvent.change(titleA, { target: { value: '내가 지은 제목' } });
+    expect((screen.getByDisplayValue('내가 지은 제목') as HTMLInputElement).value).toBe(
+      '내가 지은 제목',
+    );
+
+    // 해시 B로 교체 → 제목 입력이 B의 곡 제목으로 리셋됨
+    fireEvent.change(textarea, { target: { value: otherHash } });
+    expect(screen.getByDisplayValue(otherSong.title)).toBeTruthy();
+
+    fireEvent.click(screen.getByText('게시'));
+
+    await vi.waitFor(() => expect(publishLick).toHaveBeenCalledTimes(1));
+    // 이전 곡에 타이핑한 제목이 아니라 B의 곡 제목으로 게시
+    expect(publishLick).toHaveBeenCalledWith(otherSong.title, otherHash, expect.any(String));
   });
 
   it('publishLick이 duplicate를 반환하면 "이미 게시한 릭이에요"를 보여준다', async () => {
