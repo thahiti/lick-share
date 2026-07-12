@@ -1,0 +1,105 @@
+-- 0) 확장과 id 생성기
+create extension if not exists pgcrypto;
+
+create function gen_short_id(len int default 8) returns text
+language sql volatile as
+$$ select translate(encode(gen_random_bytes(len), 'base64'), '+/=', '-_') $$;
+
+-- 1) 프로필과 가입 trigger
+create table profiles (
+  id uuid primary key references auth.users(id) on delete cascade,
+  public_id text not null unique default gen_short_id(6),
+  display_name text not null,
+  avatar_url text,
+  created_at timestamptz not null default now()
+);
+
+create function public.handle_new_user() returns trigger
+language plpgsql security definer as $$
+begin
+  insert into public.profiles (id, display_name, avatar_url)
+  values (new.id,
+          coalesce(new.raw_user_meta_data->>'name', '이름없는 연주자'),
+          new.raw_user_meta_data->>'avatar_url');
+  return new;
+end $$;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- 2) 릭과 좋아요
+create table licks (
+  id text primary key default gen_short_id(8),
+  author_id uuid not null default auth.uid()
+    references profiles(id) on delete cascade,
+  title text not null,
+  blob text not null,
+  melody_hash text not null,
+  canonical_id text references licks(id),
+  created_at timestamptz not null default now()
+);
+
+create table likes (
+  user_id uuid not null default auth.uid()
+    references profiles(id) on delete cascade,
+  lick_id text not null references licks(id) on delete cascade,
+  primary key (user_id, lick_id)
+);
+
+-- 3) 인덱스
+create unique index licks_self_dup on licks (author_id, melody_hash);
+create index licks_hash_idx on licks (melody_hash);
+create index licks_feed_idx on licks (created_at desc);
+create index licks_author_idx on licks (author_id, created_at desc);
+
+-- 4) RLS
+alter table profiles enable row level security;
+alter table licks enable row level security;
+alter table likes enable row level security;
+
+create policy "read profiles" on profiles for select using (true);
+create policy "read licks" on licks for select using (true);
+create policy "read likes" on likes for select using (true);
+create policy "update own profile" on profiles for update
+  using (id = auth.uid()) with check (id = auth.uid());
+create policy "insert own lick" on licks for insert with check (author_id = auth.uid());
+create policy "delete own lick" on licks for delete using (author_id = auth.uid());
+create policy "insert own like" on likes for insert with check (user_id = auth.uid());
+create policy "delete own like" on likes for delete using (user_id = auth.uid());
+
+-- 5) 랭킹 view (security_invoker: 조회자 권한 — 전 테이블 select 공개라 결과 동일)
+create view ranking with (security_invoker = on) as
+select
+  l.id, l.title, l.blob, l.created_at,
+  p.public_id as author_public_id,
+  p.display_name as author_name,
+  p.avatar_url,
+  count(lk.user_id) as like_count
+from licks l
+join profiles p on p.id = l.author_id
+left join likes lk on lk.lick_id = l.id
+where l.canonical_id is null
+group by l.id, p.public_id, p.display_name, p.avatar_url
+order by like_count desc, l.created_at desc;
+
+-- 6) 원본 승계 trigger
+create function succeed_canonical() returns trigger as $$
+declare successor text;
+begin
+  if old.canonical_id is null then
+    select id into successor from licks
+      where canonical_id = old.id
+      order by created_at limit 1;
+    if successor is not null then
+      update licks set canonical_id = null where id = successor;
+      update licks set canonical_id = successor
+        where canonical_id = old.id and id <> successor;
+      update likes set lick_id = successor where lick_id = old.id;
+    end if;
+  end if;
+  return old;
+end $$ language plpgsql security definer;
+
+create trigger trg_succeed before delete on licks
+  for each row execute function succeed_canonical();
