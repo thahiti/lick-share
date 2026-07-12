@@ -8,6 +8,19 @@ vi.mock('./api/auth', () => ({
   signOut: () => Promise.resolve(),
 }));
 
+// Feed(views/Feed.tsx)의 '../api/…' 임포트와 같은 모듈로 해석됨 — 실제 네트워크 차단
+vi.mock('./api/licks', () => ({
+  PAGE_SIZE: 20,
+  fetchFeedPage: () => Promise.resolve([]),
+  deleteLick: () => Promise.resolve(),
+}));
+
+vi.mock('./api/likes', () => ({
+  canonicalIds: () => [],
+  likeTargetId: (l: { id: string; canonical_id: string | null }): string => l.canonical_id ?? l.id,
+  fetchLikeCounts: () => Promise.resolve(new Map<string, number>()),
+}));
+
 import { Root } from './Root';
 
 const fakePlayer = {
@@ -32,9 +45,9 @@ describe('Root 라우팅', () => {
     window.history.pushState(null, '', '/');
   });
 
-  it('/ 는 피드 스텁', () => {
+  it('/ 는 피드 (빈 목록이면 빈 상태 문구)', async () => {
     renderAt('/');
-    expect(screen.getByText(/최신 — 준비 중/)).toBeTruthy();
+    expect(await screen.findByText(/아직 게시된 릭이 없어요/)).toBeTruthy();
   });
 
   it('/ranking 은 랭킹 스텁', () => {
