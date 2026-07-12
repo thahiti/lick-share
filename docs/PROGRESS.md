@@ -15,9 +15,11 @@
 - **명세 공백 해소**: 코드가 없는 구간(첫 코드 이전)의 반주 = **완전 무음**. 근거: 프로토타입 line 947 `if(!ch||pat==="off"){ flush(st); ... continue; }`. SPEC §5.5에 이 규칙을 추가하기로 함(아직 미반영).
 - **작업 규칙**: TDD 필수(superpowers:test-driven-development — RED 확인 후 구현), Phase 단위 커밋("Phase N: 요약"), 공통 게이트 = `npm run typecheck && npm run lint && npm test && npm run check-smp`.
 
-## 2. 현재 상태 (P0 완료)
+## 2. 현재 상태 (P1 완료)
 
-P0 완료·커밋됨. 다음 작업: **P1 (core 1부)** — 설계 문서 §4와 handoff IMPLEMENTATION_PLAN.md P1 수치 참조.
+P0·P1 완료·커밋됨. 다음 작업: **P2 (core 2부: editing, undo + Zustand 스토어)** — 설계 문서 §4와 handoff IMPLEMENTATION_PLAN.md P2 수치 참조.
+
+P1 산출물: `src/core/{constants,geometry,overlap,rests,chords,codec}.ts` + 모듈별 테스트(52개, fast-check 프로퍼티 포함). `fixtures/prototype-hashes.json`에 프로토타입 인코딩 로직으로 생성한 해시 3종(일반/pickup/구버전) — encode가 프로토타입과 바이트 단위 동일함을 테스트로 고정.
 
 완료된 P0 작업 (전부 검증 통과):
 - `package.json` — 의존성 설치 완료, 스크립트: dev/build/test/typecheck/lint/format/check-smp/dump
