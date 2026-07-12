@@ -3,13 +3,8 @@ import { describe, expect, test } from 'vitest';
 import hashes from '../../fixtures/prototype-hashes.json';
 import { LEN_STEPS } from './constants';
 import { decodeSong, encodeSong } from './codec';
+import { demoSong } from './demo-song';
 import { asMidi, asStep, type Note, type Song } from './types';
-
-/** 데모 곡 (프로토타입 초기값, IMPLEMENTATION_PLAN 수용 픽스처) */
-const demoNotes: readonly (readonly [number, number, number])[] = [
-  [0, 4, 64], [4, 2, 69], [6, 2, 67], [8, 4, 71], [12, 6, 69], [20, 4, 67], [24, 8, 64],
-  [32, 4, 65], [36, 4, 69], [40, 8, 72], [48, 4, 71], [52, 4, 67], [56, 8, 64],
-];
 
 const makeNote = (id: number, [s, d, p]: readonly [number, number, number]): Note => ({
   id,
@@ -17,17 +12,6 @@ const makeNote = (id: number, [s, d, p]: readonly [number, number, number]): Not
   d,
   p: asMidi(p),
 });
-
-const demoSong: Song = {
-  title: '봄날의 스케치',
-  tempo: 100,
-  meas: 4,
-  pickup: 0,
-  accPat: 'pad',
-  mAcc: {},
-  notes: demoNotes.map((t, i) => makeNote(i + 1, t)),
-  chords: { 0: 'C', 4: 'Am', 8: 'F', 12: 'G7' },
-};
 
 describe('codec (SPEC §7)', () => {
   test('encode(데모 곡) = 프로토타입이 생성한 해시와 바이트 단위 동일', () => {
