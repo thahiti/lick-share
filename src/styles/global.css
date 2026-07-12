@@ -25,6 +25,14 @@ body {
   flex-direction: column;
 }
 
+/* ── pane (모바일: 단순 스택, 데스크톱: 2패널) ── */
+.pane-score,
+.pane-edit {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 /* ── 코드 행 (DESIGN §4) ── */
 .chord-row {
   display: flex;
@@ -616,4 +624,71 @@ body {
   font-size: 7.5px;
   font-weight: 400;
   color: var(--mut2);
+}
+
+/* ── 데스크톱 반응형 (DESIGN §7) — 뷰포트 ≥900px ── */
+@media (min-width: 900px) {
+  .app:not(.app--view) {
+    max-width: 1120px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: 1fr auto;
+    min-height: 100dvh;
+  }
+  /* 악보 pane: 좌측, 독립 스크롤 */
+  .app:not(.app--view) .pane-score {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    overflow-y: auto;
+    border-right: 1px solid var(--line);
+  }
+  /* 컨트롤 pane: 우측 고정폭, 여백 확대 */
+  .app:not(.app--view) .pane-edit {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding: 8px 12px 12px;
+    gap: 4px;
+    justify-content: flex-start;
+  }
+  /* Toast는 pane 밖 → grid 흐름에서 제외 */
+  .app:not(.app--view) > .toast {
+    grid-column: 1 / -1;
+  }
+
+  /* 열람: 중앙 넓은 컬럼 */
+  .app--view {
+    max-width: 680px;
+  }
+}
+
+/* ── 마우스 호버/포커스 피드백 (데스크톱 포인터) ── */
+@media (hover: hover) {
+  .icon-btn:hover,
+  .chip:hover,
+  .measure-bar button:hover,
+  .stepper button:hover:not(:disabled),
+  .chord-pick .cp-row button:hover,
+  .chord-pick .cp-ft button:hover,
+  .popover button:hover,
+  .button-bar .bb:hover {
+    background: var(--bg-stepper-zone);
+  }
+  .chord-row .cslot:hover {
+    border-color: var(--red);
+  }
+  .pad .pcell:hover {
+    outline: 1px solid var(--mut2);
+    outline-offset: -1px;
+  }
+}
+
+.icon-btn:focus-visible,
+.chip:focus-visible,
+.button-bar .bb:focus-visible,
+.measure-bar button:focus-visible,
+.stepper button:focus-visible,
+.chord-row .cslot:focus-visible,
+.pad .pcell:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
 }
