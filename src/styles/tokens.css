@@ -1,0 +1,38 @@
+/* DESIGN.md §2~§4 — D 스위스 모노 토큰. 하드코딩 색상 금지, 반드시 이 변수만 사용 */
+:root {
+  /* §2 컬러 */
+  --ink: #111; /* 기본 텍스트/선/프라이머리 */
+  --mut: #b0b0b0; /* 비활성 텍스트 */
+  --mut2: #666; /* 보조 텍스트 (캡션, eyebrow) */
+  --line: #e4e4e4; /* 헤어라인 */
+  --line2: #d6d6d6; /* 헤어라인 (버튼 구분) */
+  --red: #e3372e; /* 유일한 포인트 */
+  --cell: #f2f2f2; /* 패드 기본 셀 */
+  --celldb: #e8e8e8; /* 정박 셀 */
+  --celldk: #e0e0e0; /* ♯행 셀 */
+  --celldkdb: #d6d6d6; /* ♯행 정박 셀 */
+  --on: #8f8f8f; /* 켜진 셀 */
+  --rest: #c4b28e; /* 쉼표 행 켜진 셀 (탠) */
+
+  /* 악보 내부 전용 */
+  --staff: #c9c9c9; /* 보표/마디선 */
+  --rest-glyph: #8a8a8a; /* 쉼표 */
+  --chord-text: #555; /* 코드 텍스트 */
+
+  /* §3 타이포 */
+  --font-sans: 'Pretendard', 'Helvetica Neue', 'Apple SD Gothic Neo', sans-serif;
+  --font-chord: Georgia, serif; /* 코드 이름 전용, italic */
+
+  /* §4 공통 규격 */
+  --radius: 2px;
+  --radius-pad: 3px;
+  --radius-cell: 1.5px;
+  --shadow-popover: 0 6px 18px rgba(0, 0, 0, 0.15);
+
+  /* §7 레이아웃 */
+  --app-max-width: 420px;
+  --bg-outer: #f0f0f0;
+  --bg-pad-zone: #fafafa;
+  --bg-stepper-zone: #f5f5f5;
+  --bg-nav-btn: #f5f5f5;
+}

@@ -1,0 +1,26 @@
+/* DESIGN.md §7 — 앱 셸 레이아웃 */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--bg-outer);
+  font-family: var(--font-sans);
+  color: var(--ink);
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+}
+
+.app {
+  width: 100%;
+  max-width: var(--app-max-width);
+  min-height: 100dvh;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+}

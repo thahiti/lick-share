@@ -1,0 +1,59 @@
+# ScoreLink 재작성 — 세션 인수인계 메모 (2026-07-12)
+
+다른 세션에서 이어서 작업하기 위한 현재 상태 기록.
+
+## 1. 확정된 사항
+
+- **목표**: `lick_share/score-link-prototype_1.html`(= `scorelink-handoff/prototype-reference.html`, diff로 동일 확인)을 TypeScript + React로 재작성.
+- **확정 설계 문서**: `docs/superpowers/specs/2026-07-12-ts-react-rewrite-design.md` (사용자 승인 완료, 커밋됨).
+  - 구조는 `harness.md`(core/engine/ports/adapters/ui + 순수 `schedule()` → SoundEvent[]) 기준.
+  - 기능·DoD 수치는 `scorelink-handoff/`의 SPEC.md·IMPLEMENTATION_PLAN.md 전량 보존, Phase만 재배치(P0~P10, 엔진을 UI보다 먼저).
+- **프로젝트 위치**: `lick_share/scorelink/` (git init 완료, main 브랜치).
+- **툴링 확정** (npm 실측 후 결정):
+  - TypeScript **~6.0.3 고정** (7.0.2 존재하나 harness 결정대로 6.0. typescript-eslint 8.63.0과 조합)
+  - ESLint 10.7 flat config, Prettier, Vite 8.1, Vitest 4.1, React 19.2, Zustand 5, fast-check 4.9
+- **명세 공백 해소**: 코드가 없는 구간(첫 코드 이전)의 반주 = **완전 무음**. 근거: 프로토타입 line 947 `if(!ch||pat==="off"){ flush(st); ... continue; }`. SPEC §5.5에 이 규칙을 추가하기로 함(아직 미반영).
+- **작업 규칙**: TDD 필수(superpowers:test-driven-development — RED 확인 후 구현), Phase 단위 커밋("Phase N: 요약"), 공통 게이트 = `npm run typecheck && npm run lint && npm test && npm run check-smp`.
+
+## 2. 현재 상태 (P0 완료)
+
+P0 완료·커밋됨. 다음 작업: **P1 (core 1부)** — 설계 문서 §4와 handoff IMPLEMENTATION_PLAN.md P1 수치 참조.
+
+완료된 P0 작업 (전부 검증 통과):
+- `package.json` — 의존성 설치 완료, 스크립트: dev/build/test/typecheck/lint/format/check-smp/dump
+- `tsconfig.json`(strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes) / `tsconfig.pure.json`(core·engine·ports 전용, **lib에서 DOM 제거**)
+- `eslint.config.js` — 순수 레이어에 no-restricted-imports(react/adapters/ui/zustand), no-restricted-globals(Date/setTimeout/window/document/location/AudioContext), Math.random 금지
+- `vite.config.ts`(vitest 설정 포함), `.prettierrc.json`, `.gitignore`, `index.html`, `src/main.tsx`
+- `src/ui/components/App.tsx`(빈 셸) + `App.test.tsx`(샘플 테스트 1개 통과)
+- `src/styles/tokens.css`(DESIGN §2~§4·§7 토큰) + `global.css`(앱 셸)
+- `src/core/types.ts` — branded types(Step/Midi/Sec/BarIndex) + Note/Song (tsconfig.pure 입력 확보를 위해 P1에서 앞당김)
+- `scripts/check-no-smp.js` — 양성/음성 케이스 모두 검증 완료
+- 게이트: typecheck ✅ lint ✅ test 1/1 ✅ check-smp ✅ dev 서버 기동 ✅
+
+### P0 마무리 내역 (2026-07-12 완료)
+1. handoff 문서 `docs/`로 복사 완료 (사용자 확인 후): SPEC, DESIGN, ARCHITECTURE, IMPLEMENTATION_PLAN, harness.md, prototype-reference.html
+2. `docs/SPEC.md` §5.5에 "코드 없는 구간 무음" 규칙 추가 완료
+3. 저장소 루트 `CLAUDE.md` 작성 완료 (handoff CLAUDE.md + harness 규칙 병합, 경로를 core/engine/ports 구조로 정정)
+4. P0 커밋 완료: `Phase 0: 프로젝트 셋업`
+
+## 3. 다음 Phase 요약 (상세는 설계 문서 §4)
+
+| Phase | 내용 | DoD 출처 (scorelink-handoff/IMPLEMENTATION_PLAN.md) |
+|---|---|---|
+| P1 | core 1부: constants, geometry, overlap, rests, chords, codec — 단위 + fast-check 프로퍼티 | handoff P1 수치 그대로 |
+| P2 | core 2부: editing, undo + Zustand 스토어(순수 함수 래핑만) | handoff P2 |
+| P3 | engine: schedule()+buildAccEvents+FakeAudioSink 골든 스냅샷+`npm run dump` | handoff P6의 이벤트/카운트 DoD 이관 (무반주 N, pad=N+26, comp=N+104, arp=N+64) |
+| P4 | adapters: WebAudioSink(게인 시퀀스 테스트)/RafClock/LocationHashStore/player | handoff P6 나머지 |
+| P5~P7 | UI: Score → Pad/ChordRow/Picker → Steppers/ButtonBar/MeasureBar/Header | handoff P3·P4·P5 |
+| P8 | 조립+재생 연동+해시 자동 저장(500ms) | handoff P7 |
+| P9 | Viewer+공유+구버전 해시 3종 하위 호환 | handoff P8 |
+| P10 | 마감: 접근성/빌드/e2e 체크리스트/해시 길이 iOS 실측 | handoff P9 |
+
+공통 픽스처(데모 곡)는 handoff IMPLEMENTATION_PLAN.md 말미 "수용 픽스처" 참조.
+프로토타입 실제 해시 샘플 3종(일반/pickup/구버전)은 프로토타입을 브라우저로 열어 공유 버튼으로 생성해 `fixtures/`에 저장해야 함 (P1 codec 테스트와 P9에서 사용).
+
+## 4. 주의사항
+
+- 절대 규칙(handoff CLAUDE.md): SMP 유니코드 음악 기호 금지(SVG 패스만), 오디오 게인 불연속 점프 금지, 순수 레이어에서 react/DOM/Web Audio 금지, 조판 상수는 LAYOUT 한 곳, 구버전 URL 해시 하위 호환 유지, 쉼표는 저장하지 않고 파생.
+- `npm run dump` 스크립트는 `scripts/dump.test.ts`를 참조하나 파일은 P3에서 생성 예정 (현재 없음, vitest는 무시).
+- 문서 우선순위: 설계 문서(구조) > SPEC.md(기능) > DESIGN.md(스타일) > 프로토타입(동작 참고).
