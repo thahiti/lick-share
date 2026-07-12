@@ -12,6 +12,7 @@ import { ChordRail } from './ChordRail';
 import { DawTopBar } from './DawTopBar';
 import { Inspector } from './Inspector';
 import { PianoRoll } from './PianoRoll';
+import '../../../../styles/daw.css';
 
 export interface DawEditProps {
   readonly song: Song;

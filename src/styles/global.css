@@ -626,36 +626,8 @@ body {
   color: var(--mut2);
 }
 
-/* ── 데스크톱 반응형 (DESIGN §7) — 뷰포트 ≥900px ── */
+/* ── 데스크톱 열람 (DESIGN §7) — 편집은 DAW 레이아웃(daw.css)이 담당 ── */
 @media (min-width: 900px) {
-  .app:not(.app--view) {
-    max-width: 1120px;
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    grid-template-rows: 1fr auto;
-    min-height: 100dvh;
-  }
-  /* 악보 pane: 좌측, 독립 스크롤 */
-  .app:not(.app--view) .pane-score {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    overflow-y: auto;
-    border-right: 1px solid var(--line);
-  }
-  /* 컨트롤 pane: 우측 고정폭, 여백 확대 */
-  .app:not(.app--view) .pane-edit {
-    grid-column: 2;
-    grid-row: 1 / span 2;
-    padding: 8px 12px 12px;
-    gap: 4px;
-    justify-content: flex-start;
-  }
-  /* Toast는 pane 밖 → grid 흐름에서 제외 */
-  .app:not(.app--view) > .toast {
-    grid-column: 1 / -1;
-  }
-
-  /* 열람: 중앙 넓은 컬럼 */
   .app--view {
     max-width: 680px;
   }

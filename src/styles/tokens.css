@@ -37,3 +37,38 @@
   --bg-stepper-zone: #f5f5f5;
   --bg-nav-btn: #f5f5f5;
 }
+
+/* ── 데스크톱 DAW 다크 테마 (P11 v2) ──
+   기존 토큰을 .daw 스코프에서 재정의해 Score·ChordPicker·popover가
+   코드 수정 없이 다크로 렌더된다. --red는 유일한 포인트로 유지. */
+.daw {
+  /* 재정의: 라이트 → 다크 */
+  --ink: #e8e8ea;
+  --mut: #6b6b72;
+  --mut2: #9a9aa2;
+  --line: #333338;
+  --line2: #3f3f45;
+  --paper: #202023;
+  --staff: #55555c;
+  --rest-glyph: #8a8a90;
+  --chord-text: #b8b8c0;
+  --shadow-popover: 0 6px 18px rgba(0, 0, 0, 0.5);
+
+  /* DAW 전용 표면 */
+  --daw-bg: #202023; /* 앱 배경 */
+  --daw-panel: #29292d; /* 카드·버튼 표면 */
+  --daw-panel2: #232326; /* 롤·악보 패널 */
+  --daw-line: #3a3a40; /* 패널 구분선 */
+  --daw-cell: #2e2e33; /* 롤 기본 셀 */
+  --daw-cell-db: #35353b; /* 정박 셀 */
+  --daw-cell-dk: #2a2a2f; /* ♯행 셀 */
+
+  /* DAW 포인트 (목업: 노트 인디고·선택 주황적·코드 틸) */
+  --daw-note: #5558c8;
+  --daw-note-bd: #7c7ee0;
+  --daw-note-sel: #c34d2e;
+  --daw-note-sel-bd: #e8825f;
+  --daw-chord: #175c4c;
+  --daw-chord-bd: #2fa584;
+  --daw-chord-ink: #eafff5;
+}
