@@ -104,3 +104,4 @@ top=42      (단일 줄 기준 보표 첫 선 y)
 - 앱 최대폭 420px 중앙 정렬, 흰 배경, 바깥 #f0f0f0.
 - 세로 흐름: 헤더(고정 높이) → 악보(내용 높이) → 패드 존(#fafafa) → 스테퍼 존(#f5f5f5) → 6버튼줄(flex 하단 고정, margin-top:auto).
 - 모바일 우선: user-scalable=no, tap-highlight 제거, 스크롤 영역 overscroll-behavior:contain.
+- 데스크톱(뷰포트 ≥900px): 편집은 `max-width:1120px` 2패널 그리드 `[1fr 악보 | 380px 컨트롤]`, 악보 pane 독립 스크롤. 열람은 `max-width:680px` 중앙 컬럼. 컨트롤 px 규격은 불변, padding/gap만 확대. 마우스 hover/focus 피드백 추가.
