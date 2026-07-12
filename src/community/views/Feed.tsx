@@ -13,16 +13,19 @@ interface Props {
   readonly deletable?: boolean;
 }
 
-/**
- * 최신 피드 (설계 §8.2, §8.5). keyset 커서 무한 스크롤 — 첫 페이지는 마운트 시 로드하고,
- * 이후 페이지는 sentinel의 IntersectionObserver로 로드한다 (authorId를 주면 유저 페이지/내 릭 재사용).
- */
-export const Feed = ({ authorId, deletable }: Props): JSX.Element => {
+interface ListProps {
+  readonly authorId: string | undefined;
+  readonly deletable: boolean | undefined;
+}
+
+/** 한 authorId에 대한 목록 인스턴스 — authorId 전환은 바깥 Feed의 key 리마운트가 처리한다. */
+const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
   const [licks, setLicks] = useState<LickRow[]>([]);
   const [counts, setCounts] = useState<Map<string, number>>(new Map());
   const [done, setDone] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const cursor = useRef<string | null>(null);
+  const started = useRef(false);
 
   const loadMore = useCallback(async (): Promise<boolean> => {
     const page = await fetchFeedPage(cursor.current, authorId);
@@ -38,13 +41,10 @@ export const Feed = ({ authorId, deletable }: Props): JSX.Element => {
   const sentinelRef = useInfiniteScroll(loadMore);
 
   useEffect(() => {
-    let cancelled = false;
-    void loadMore().finally(() => {
-      if (!cancelled) setLoaded(true);
-    });
-    return () => {
-      cancelled = true;
-    };
+    // StrictMode의 이중 이펙트에서도 첫 페이지 요청은 인스턴스당 정확히 1회
+    if (started.current) return;
+    started.current = true;
+    void loadMore().finally(() => setLoaded(true));
   }, [loadMore]);
 
   const onDelete = (lick: LickRow) => async (): Promise<void> => {
@@ -70,3 +70,12 @@ export const Feed = ({ authorId, deletable }: Props): JSX.Element => {
     </div>
   );
 };
+
+/**
+ * 최신 피드 (설계 §8.2, §8.5). keyset 커서 무한 스크롤 — 첫 페이지는 마운트 시 로드하고,
+ * 이후 페이지는 sentinel의 IntersectionObserver로 로드한다 (authorId를 주면 유저 페이지/내 릭 재사용).
+ * authorId가 바뀌면 key 리마운트로 커서·목록·카운트를 전부 초기화하고 새 작성자의 첫 페이지부터 로드한다.
+ */
+export const Feed = ({ authorId, deletable }: Props): JSX.Element => (
+  <FeedList key={authorId ?? ''} authorId={authorId} deletable={deletable} />
+);
