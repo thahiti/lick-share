@@ -8,8 +8,10 @@ import type { User } from '@supabase/supabase-js';
 import { decodeSong } from '../../core/codec';
 import { Score } from '../../ui/components/edit/Score';
 import { publishLick } from '../api/licks';
+import { TagInput } from '../components/TagInput';
 import { melodyHash } from '../melody-hash';
 import { navigate } from '../routing';
+import { normalizeTags } from '../tags';
 
 interface Props {
   readonly user: User | null;
@@ -33,6 +35,7 @@ export const Publish = ({ user }: Props): JSX.Element => {
   // 음표 없는 곡은 무효 취급 — melodyHash([])는 모든 빈 릭이 충돌하므로 게시 차단
   const validSong = song && song.notes.length > 0 ? song : null;
   const [title, setTitle] = useState(validSong?.title ?? '');
+  const [tags, setTags] = useState<string[]>([]);
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
 
   if (!user) return <p className="c-state">Sign in to publish</p>;
@@ -61,8 +64,13 @@ export const Publish = ({ user }: Props): JSX.Element => {
     setStatus({ kind: 'submitting' });
     try {
       const mh = await melodyHash(validSong.notes);
-      // TODO(publish-tags T4): TagInput 배선 전까지 태그 없이 게시
-      const result = await publishLick(title.trim() || validSong.title, hash, mh, []);
+      // TagInput이 이미 정규화하지만 최종 방어로 한 번 더 적용 (설계 §5)
+      const result = await publishLick(
+        title.trim() || validSong.title,
+        hash,
+        mh,
+        normalizeTags(tags),
+      );
       if (result.ok) {
         navigate('/lick/' + result.id);
         return;
@@ -85,6 +93,7 @@ export const Publish = ({ user }: Props): JSX.Element => {
     <div className="c-form">
       <Score song={validSong} mode="view" width={384} />
       <input className="c-input" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <TagInput value={tags} onChange={setTags} />
       <button
         type="button"
         className="c-btn"

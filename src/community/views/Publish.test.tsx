@@ -6,9 +6,13 @@ import { encodeSong } from '../../core/codec';
 import { demoSong } from '../../core/demo-song';
 import type { PublishResult } from '../api/licks';
 
-const publishLick = vi.fn<(title: string, blob: string, hash: string) => Promise<PublishResult>>();
+const publishLick =
+  vi.fn<
+    (title: string, blob: string, hash: string, tags: readonly string[]) => Promise<PublishResult>
+  >();
 vi.mock('../api/licks', () => ({
-  publishLick: (title: string, blob: string, hash: string) => publishLick(title, blob, hash),
+  publishLick: (title: string, blob: string, hash: string, tags: readonly string[]) =>
+    publishLick(title, blob, hash, tags),
 }));
 
 const navigate = vi.fn<(path: string) => void>();
@@ -90,7 +94,33 @@ describe('Publish 게시 화면 (해시 기반)', () => {
     fireEvent.change(screen.getByDisplayValue(demoSong.title), { target: { value: 'My title' } });
     fireEvent.click(screen.getByText('Publish'));
     await vi.waitFor(() => expect(publishLick).toHaveBeenCalledTimes(1));
-    expect(publishLick).toHaveBeenCalledWith('My title', validHash, expect.any(String));
+    expect(publishLick).toHaveBeenCalledWith('My title', validHash, expect.any(String), []);
+  });
+
+  it('태그를 커밋해 게시하면 정규화된 태그가 함께 전달된다', async () => {
+    publishLick.mockResolvedValue({ ok: true, id: 'tagged' });
+    renderAt('#' + validHash);
+    const field = screen.getByLabelText('Add tags');
+    fireEvent.change(field, { target: { value: '#Jazz Blues' } });
+    fireEvent.keyDown(field, { key: 'Enter' });
+    fireEvent.change(field, { target: { value: 'bebop' } });
+    fireEvent.keyDown(field, { key: ',' });
+    fireEvent.click(screen.getByText('Publish'));
+    await vi.waitFor(() => expect(publishLick).toHaveBeenCalledTimes(1));
+    expect(publishLick).toHaveBeenCalledWith(
+      demoSong.title,
+      validHash,
+      expect.any(String),
+      ['jazz-blues', 'bebop'],
+    );
+  });
+
+  it('태그 없이도 정상 게시된다 (빈 배열)', async () => {
+    publishLick.mockResolvedValue({ ok: true, id: 'plain' });
+    renderAt('#' + validHash);
+    fireEvent.click(screen.getByText('Publish'));
+    await vi.waitFor(() => expect(publishLick).toHaveBeenCalledTimes(1));
+    expect(publishLick).toHaveBeenCalledWith(demoSong.title, validHash, expect.any(String), []);
   });
 
   it('publishLick이 duplicate를 반환하면 안내 문구를 보여준다', async () => {
