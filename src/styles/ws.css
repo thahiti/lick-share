@@ -1,0 +1,642 @@
+/* 데스크톱 편집 워크스페이스 (editor-workspace-design). 색상은 tokens.css 변수만 사용.
+   악보(StaffLane)와 피아노롤은 하나의 .ws-scroll 안에 쌓여 가로 스크롤·좌표를
+   공유한다. 좌측 거터는 sticky로 고정되어 마디 경계가 두 패널에서 일치한다. */
+
+.ws {
+  min-height: 100dvh;
+  background: var(--bg-page);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* ── 상단 바 ── */
+.ws-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--line);
+}
+
+.ws-top-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ws-back {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ws-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ws-saved {
+  font-size: 11px;
+  color: var(--mut2);
+  white-space: nowrap;
+}
+
+.ws-top-right {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+
+.ws-btn-outline {
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  font-size: 13px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+.ws-btn-primary {
+  border: 1px solid var(--brand-primary);
+  border-radius: var(--radius-ctl);
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+/* ── 메인 그리드 ── */
+.ws-main {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 16px;
+  align-items: start;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px 20px;
+}
+
+.ws-canvas {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── 트랜스포트 행 ── */
+.ws-transport {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ws-play {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: var(--brand-tint);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ws-chip {
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  font-size: 13px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.ws-icon-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ws-icon-btn.on {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.ws-transport-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  margin: 0 2px;
+}
+
+.ws-tempo-wrap {
+  position: relative;
+}
+
+.ws-tempo-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 6px;
+  background: var(--bg-card);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  box-shadow: var(--shadow-popover);
+}
+
+.ws-tempo-pop input {
+  width: 56px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  padding: 4px 6px;
+  font: inherit;
+}
+
+.ws-zoom {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+
+.ws-zoom button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+/* ── 공유 스크롤 (악보 + 롤) ──
+   가로: 두 패널이 함께 스크롤. 세로: 낮은 음까지 스크롤.
+   거터는 sticky left:0 으로 고정돼 마디 경계 정렬을 유지한다. */
+.ws-scroll {
+  overflow: auto;
+  max-height: 520px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-page);
+}
+
+/* ── 악보 (StaffLane) ── */
+.sl {
+  display: flex;
+  width: max-content;
+  background: var(--bg-page);
+}
+
+.sl-gutter {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  flex: none;
+  background: var(--bg-page);
+}
+
+.sl-body {
+  flex: none;
+  display: block;
+}
+
+/* ── 피아노롤 ── */
+.roll {
+  border-top: 1px solid var(--line);
+}
+
+.roll-scroll {
+  /* 세로 스크롤은 상위 .ws-scroll이 담당 — 여기선 패스스루 */
+  overflow: visible;
+}
+
+.roll-body {
+  display: flex;
+  width: max-content;
+}
+
+.roll-labels {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  flex: none;
+  width: 44px;
+  background: var(--bg-page);
+}
+
+.rlab {
+  height: 18px;
+  font-size: 9px;
+  color: var(--mut2);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 6px;
+}
+
+.rlab.dk {
+  color: var(--mut);
+}
+
+.roll-grid {
+  display: grid;
+  flex: none;
+  background: var(--bg-card);
+}
+
+.rcell {
+  min-width: 0;
+  border: none;
+  padding: 0;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.rcell.dk {
+  background: var(--bg-pad-zone);
+}
+
+.rcell.db {
+  box-shadow: inset 1px 0 0 var(--line);
+}
+
+.rcell.mb {
+  box-shadow: inset 2px 0 0 var(--line2);
+}
+
+.roll-note {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid var(--brand-primary);
+  border-radius: 3px;
+  background: var(--note-block);
+  cursor: grab;
+  padding: 0;
+  touch-action: none;
+}
+
+.roll-note.sel {
+  background: var(--note-block-selected);
+}
+
+.roll-resize {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  cursor: ew-resize;
+}
+
+.roll-playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--playhead);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ── 단축키 힌트 행 ── */
+.ws-hints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  padding: 2px;
+  font-size: 11px;
+  color: var(--mut2);
+}
+
+.ws-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ws-hint kbd {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--ink);
+  background: var(--bg-card);
+  border: 1px solid var(--line2);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ── 가로 피아노 건반 ── */
+.pk {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 6px;
+}
+
+.pk-keys {
+  position: relative;
+  display: flex;
+  height: 64px;
+}
+
+.pk-white {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line2);
+  border-radius: 0 0 3px 3px;
+  background: var(--paper);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 3px;
+  cursor: pointer;
+}
+
+.pk-lab {
+  font-size: 8px;
+  color: var(--mut2);
+}
+
+.pk-black {
+  position: absolute;
+  top: 0;
+  height: 58%;
+  transform: translateX(-50%);
+  border: 1px solid var(--ink);
+  border-radius: 0 0 3px 3px;
+  background: var(--ink);
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* ── 속성 패널 ── */
+.pp {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pp-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--bg-card);
+  padding: 12px 14px 14px;
+  box-shadow: var(--shadow-card);
+}
+
+.pp-hd {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pp-title {
+  width: 100%;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  padding: 7px 9px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.pp-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pp-field input {
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  padding: 6px 8px;
+  font: inherit;
+}
+
+.pp-static {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-ctl);
+  padding: 6px 8px;
+  background: var(--bg-pad-zone);
+  font-size: 13px;
+}
+
+.pp-lab {
+  font-size: 11px;
+  color: var(--mut2);
+}
+
+.pp-lens {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.pp-lens button {
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  font-size: 12px;
+  padding: 7px 0;
+  cursor: pointer;
+}
+
+.pp-lens button.on {
+  background: var(--brand-tint);
+  border-color: var(--brand-outline);
+  color: var(--brand-tint-text);
+  font-weight: 700;
+}
+
+.pp-rest {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pp-rest:disabled {
+  opacity: 0.35;
+}
+
+.pp-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.pp-ctl {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pp-ctl b {
+  min-width: 84px;
+  text-align: center;
+  font-size: 11.5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-pad-zone);
+  padding: 4px 6px;
+}
+
+.pp-ctl button {
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.pp-ctl button:disabled {
+  opacity: 0.3;
+}
+
+.pp-chords {
+  display: flex;
+  gap: 4px;
+}
+
+.pp-slot {
+  flex: 1;
+  min-width: 0;
+  min-height: 30px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  font-family: var(--font-chord);
+  font-style: italic;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.pp-slot.empty {
+  border-style: dashed;
+  color: var(--mut);
+  font-family: var(--font-sans);
+  font-style: normal;
+}
+
+.pp-slot.open {
+  background: var(--brand-tint);
+  border-color: var(--brand-outline);
+}
+
+.pp-acc {
+  display: flex;
+  gap: 4px;
+}
+
+.pp-acc button {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--ink);
+  font-size: 10.5px;
+  padding: 6px 2px;
+  cursor: pointer;
+}
+
+.pp-acc button.on {
+  background: var(--brand-tint);
+  border-color: var(--brand-outline);
+  color: var(--brand-tint-text);
+  font-weight: 700;
+}
+
+.pp-macc {
+  margin-top: 8px;
+  width: 100%;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  color: var(--mut2);
+  font-size: 10.5px;
+  padding: 6px 0;
+  cursor: pointer;
+}
+
+.pp-macc b {
+  color: var(--ink);
+  margin-left: 4px;
+}
+
+/* ── 코드 피커 팝오버 ── */
+.ws-picker {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 40;
+  max-width: 560px;
+  box-shadow: var(--shadow-popover);
+}
+
+/* ── 포인터 호버 피드백 ── */
+@media (hover: hover) {
+  .ws-btn-primary:hover {
+    background: var(--brand-primary-hover);
+  }
+  .ws-btn-outline:hover,
+  .ws-chip:hover,
+  .ws-icon-btn:not(.on):hover,
+  .ws-zoom button:hover,
+  .ws-back:hover,
+  .pp-lens button:not(.on):hover,
+  .pp-acc button:not(.on):hover {
+    background: var(--bg-stepper-zone);
+  }
+  .roll-note:hover {
+    filter: brightness(1.06);
+  }
+  .rcell:hover {
+    outline: 1px solid var(--brand-outline);
+    outline-offset: -1px;
+  }
+}
