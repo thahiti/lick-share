@@ -186,6 +186,9 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
         <button type="button" className="c-btn" onClick={onTogglePlay}>
           {playing ? 'Stop' : 'Play all'}
         </button>
+        <button type="button" className="c-btn" onClick={() => navigate('/edit#' + lick.blob)}>
+          Duplicate &amp; edit
+        </button>
         <LikeButton liked={liked} count={count} onToggle={onToggleLike} disabled={likeBusy} />
       </div>
       {likeMsg && <p className="c-state">{likeMsg}</p>}

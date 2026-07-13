@@ -100,6 +100,14 @@ describe('LickDetail 릭 상세', () => {
     expect(navigate).toHaveBeenCalledWith('/lick/orig-1');
   });
 
+  it('Duplicate & edit: 릭 blob으로 /edit# 로 이동한다', async () => {
+    fetchLick.mockResolvedValue(original);
+    render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
+
+    fireEvent.click(await screen.findByText('Duplicate & edit'));
+    expect(navigate).toHaveBeenCalledWith('/edit#' + blob);
+  });
+
   it('로그인 상태에서 좋아요 토글 → addLike(원본 대상) 호출·카운트 +1·on 클래스', async () => {
     fetchLick.mockResolvedValue(similar);
     const { container } = render(<LickDetail id="sim-1" user={user2} player={fakePlayer()} />);
