@@ -192,3 +192,63 @@ describe('songStore: showToast (P9)', () => {
     expect(store.getState().toast).toBe('열람 링크 복사됨');
   });
 });
+
+describe('songStore: 데스크톱 워크스페이스 액션', () => {
+  test('dragNote: 이동 커밋이 undo 1회로 원복된다', () => {
+    const store = createSongStore();
+    store.getState().loadSong({ ...demoSong, meas: 2, notes: [{ id: 1, s: 0, d: 4, p: 64 }] });
+    store.getState().dragNote(1, { s: 8 });
+    expect(store.getState().song.notes[0]).toMatchObject({ s: 8, d: 4, p: 64 });
+    expect(store.getState().undo.past).toHaveLength(1);
+    store.getState().undoAction();
+    expect(store.getState().song.notes[0]?.s).toBe(0);
+  });
+
+  test('setLen: inputLen 세션 갱신 + 선택 노트 길이 설정', () => {
+    const store = createSongStore();
+    store.getState().loadSong({ ...demoSong, meas: 1, notes: [{ id: 1, s: 0, d: 4, p: 64 }] });
+    store.getState().setSel(1);
+    store.getState().setLen(8);
+    expect(store.getState().inputLen).toBe(8);
+    expect(store.getState().song.notes[0]?.d).toBe(8);
+  });
+
+  test('setLen: 선택 없어도 inputLen은 갱신된다', () => {
+    const store = createSongStore();
+    store.getState().loadSong({ ...demoSong, meas: 1, notes: [] });
+    store.getState().setLen(2);
+    expect(store.getState().inputLen).toBe(2);
+    expect(store.getState().song.notes).toHaveLength(0);
+  });
+
+  test('noteLetter: 선택 있으면 해당 음이름으로 재배치', () => {
+    const store = createSongStore();
+    store.getState().loadSong({ ...demoSong, meas: 1, notes: [{ id: 1, s: 0, d: 4, p: 72 }] });
+    store.getState().setSel(1);
+    store.getState().noteLetter('G');
+    expect(store.getState().song.notes[0]?.p).toBe(67); // G4
+  });
+
+  test('noteLetter: 선택 없으면 다음 빈 박에 입력', () => {
+    const store = createSongStore();
+    store.getState().loadSong({ ...demoSong, meas: 1, notes: [] });
+    store.getState().noteLetter('C');
+    const n = store.getState().song.notes[0];
+    expect(n).toMatchObject({ s: 0, p: 72 }); // 직전 노트 없음 → C5=72
+    expect(store.getState().sel).toBe(n?.id);
+  });
+
+  test('keyTap: 지정 피치를 다음 빈 박에 입력', () => {
+    const store = createSongStore();
+    store.getState().loadSong({ ...demoSong, meas: 1, notes: [] });
+    store.getState().keyTap(asMidi(60));
+    expect(store.getState().song.notes[0]).toMatchObject({ s: 0, p: 60 });
+  });
+
+  test('setTitle: 제목 갱신하되 undo 스택에는 쌓지 않는다', () => {
+    const store = createSongStore();
+    store.getState().setTitle('My Lick');
+    expect(store.getState().song.title).toBe('My Lick');
+    expect(store.getState().undo.past).toHaveLength(0);
+  });
+});
