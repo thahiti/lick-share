@@ -45,8 +45,6 @@ export interface SongStore {
   readonly undo: UndoStack;
   readonly toast: string | null;
   readonly preview: Note | null;
-  /** 메트로놈 켜짐 (세션) */
-  readonly metroOn: boolean;
   /** 새 음 입력 시 기본 길이 (세션, 워크스페이스 음길이 세그먼트) */
   readonly inputLen: number;
 
@@ -65,6 +63,7 @@ export interface SongStore {
   setTempo(v: number): void;
   /** 헤더 반주 팝오버: 전역 반주 패턴 설정 ('off'=반주 없음). 값이 곧 곡 데이터 */
   setAccGlobal(v: MeasureAcc): void;
+  /** 메트로놈 패턴 토글: 곡의 metro를 'off'↔'quarter'로 전환 (곡 데이터, undo 대상) */
   toggleMetro(): void;
   /** 마디 탭/이동: 첫 노트 자동 선택 + 프리뷰 (SPEC §3.2) */
   gotoMeasure(m: number): void;
@@ -119,7 +118,6 @@ export const createSongStore = (initial: Song = demoSong) =>
       undo: emptyUndo,
       toast: null,
       preview: null,
-      metroOn: false,
       inputLen: INPUT_LEN,
 
       padTap: (pv, st) => apply((c) => padTap(c, pv, st)),
@@ -160,7 +158,11 @@ export const createSongStore = (initial: Song = demoSong) =>
           applyOut(s, insertAtFreeBeat({ song: s.song, sel: s.sel, curM: s.curM }, p, s.inputLen)),
         ),
       setTitle: (title) => set((s) => ({ song: { ...s.song, title } })),
-      toggleMetro: () => set((s) => ({ metroOn: !s.metroOn })),
+      toggleMetro: () =>
+        set((s) => ({
+          song: { ...s.song, metro: s.song.metro === 'off' ? 'quarter' : 'off' },
+          undo: pushUndo(s.undo, s.song),
+        })),
       gotoMeasure: (m) => apply((c) => gotoMeasure(c, asBar(m))),
       setCurM: (m) => set({ curM: asBar(m), preview: null }),
       setSel: (id) => set({ sel: id, preview: null }),

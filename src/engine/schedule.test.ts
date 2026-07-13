@@ -11,6 +11,7 @@ const opts = (over: Partial<PlayOpts> = {}): PlayOpts => ({
 });
 
 const withAcc = (s: Song, accPat: Song['accPat']): Song => ({ ...s, accPat });
+const withMetro = (s: Song): Song => ({ ...s, metro: 'quarter' });
 
 /** osc 수 = pianoAt 1회당 2 (트라이앵글+사인). 메트로놈 클릭은 1 */
 const oscCount = (evs: readonly { kind: string }[]): number =>
@@ -83,7 +84,7 @@ describe('schedule: 반주 osc 카운트 DoD (handoff P6)', () => {
 
 describe('schedule: 메트로놈 (SPEC §6.3)', () => {
   test('4박 클릭 × 4마디 = 16개, 정박 액센트 1568/일반 1047', () => {
-    const evs = schedule(demoSong, opts({ melody: false, metro: true }), asStep(0));
+    const evs = schedule(withMetro(demoSong), opts({ melody: false, metro: true }), asStep(0));
     expect(evs).toHaveLength(16);
     const accents = evs.filter((e) => e.kind === 'metro' && e.freq === 1568);
     expect(accents).toHaveLength(4);
@@ -96,6 +97,7 @@ describe('schedule: 메트로놈 (SPEC §6.3)', () => {
     const song: Song = {
       ...demoSong,
       pickup: 8,
+      metro: 'quarter',
       notes: demoSong.notes.map((n) => ({ ...n, s: asStep(n.s + 8) })),
       chords: { 2: 'C', 6: 'Am', 10: 'F', 14: 'G7' },
     };
@@ -107,12 +109,17 @@ describe('schedule: 메트로놈 (SPEC §6.3)', () => {
   });
 
   test('중간 시작: fromStep 이후 클릭만', () => {
-    const evs = schedule(demoSong, opts({ melody: false, metro: true }), asStep(20));
+    const evs = schedule(withMetro(demoSong), opts({ melody: false, metro: true }), asStep(20));
     expect(evs).toHaveLength(11); // st=20,24,...,60
     expect(evs[0]?.t).toBe(0);
   });
 
-  test('열람 모드 상당(멜로디만): 반주·메트로놈 0건', () => {
+  test("song.metro='off'면 opts.metro=true여도 클릭 0건 (데이터가 결정)", () => {
+    const evs = schedule(demoSong, opts({ melody: false, metro: true }), asStep(0));
+    expect(evs).toHaveLength(0);
+  });
+
+  test('멜로디만: 반주·메트로놈 0건', () => {
     const evs = schedule(withAcc(demoSong, 'arp'), opts(), asStep(0));
     expect(evs.every((e) => e.kind === 'melody')).toBe(true);
   });

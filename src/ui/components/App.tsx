@@ -112,9 +112,10 @@ export const App = ({
     };
   }, [player, store]);
 
-  // 반주 켬/끔은 곡 데이터(accPat/mAcc)가 결정 — 스케줄러는 항상 반주 종류를 낸다
+  // 반주·메트로놈 켬/끔은 곡 데이터가 결정 — 스케줄러는 항상 각 종류를 낸다
   const accOn = s.song.accPat !== 'off';
-  const playOpts = { melody: true, accomp: true, metro: s.metroOn };
+  const metroOn = s.song.metro !== 'off';
+  const playOpts = { melody: true, accomp: true, metro: true };
 
   const togglePlay = (): void => {
     if (player.isPlaying()) {
@@ -154,7 +155,8 @@ export const App = ({
 
   const metroToggle = (): void => {
     store.getState().toggleMetro();
-    if (player.isPlaying()) player.toggleMetro(store.getState().metroOn);
+    const song = store.getState().song;
+    if (player.isPlaying()) player.toggleMetro(song.metro !== 'off', song);
   };
 
   const chordKey = (b: number): number => measStart(s.song, s.curM) / 4 + b;
@@ -252,7 +254,7 @@ export const App = ({
           sel={s.sel}
           curM={s.curM}
           accOn={accOn}
-          metroOn={s.metroOn}
+          metroOn={metroOn}
           playing={playing}
           playEl={playEl}
           cpBeat={cpBeat}
@@ -307,7 +309,7 @@ export const App = ({
         <Header
           song={s.song}
           accOn={accOn}
-          metroOn={s.metroOn}
+          metroOn={metroOn}
           playing={playing}
           onAccSelect={accSelect}
           onToggleMetro={metroToggle}

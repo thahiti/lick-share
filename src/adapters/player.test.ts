@@ -25,7 +25,11 @@ const kinds = (): string[] => [...new Set(sink.events.map((e) => e.kind))].sort(
 
 describe('player: 재생 세션', () => {
   test('play → melody+acc+metro 스케줄, isPlaying', () => {
-    player.play(demoSong, { melody: true, accomp: true, metro: true }, asStep(0));
+    player.play(
+      { ...demoSong, metro: 'quarter' },
+      { melody: true, accomp: true, metro: true },
+      asStep(0),
+    );
     expect(kinds()).toEqual(['acc', 'melody', 'metro']);
     expect(player.isPlaying()).toBe(true);
   });
@@ -72,7 +76,11 @@ describe('player: 재생 세션', () => {
 
 describe('player: 재생 중 실시간 토글 (SPEC §3.1, §6.2~6.3 DoD)', () => {
   test('메트로놈 off → 클릭만 제거, 멜로디 유지', () => {
-    player.play(demoSong, { melody: true, accomp: false, metro: true }, asStep(0));
+    player.play(
+      { ...demoSong, metro: 'quarter' },
+      { melody: true, accomp: false, metro: true },
+      asStep(0),
+    );
     player.toggleMetro(false);
     expect(kinds()).toEqual(['melody']);
     expect(player.isPlaying()).toBe(true);
@@ -81,14 +89,18 @@ describe('player: 재생 중 실시간 토글 (SPEC §3.1, §6.2~6.3 DoD)', () =
   test('메트로놈 on → 현재 이후 박만 스케줄', () => {
     player.play(demoSong, { melody: true, accomp: false, metro: false }, asStep(0));
     time.t = EPOCH + 20 * SPS; // el ≈ step 20
-    player.toggleMetro(true);
+    player.toggleMetro(true, { ...demoSong, metro: 'quarter' });
     const metros = sink.events.filter((e) => e.kind === 'metro');
     expect(metros).toHaveLength(11); // st=20,24,…,60
     expect(metros[0]?.t).toBeCloseTo(20 * SPS);
   });
 
   test('반주 off → acc만 제거', () => {
-    player.play(demoSong, { melody: true, accomp: true, metro: true }, asStep(0));
+    player.play(
+      { ...demoSong, metro: 'quarter' },
+      { melody: true, accomp: true, metro: true },
+      asStep(0),
+    );
     player.toggleAcc(false);
     expect(kinds()).toEqual(['melody', 'metro']);
   });

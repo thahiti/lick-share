@@ -59,7 +59,7 @@ export const schedule = (
     }
   }
 
-  if (opts.metro) {
+  if (opts.metro && song.metro !== 'off') {
     for (let m = 0; m < measCountAll(song); m++) {
       const ms = measStart(song, asBar(m));
       const len = measLen(song, asBar(m));

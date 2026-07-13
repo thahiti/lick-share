@@ -26,7 +26,7 @@ describe.each([
   for (const acc of ACC) {
     for (const metro of [false, true]) {
       test(`반주=${acc} 메트로놈=${metro ? 'on' : 'off'}`, () => {
-        const target: Song = acc === 'off' ? song : { ...song, accPat: acc };
+        const target: Song = { ...song, accPat: acc, metro: metro ? 'quarter' : 'off' };
         const sink = createFakeAudioSink();
         sink.play(
           schedule(target, { melody: true, accomp: acc !== 'off', metro }, asStep(0)),

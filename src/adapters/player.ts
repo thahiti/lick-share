@@ -18,8 +18,9 @@ export interface Player {
   isPlaying(): boolean;
   play(song: Song, opts: PlayOpts, fromStep: Step, toStep?: Step): void;
   stop(): void;
-  /** 재생 중 메트로놈 토글: on=현재 이후 박만 스케줄, off=클릭 노드만 정지 */
-  toggleMetro(on: boolean): void;
+  /** 재생 중 메트로놈 토글: on=현재 이후 박만 스케줄, off=클릭 노드만 정지.
+   *  song을 주면 새 곡(metro 패턴 변경 반영)으로 재스케줄 */
+  toggleMetro(on: boolean, song?: Song): void;
   /** 재생 중 반주 토글. song을 주면 새 곡(패턴 변경 등)으로 재스케줄 */
   toggleAcc(on: boolean, song?: Song): void;
   /** 진행 스텝(el) 구독. 반환값은 해제 함수 */
@@ -89,8 +90,9 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
 
     stop,
 
-    toggleMetro(on) {
+    toggleMetro(on, song) {
       if (!session) return;
+      if (song) session.song = song;
       session.opts = { ...session.opts, metro: on };
       if (on) {
         rescheduleFrom(session, { melody: false, accomp: false, metro: true });

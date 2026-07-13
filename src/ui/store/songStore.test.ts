@@ -107,12 +107,14 @@ describe('songStore: 세션 상태 (설계 문서 §3, SPEC §3.1)', () => {
     expect(store.getState().undo.past).toHaveLength(1);
   });
 
-  test('toggleMetro: 세션 토글 (undo 무관)', () => {
+  test('toggleMetro: song.metro off↔quarter 토글 (undo 대상)', () => {
     const store = createSongStore();
-    expect(store.getState().metroOn).toBe(false);
+    expect(store.getState().song.metro).toBe('off');
     store.getState().toggleMetro();
-    expect(store.getState().metroOn).toBe(true);
-    expect(store.getState().undo.past).toHaveLength(0);
+    expect(store.getState().song.metro).toBe('quarter');
+    expect(store.getState().undo.past).toHaveLength(1);
+    store.getState().toggleMetro();
+    expect(store.getState().song.metro).toBe('off');
   });
 });
 
