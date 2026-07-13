@@ -250,6 +250,12 @@ body {
   outline-offset: -1.5px;
 }
 
+/* 이전 마디에서 이어져 온 음: ⤳를 좌향으로 반전 */
+.pad .pcell .tie.lead {
+  display: inline-block;
+  transform: scaleX(-1);
+}
+
 /* ── 헤더 (DESIGN §4) ── */
 .header {
   padding: 10px 8px 6px;

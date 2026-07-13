@@ -33,8 +33,10 @@ const padRows = (song: Song, curM: BarIndex): number[] => {
 
 interface CellHit {
   readonly n: Note;
-  /** 마디 경계를 넘는 음의 마지막 칸 (⤳ 표시) */
+  /** 마디 경계를 넘어 다음 마디로 이어지는 음의 마지막 칸 (⤳ 표시) */
   readonly tail: boolean;
+  /** 이전 마디에서 이어져 온 음의 첫 칸 (⤳ 표시) */
+  readonly lead: boolean;
 }
 
 const cellHit = (song: Song, curM: BarIndex, p: Midi, st: number): CellHit | null => {
@@ -43,7 +45,11 @@ const cellHit = (song: Song, curM: BarIndex, p: Midi, st: number): CellHit | nul
   const abs = ms + st;
   const n = noteAt(song, abs, p);
   if (!n) return null;
-  return { n, tail: n.s + n.d > ms + len && abs === ms + len - 1 };
+  return {
+    n,
+    tail: n.s + n.d > ms + len && abs === ms + len - 1,
+    lead: n.s < ms && abs === ms,
+  };
 };
 
 export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
@@ -102,6 +108,7 @@ export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
               aria-label={`${NOTE_KO[p % 12]}${Math.floor(p / 12 - 1)} ${st + 1}칸`}
               onClick={() => onCellTap(p, st)}
             >
+              {hit?.lead && <span className="tie lead">⤳</span>}
               {hit?.tail && <span className="tie">⤳</span>}
             </button>
           );

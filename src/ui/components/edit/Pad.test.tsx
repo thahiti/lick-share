@@ -69,6 +69,19 @@ describe('Pad: 셀 상태 (SPEC §3.5)', () => {
     expect(container.querySelector('[data-p="64"][data-st="7"]')?.textContent).toContain('⤳');
   });
 
+  test('이전 마디에서 이어져 온 음: 현재 마디 첫 칸에 ⤳', () => {
+    // pickup=8. 마디2=24..39. note 22..29(라) → 마디2 첫 칸(st0)이 이어짐
+    const song: Song = {
+      ...demoSong,
+      pickup: 8,
+      meas: 4,
+      notes: [note(1, 22, 8, 57), note(2, 30, 4, 64)],
+      chords: {},
+    };
+    const { container } = render(<Pad song={song} curM={asBar(2)} sel={null} onCellTap={vi.fn()} />);
+    expect(container.querySelector('[data-p="57"][data-st="0"]')?.textContent).toContain('⤳');
+  });
+
   test('쉼표 행: 음이 없는 칸만 점등, 탭 → onCellTap("rest", st)', () => {
     const song: Song = { ...demoSong, meas: 1, notes: [note(1, 0, 4, 64)], chords: {} };
     const onTap = vi.fn();
