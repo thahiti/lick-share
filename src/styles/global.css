@@ -429,6 +429,7 @@ body {
 }
 
 .stepper.horiz {
+  flex: 1;
   display: flex;
   align-items: stretch;
 }
