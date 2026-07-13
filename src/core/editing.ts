@@ -168,14 +168,20 @@ export const stepLen = (ctx: EditCtx, dir: 1 | -1): EditOut => {
   };
 };
 
+/** 음이 걸친 마지막 마디 */
+const lastMeasOf = (song: Song, n: Note): BarIndex => measOf(song, asStep(n.s + n.d - 1));
+
 /** 이전/다음 선택. 끝에서는 복제 추가로 전환 (SPEC §3.8) */
 export const selectDir = (ctx: EditCtx, dir: 1 | -1): EditOut => {
-  const { song } = ctx;
+  const { song, curM } = ctx;
   const sorted = notesSorted(song);
   if (sorted.length === 0) return keep(ctx, '음표가 없습니다');
+  const cur = getSel(ctx);
   const i = sorted.findIndex((n) => n.id === ctx.sel);
 
   if (dir > 0) {
+    // 마디에 걸친 음: 아직 마지막 마디를 안 봤으면 같은 음의 다음 마디 뷰로만 이동
+    if (cur && curM < lastMeasOf(song, cur)) return { ...keep(ctx), curM: asBar(curM + 1) };
     if (i === sorted.length - 1) {
       const last = sorted[sorted.length - 1] as Note;
       const ns = last.s + last.d;
@@ -199,6 +205,8 @@ export const selectDir = (ctx: EditCtx, dir: 1 | -1): EditOut => {
     return { ...keep(ctx), sel: n.id, curM: measOf(song, n.s), preview: n };
   }
 
+  // 마디에 걸친 음: 아직 시작 마디를 안 봤으면 같은 음의 이전 마디 뷰로만 이동
+  if (cur && curM > measOf(song, cur.s)) return { ...keep(ctx), curM: asBar(curM - 1) };
   if (i === 0) {
     const first = sorted[0] as Note;
     if (first.s <= 0) return keep(ctx, '곡 처음입니다');
@@ -213,8 +221,9 @@ export const selectDir = (ctx: EditCtx, dir: 1 | -1): EditOut => {
       toast: '앞에 복제 추가',
     };
   }
+  // 뒤로 이동은 이전 음의 마지막 마디로 진입 (걸친 음을 오른쪽부터 방문)
   const n = sorted[i < 0 ? 0 : i - 1] as Note;
-  return { ...keep(ctx), sel: n.id, curM: measOf(song, n.s), preview: n };
+  return { ...keep(ctx), sel: n.id, curM: lastMeasOf(song, n), preview: n };
 };
 
 /** 선택 노트 삭제, 이전 노트 자동 선택 */

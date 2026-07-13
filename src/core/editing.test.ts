@@ -206,6 +206,52 @@ describe('selectDir (SPEC §3.8)', () => {
   });
 });
 
+describe('selectDir: 마디 걸친 음은 마디별로 방문 (SPEC §3.8)', () => {
+  // 마디1=8..23, 마디2=24..39. note2(라 A3) 22..29 → 마디1·2에 걸침
+  const cross = song({
+    meas: 4,
+    pickup: 8,
+    notes: [note(1, 18, 4, 60), note(2, 22, 8, 57), note(3, 30, 4, 64)],
+  });
+
+  test('다음: 걸친 음의 시작 마디 → 같은 음, 다음 마디 뷰', () => {
+    const out = selectDir(ctx(cross, 2, 1), 1);
+    expect(out.sel).toBe(2);
+    expect(out.curM).toBe(2);
+    expect(out.changed).toBe(false);
+  });
+
+  test('다음: 걸친 음의 마지막 마디 → 다음 음', () => {
+    const out = selectDir(ctx(cross, 2, 2), 1);
+    expect(out.sel).toBe(3);
+    expect(out.curM).toBe(2);
+  });
+
+  test('다음: 걸친 음 진입은 시작 마디로', () => {
+    const out = selectDir(ctx(cross, 1, 1), 1);
+    expect(out.sel).toBe(2);
+    expect(out.curM).toBe(1);
+  });
+
+  test('이전: 걸친 음 진입은 마지막 마디로', () => {
+    const out = selectDir(ctx(cross, 3, 2), -1);
+    expect(out.sel).toBe(2);
+    expect(out.curM).toBe(2);
+  });
+
+  test('이전: 걸친 음의 마지막 마디 → 같은 음, 이전 마디 뷰', () => {
+    const out = selectDir(ctx(cross, 2, 2), -1);
+    expect(out.sel).toBe(2);
+    expect(out.curM).toBe(1);
+  });
+
+  test('이전: 걸친 음의 시작 마디 → 이전 음', () => {
+    const out = selectDir(ctx(cross, 2, 1), -1);
+    expect(out.sel).toBe(1);
+    expect(out.curM).toBe(1);
+  });
+});
+
 describe('deleteSel (SPEC §3.8)', () => {
   test('선택 삭제 후 이전 노트 자동 선택', () => {
     const base = song({ meas: 1, notes: [note(1, 0, 4), note(2, 4, 4)] });
