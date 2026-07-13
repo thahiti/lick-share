@@ -1,6 +1,6 @@
 /** 최신 피드 — 첫 페이지 마운트 로드, 좋아요 수는 원본 기준, 유사릭 배지 (설계 §8.2, §7). */
 import { StrictMode } from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { LickRow } from '../api/licks';
 
@@ -96,5 +96,20 @@ describe('Feed 최신 피드', () => {
 
     // 새 작성자의 첫 페이지는 커서 null부터 다시 시작
     expect(fetchFeedPage).toHaveBeenLastCalledWith(null, 'a2');
+  });
+
+  it('첫 페이지 로드 실패 시 에러 안내와 재시도 버튼을 보여주고, 재시도 성공 시 카드가 렌더된다', async () => {
+    fetchFeedPage.mockRejectedValueOnce(new Error('network down'));
+
+    render(<Feed />);
+
+    expect(await screen.findByText('목록을 불러오지 못했어요')).toBeTruthy();
+    const retry = screen.getByRole('button', { name: '다시 시도' });
+
+    fetchFeedPage.mockResolvedValueOnce([original, similar]);
+    fireEvent.click(retry);
+
+    expect(await screen.findByText('오리지널 릭')).toBeTruthy();
+    expect(screen.queryByText('목록을 불러오지 못했어요')).toBeNull();
   });
 });

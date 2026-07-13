@@ -20,16 +20,24 @@ export const Ranking = (_props: Props): JSX.Element => {
   const [rows, setRows] = useState<RankingRow[]>([]);
   const [done, setDone] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   const offset = useRef(0);
   const started = useRef(false);
 
   const loadMore = useCallback(async (): Promise<boolean> => {
-    const page = await fetchRankingPage(offset.current);
-    offset.current += PAGE_SIZE;
-    setRows((prev) => appendDeduped(prev, page));
-    const hasMore = page.length === PAGE_SIZE;
-    setDone(!hasMore);
-    return hasMore;
+    try {
+      const page = await fetchRankingPage(offset.current);
+      offset.current += PAGE_SIZE;
+      setRows((prev) => appendDeduped(prev, page));
+      const hasMore = page.length === PAGE_SIZE;
+      setDone(!hasMore);
+      setError(false);
+      return hasMore;
+    } catch {
+      // 사용자가 재시도 버튼을 누르거나(초기 로드) 스크롤로 다시 교차하면(페이지 로드) 재시도된다.
+      setError(true);
+      return true;
+    }
   }, []);
 
   const sentinelRef = useInfiniteScroll(loadMore);
@@ -73,7 +81,16 @@ export const Ranking = (_props: Props): JSX.Element => {
         );
       })}
       {loaded && !done && <div ref={sentinelRef} className="c-sentinel" />}
-      <p className="c-state">{done ? (rows.length ? '끝이에요' : '아직 랭킹이 없어요') : '불러오는 중…'}</p>
+      {error ? (
+        <p className="c-state">
+          목록을 불러오지 못했어요{' '}
+          <button type="button" className="c-btn" onClick={() => void loadMore()}>
+            다시 시도
+          </button>
+        </p>
+      ) : (
+        <p className="c-state">{done ? (rows.length ? '끝이에요' : '아직 랭킹이 없어요') : '불러오는 중…'}</p>
+      )}
     </div>
   );
 };

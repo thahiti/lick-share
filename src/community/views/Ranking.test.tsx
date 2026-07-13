@@ -1,6 +1,6 @@
 /** 랭킹 — offset 무한 스크롤 첫 페이지, 좋아요 내림차순 순위 (설계 §8.1, §8.5). */
 import { StrictMode } from 'react';
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Player } from '../../adapters/player';
 import type { RankingRow } from '../api/licks';
@@ -82,5 +82,20 @@ describe('Ranking 랭킹', () => {
     render(<Ranking player={fakePlayer} />);
 
     expect(await screen.findByText('아직 랭킹이 없어요')).toBeTruthy();
+  });
+
+  it('첫 페이지 로드 실패 시 에러 안내와 재시도 버튼을 보여주고, 재시도 성공 시 목록이 렌더된다', async () => {
+    fetchRankingPage.mockRejectedValueOnce(new Error('network down'));
+
+    render(<Ranking player={fakePlayer} />);
+
+    expect(await screen.findByText('목록을 불러오지 못했어요')).toBeTruthy();
+    const retry = screen.getByRole('button', { name: '다시 시도' });
+
+    fetchRankingPage.mockResolvedValueOnce([first, second]);
+    fireEvent.click(retry);
+
+    expect(await screen.findByText('인기 릭')).toBeTruthy();
+    expect(screen.queryByText('목록을 불러오지 못했어요')).toBeNull();
   });
 });

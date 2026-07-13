@@ -20,9 +20,12 @@ export function useInfiniteScroll(onLoadMore: () => Promise<boolean>): (el: HTML
     io.current = new IntersectionObserver(async (entries) => {
       if (!entries.some((e) => e.isIntersecting) || busy.current) return;
       busy.current = true;
-      const hasMore = await cb.current();
-      busy.current = false;
-      if (!hasMore) io.current?.disconnect();
+      try {
+        const hasMore = await cb.current();
+        if (!hasMore) io.current?.disconnect();
+      } finally {
+        busy.current = false;
+      }
     });
     io.current.observe(el);
   };

@@ -24,18 +24,26 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
   const [counts, setCounts] = useState<Map<string, number>>(new Map());
   const [done, setDone] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState(false);
   const cursor = useRef<string | null>(null);
   const started = useRef(false);
 
   const loadMore = useCallback(async (): Promise<boolean> => {
-    const page = await fetchFeedPage(cursor.current, authorId);
-    cursor.current = page.at(-1)?.created_at ?? cursor.current;
-    const c = await fetchLikeCounts(canonicalIds(page));
-    setCounts((prev) => new Map([...prev, ...c]));
-    setLicks((prev) => [...prev, ...page]);
-    const hasMore = page.length === PAGE_SIZE;
-    setDone(!hasMore);
-    return hasMore;
+    try {
+      const page = await fetchFeedPage(cursor.current, authorId);
+      cursor.current = page.at(-1)?.created_at ?? cursor.current;
+      const c = await fetchLikeCounts(canonicalIds(page));
+      setCounts((prev) => new Map([...prev, ...c]));
+      setLicks((prev) => [...prev, ...page]);
+      const hasMore = page.length === PAGE_SIZE;
+      setDone(!hasMore);
+      setError(false);
+      return hasMore;
+    } catch {
+      // 사용자가 재시도 버튼을 누르거나(초기 로드) 스크롤로 다시 교차하면(페이지 로드) 재시도된다.
+      setError(true);
+      return true;
+    }
   }, [authorId]);
 
   const sentinelRef = useInfiniteScroll(loadMore);
@@ -64,9 +72,18 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
         />
       ))}
       {loaded && !done && <div ref={sentinelRef} className="c-sentinel" />}
-      <p className="c-state">
-        {done ? (licks.length ? '끝이에요' : '아직 게시된 릭이 없어요') : '불러오는 중…'}
-      </p>
+      {error ? (
+        <p className="c-state">
+          목록을 불러오지 못했어요{' '}
+          <button type="button" className="c-btn" onClick={() => void loadMore()}>
+            다시 시도
+          </button>
+        </p>
+      ) : (
+        <p className="c-state">
+          {done ? (licks.length ? '끝이에요' : '아직 게시된 릭이 없어요') : '불러오는 중…'}
+        </p>
+      )}
     </div>
   );
 };
