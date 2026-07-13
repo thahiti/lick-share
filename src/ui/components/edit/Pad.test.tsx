@@ -15,20 +15,20 @@ const rowsOf = (container: HTMLElement): string[] =>
   [...container.querySelectorAll('[data-row]')].map((el) => el.getAttribute('data-row') ?? '');
 
 describe('Pad: 동적 행 구성 (SPEC §3.5)', () => {
-  test('데모 곡(온음계만): 19행, ♯행 없음', () => {
+  test('데모 곡(온음계만): 20행, ♯행 없음', () => {
     const { container } = render(<Pad song={demoSong} curM={asBar(0)} sel={null} onCellTap={vi.fn()} />);
     const rows = rowsOf(container);
-    expect(rows).toHaveLength(19);
+    expect(rows).toHaveLength(20);
     expect(rows.some((p) => [1, 3, 6, 8, 10].includes(+p % 12))).toBe(false);
   });
 
-  test('현재 마디에 ♯음이 있으면 그 행만 추가 (20행), 마디 이동 시 재계산', () => {
+  test('현재 마디에 ♯음이 있으면 그 행만 추가 (21행), 마디 이동 시 재계산', () => {
     const song: Song = { ...demoSong, notes: [...demoSong.notes, note(99, 16, 2, 70)] };
     const m1 = render(<Pad song={song} curM={asBar(1)} sel={null} onCellTap={vi.fn()} />);
-    expect(rowsOf(m1.container)).toHaveLength(20);
+    expect(rowsOf(m1.container)).toHaveLength(21);
     expect(rowsOf(m1.container)).toContain('70');
     const m0 = render(<Pad song={song} curM={asBar(0)} sel={null} onCellTap={vi.fn()} />);
-    expect(rowsOf(m0.container)).toHaveLength(19);
+    expect(rowsOf(m0.container)).toHaveLength(20);
   });
 
   test('보이는 ♯행의 빈 칸 탭 = 입력 가능', () => {
