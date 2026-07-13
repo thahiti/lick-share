@@ -47,6 +47,9 @@ create table licks (
   blob text not null,
   melody_hash text not null,
   canonical_id text references licks(id),
+  -- 개수 상한(3)은 DB CHECK, 원소 길이(15자)·정규화는 앱 계층(normalizeTags)에서 강제
+  tags text[] not null default '{}'
+    check (array_length(tags, 1) is null or array_length(tags, 1) <= 3),
   created_at timestamptz not null default now()
 );
 
@@ -92,7 +95,7 @@ create policy "delete own like" on likes for delete using (user_id = auth.uid())
 -- 5) 랭킹 view (security_invoker: 조회자 권한 — 전 테이블 select 공개라 결과 동일)
 create view ranking with (security_invoker = on) as
 select
-  l.id, l.title, l.blob, l.created_at,
+  l.id, l.title, l.blob, l.tags, l.created_at,
   p.public_id as author_public_id,
   p.display_name as author_name,
   p.avatar_url,
