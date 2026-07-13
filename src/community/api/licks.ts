@@ -12,7 +12,10 @@ export interface LickRow {
   profiles: { public_id: string; display_name: string } | null;
 }
 
-const LICK_COLS = 'id, title, blob, author_id, canonical_id, created_at, profiles(public_id, display_name)';
+// profiles 임베딩은 FK를 명시한다 — licks↔profiles 관계가 둘이라(author_id 직접 FK,
+// 그리고 likes 정션 테이블 경유 many-to-many) 수식어 없이 쓰면 PostgREST가 PGRST201(300)로 거부한다.
+const LICK_COLS =
+  'id, title, blob, author_id, canonical_id, created_at, profiles!licks_author_id_fkey(public_id, display_name)';
 
 /** keyset 커서 무한 스크롤 (설계 §8.5). authorId를 주면 유저 페이지/내 릭. */
 export async function fetchFeedPage(cursor: string | null, authorId?: string): Promise<LickRow[]> {
