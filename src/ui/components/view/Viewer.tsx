@@ -31,14 +31,14 @@ export const Viewer = ({
 }: ViewerProps): JSX.Element => (
   <div className="viewer">
     <div className="hero">
-      <div className="eyebrow">공유된 악보</div>
+      <div className="eyebrow">SHARED SCORE</div>
       <h1 className="title">{song.title}</h1>
       <hr className="rule" />
       <div className="badges">
-        <span data-badge="key">C장조</span>
+        <span data-badge="key">C Major</span>
         <span data-badge="time">4/4</span>
         <span data-badge="tempo">{`♩=${song.tempo}`}</span>
-        <span data-badge="meas">{`${measCountAll(song) - (song.pickup ? 1 : 0)}마디`}</span>
+        <span data-badge="meas">{`${measCountAll(song) - (song.pickup ? 1 : 0)} bars`}</span>
       </div>
     </div>
     <div className="score-card">
@@ -52,16 +52,16 @@ export const Viewer = ({
         />
       </div>
     </div>
-    <button type="button" data-btn="playv" className="big-play" aria-label="전곡 재생" onClick={onPlayAll}>
+    <button type="button" data-btn="playv" className="big-play" aria-label="Play all" onClick={onPlayAll}>
       <Icon name={playing ? 'pause' : 'play'} color="#fff" size={26} />
     </button>
     <div className="viewer-actions">
       <button type="button" data-btn="copy" onClick={onCopyLink}>
-        링크 복사
+        Copy link
       </button>
       <button type="button" data-btn="toedit" className="dark" onClick={onToEdit}>
         <Icon name="plus" color="#fff" size={15} />
-        복제해서 편집
+        Duplicate & edit
       </button>
     </div>
   </div>

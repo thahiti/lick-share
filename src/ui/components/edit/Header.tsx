@@ -20,10 +20,10 @@ export interface HeaderProps {
 }
 
 const ACC_OPTIONS: readonly (readonly [AccPattern | 'off', string])[] = [
-  ['off', '끔'],
-  ['pad', '패드'],
-  ['comp', '컴핑'],
-  ['arp', '아르페지오'],
+  ['off', 'Off'],
+  ['pad', 'Pad'],
+  ['comp', 'Comp'],
+  ['arp', 'Arp'],
 ];
 
 export const Header = ({
@@ -51,7 +51,7 @@ export const Header = ({
     <header className="header">
       <div className="header-row">
         <div className="header-left">
-          <div className="eyebrow">SCORELINK — EDIT</div>
+          <div className="eyebrow">LICK SHARE — EDIT</div>
           <h1 className="title">{song.title}</h1>
         </div>
         <div className="header-btns">
@@ -59,7 +59,7 @@ export const Header = ({
             type="button"
             data-btn="acc"
             className={`icon-btn${accOn ? ' on' : ''}`}
-            aria-label="코드 반주"
+            aria-label="Chord accompaniment"
             onClick={() => setAccPop((v) => !v)}
           >
             <Icon name="chord" color={accOn ? '#fff' : 'var(--ink)'} />
@@ -68,7 +68,7 @@ export const Header = ({
             type="button"
             data-btn="metro"
             className={`icon-btn${metroOn ? ' on' : ''}`}
-            aria-label="메트로놈"
+            aria-label="Metronome"
             onClick={onToggleMetro}
           >
             <Icon name="metro" color={metroOn ? '#fff' : 'var(--ink)'} />
@@ -77,7 +77,7 @@ export const Header = ({
             type="button"
             data-btn="playall"
             className="icon-btn"
-            aria-label="전체 재생/정지"
+            aria-label="Play/Stop all"
             onClick={onTogglePlay}
           >
             <Icon name={playing ? 'pause' : 'play'} />
@@ -93,17 +93,16 @@ export const Header = ({
           >
             {`♩=${song.tempo}`}
           </button>
-          <button type="button" data-btn="share" className="icon-btn" aria-label="공유" onClick={onShare}>
+          <button type="button" data-btn="share" className="icon-btn" aria-label="Share" onClick={onShare}>
             <Icon name="share" size={15} />
           </button>
-          <button type="button" data-btn="view" className="icon-btn" aria-label="열람 모드" onClick={onView}>
-            보기
+          <button type="button" data-btn="view" className="icon-btn" aria-label="View mode" onClick={onView}>
+            View
           </button>
         </div>
       </div>
       <div className="metaline">
-        <span>{`C장조 · 4/4 · ${song.meas}마디${song.pickup ? ' + 못갖춘' : ''}`}</span>
-        <span>자동 저장 · v1</span>
+        <span>{`C Major · 4/4 · ${song.meas} bars${song.pickup ? ' + pickup' : ''}`}</span>
       </div>
 
       {accPop && (
@@ -145,7 +144,7 @@ export const Header = ({
             ＋
           </button>
           <button type="button" className="cls" onClick={() => setTempoPop(false)}>
-            닫기
+            Close
           </button>
         </div>
       )}

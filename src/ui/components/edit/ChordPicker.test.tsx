@@ -12,7 +12,7 @@ describe('ChordPicker (SPEC §3.4)', () => {
     render(
       <ChordPicker song={demoSong} curM={asBar(0)} beat={1} onApply={vi.fn()} onClear={vi.fn()} onDone={vi.fn()} />,
     );
-    expect(screen.getByText('마디 1 · 2박 코드')).toBeTruthy();
+    expect(screen.getByText('Bar 1 · beat 2 chord')).toBeTruthy();
   });
 
   test('pickup 마디의 박 표기는 3, 4', () => {
@@ -20,7 +20,7 @@ describe('ChordPicker (SPEC §3.4)', () => {
     render(
       <ChordPicker song={song} curM={asBar(0)} beat={0} onApply={vi.fn()} onClear={vi.fn()} onDone={vi.fn()} />,
     );
-    expect(screen.getByText('못갖춘 · 3박 코드')).toBeTruthy();
+    expect(screen.getByText('Pickup · beat 3 chord')).toBeTruthy();
   });
 
   test('선택 즉시 적용: 루트→임시표→성질 누적 (루트+♯♭+접미 형식)', () => {
@@ -58,9 +58,9 @@ describe('ChordPicker (SPEC §3.4)', () => {
     render(
       <ChordPicker song={demoSong} curM={asBar(0)} beat={1} onApply={vi.fn()} onClear={onClear} onDone={onDone} />,
     );
-    fireEvent.click(screen.getByText('코드 지우기'));
+    fireEvent.click(screen.getByText('Clear chord'));
     expect(onClear).toHaveBeenCalled();
-    fireEvent.click(screen.getByText('완료'));
+    fireEvent.click(screen.getByText('Done'));
     expect(onDone).toHaveBeenCalled();
   });
 });

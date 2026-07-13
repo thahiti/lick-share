@@ -6,10 +6,10 @@ import { measLen, measStart } from '../../../core/geometry';
 import type { BarIndex, Song } from '../../../core/types';
 
 export const ACC_LAB: Readonly<Record<string, string>> = {
-  pad: '패드',
-  comp: '컴핑',
-  arp: '아르프',
-  off: '끔',
+  pad: 'Pad',
+  comp: 'Comp',
+  arp: 'Arp',
+  off: 'Off',
 };
 
 export interface ChordRowProps {
@@ -35,7 +35,7 @@ export const ChordRow = ({ song, curM, openBeat, onSlotTap, onCycleAcc }: ChordR
           className={`cacc${effective === 'off' ? ' off' : ''}`}
           onClick={onCycleAcc}
         >
-          반주<b>{ov ? ACC_LAB[ov] : '기본'}</b>
+          Acc<b>{ov ? ACC_LAB[ov] : 'Default'}</b>
         </button>
       </div>
       {Array.from({ length: beats }, (_, b) => {

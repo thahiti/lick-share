@@ -46,13 +46,13 @@ describe('ChordRow (SPEC §3.3)', () => {
     const base = render(
       <ChordRow song={demoSong} curM={asBar(0)} openBeat={null} onSlotTap={vi.fn()} onCycleAcc={onCycle} />,
     );
-    expect(base.container.querySelector('.cacc')?.textContent).toBe('반주기본');
+    expect(base.container.querySelector('.cacc')?.textContent).toBe('AccDefault');
 
     const withOv: Song = { ...demoSong, mAcc: { 0: 'arp' } };
     const ov = render(
       <ChordRow song={withOv} curM={asBar(0)} openBeat={null} onSlotTap={vi.fn()} onCycleAcc={onCycle} />,
     );
-    expect(ov.container.querySelector('.cacc')?.textContent).toBe('반주아르프');
+    expect(ov.container.querySelector('.cacc')?.textContent).toBe('AccArp');
 
     const offSong: Song = { ...demoSong, mAcc: { 0: 'off' } };
     const off = render(

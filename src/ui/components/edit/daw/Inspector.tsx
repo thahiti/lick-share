@@ -11,10 +11,10 @@ import { ACC_LAB } from '../ChordRow';
 import { Icon } from '../../common/Icon';
 
 const ACC_OPTIONS: readonly (readonly [AccPattern | 'off', string])[] = [
-  ['off', '끔'],
-  ['pad', '패드'],
-  ['comp', '컴핑'],
-  ['arp', '아르페지오'],
+  ['off', 'Off'],
+  ['pad', 'Pad'],
+  ['comp', 'Comp'],
+  ['arp', 'Arp'],
 ];
 
 export interface InspectorProps {
@@ -82,9 +82,9 @@ export const Inspector = ({
   return (
     <aside className="inspector">
       <section className="insp-card">
-        <h2 className="insp-hd">선택한 노트</h2>
+        <h2 className="insp-hd">Selected note</h2>
         <Row
-          label="음높이"
+          label="Pitch"
           value={n ? pName(n.p) : '—'}
           cur="pitch"
           prevKey="pitch-down"
@@ -94,7 +94,7 @@ export const Inspector = ({
           onStep={onStepPitch}
         />
         <Row
-          label="위치"
+          label="Position"
           value={posLabel(song, n)}
           cur="pos"
           prevKey="pos-prev"
@@ -104,7 +104,7 @@ export const Inspector = ({
           onStep={onStepPos}
         />
         <Row
-          label="길이"
+          label="Length"
           value={lenLabel(n)}
           cur="len"
           prevKey="len-prev"
@@ -116,7 +116,7 @@ export const Inspector = ({
       </section>
 
       <section className="insp-card">
-        <h2 className="insp-hd">반주</h2>
+        <h2 className="insp-hd">Accompaniment</h2>
         <div className="insp-acc">
           {ACC_OPTIONS.map(([v, label]) => (
             <button
@@ -131,7 +131,7 @@ export const Inspector = ({
           ))}
         </div>
         <button type="button" data-btn="macc" className="insp-macc" onClick={onCycleAcc}>
-          이 마디 <b>{ov ? ACC_LAB[ov] : '기본'}</b>
+          This bar <b>{ov ? ACC_LAB[ov] : 'Default'}</b>
         </button>
       </section>
     </aside>

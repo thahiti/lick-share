@@ -38,23 +38,23 @@ export const ButtonBar = ({
         onClick={() => onSelectDir(-1)}
       >
         <Icon name={atStart ? 'plus' : 'prev'} color={atStart ? 'var(--red)' : 'var(--ink)'} />
-        <span>{atStart ? '추가' : '선택'}</span>
+        <span>{atStart ? 'Add' : 'Select'}</span>
       </button>
       <button type="button" data-btn="play" className="bb pri" onClick={onPlayMeasure}>
         <Icon name="play" color="#fff" />
-        <span>마디</span>
+        <span>Bar</span>
       </button>
       <button type="button" data-btn="undo" className="bb" onClick={onUndo}>
         <Icon name="undo" />
-        <span>취소</span>
+        <span>Undo</span>
       </button>
       <button type="button" data-btn="redo" className="bb" onClick={onRedo}>
         <Icon name="redo" />
-        <span>실행</span>
+        <span>Redo</span>
       </button>
       <button type="button" data-btn="del" className="bb warn" onClick={onDelete}>
         <Icon name="del" color="var(--red)" />
-        <span>삭제</span>
+        <span>Delete</span>
       </button>
       <button
         type="button"
@@ -63,7 +63,7 @@ export const ButtonBar = ({
         onClick={() => onSelectDir(1)}
       >
         <Icon name={atEnd ? 'plus' : 'next'} color={atEnd ? 'var(--red)' : 'var(--ink)'} />
-        <span>{atEnd ? '추가' : '선택'}</span>
+        <span>{atEnd ? 'Add' : 'Select'}</span>
       </button>
     </div>
   );

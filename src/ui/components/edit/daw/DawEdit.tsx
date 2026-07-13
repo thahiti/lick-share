@@ -138,8 +138,7 @@ export const DawEdit = ({
       />
     </div>
     <div className="daw-status">
-      <span>{`${measCountAll(song)}마디 전체 표시`}</span>
-      <span>자동 저장 · v1</span>
+      <span>{`Showing all ${measCountAll(song)} bars`}</span>
     </div>
   </div>
 );

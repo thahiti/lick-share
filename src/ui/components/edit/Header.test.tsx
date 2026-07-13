@@ -29,12 +29,12 @@ const $ = (c: HTMLElement, sel: string): Element => {
 describe('Header (SPEC §3.1)', () => {
   test('제목·메타라인: "C장조 · 4/4 · 4마디", pickup 시 "+ 못갖춘"', () => {
     const base = renderHeader();
-    expect(base.container.textContent).toContain('봄날의 스케치');
-    expect(base.container.textContent).toContain('C장조 · 4/4 · 4마디');
+    expect(base.container.textContent).toContain('Spring Sketch');
+    expect(base.container.textContent).toContain('C Major · 4/4 · 4 bars');
 
     const pk: Song = { ...demoSong, pickup: 8 };
     const withPk = renderHeader({ song: pk });
-    expect(withPk.container.textContent).toContain('4마디 + 못갖춘');
+    expect(withPk.container.textContent).toContain('4 bars + pickup');
   });
 
   test('반주 팝오버: 열고 패턴 선택 → onAccSelect, 켜짐 반전 표시', () => {

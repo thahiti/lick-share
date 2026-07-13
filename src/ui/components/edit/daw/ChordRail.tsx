@@ -20,7 +20,7 @@ export const ChordRail = ({ song, curM, openBeat, onSlotTap }: ChordRailProps): 
 
   return (
     <div className="chord-rail">
-      <div className="rail-lead">코드</div>
+      <div className="rail-lead">Chord</div>
       <div
         className="rail-grid"
         style={{ gridTemplateColumns: `repeat(${T}, minmax(12px, 1fr))` }}

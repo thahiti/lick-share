@@ -15,29 +15,27 @@ export const PMAX = 84;
 export const LEN_STEPS: readonly number[] = [1, 2, 3, 4, 6, 8, 12, 16];
 /** 패드 입력 고정 길이 (4분음표) */
 export const INPUT_LEN = 4;
-/** 음길이 → 한국어 표기 (SMP 문자 금지) */
+/** 음길이 → 영문 표기 (SMP 문자 금지, 점음표는 뒤 '.' 규약) */
 export const LEN_NAME: Readonly<Record<number, string>> = {
-  1: '16분',
-  2: '8분',
-  3: '점8분',
-  4: '4분',
-  6: '점4분',
-  8: '2분',
-  12: '점2분',
-  16: '온음표',
+  1: '16th',
+  2: '8th',
+  3: '8th.',
+  4: 'Quarter',
+  6: 'Quarter.',
+  8: 'Half',
+  12: 'Half.',
+  16: 'Whole',
 };
 
-/** 반음계 계이름 (한국어) */
-export const NOTE_KO: readonly string[] = ['도', '도♯', '레', '레♯', '미', '파', '파♯', '솔', '솔♯', '라', '라♯', '시'];
 /** 반음계 음이름 (영문) */
 export const NOTE_EN: readonly string[] = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
 /** 검은건반 피치 클래스 */
 export const BLACK_PC: ReadonlySet<number> = new Set([1, 3, 6, 8, 10]);
-/** "도 C5" 형식 (스테퍼 현재 음 표기) */
+/** "C5" 형식 (스테퍼 현재 음 표기) */
 export const pName = (p: number): string =>
-  `${NOTE_KO[p % 12]} ${NOTE_EN[p % 12]}${Math.floor(p / 12 - 1)}`;
-/** "도5" 형식 (스테퍼 이웃 음 표기) */
-export const pShort = (p: number): string => `${NOTE_KO[p % 12]}${Math.floor(p / 12 - 1)}`;
+  `${NOTE_EN[p % 12]}${Math.floor(p / 12 - 1)}`;
+/** "C5" 형식 (스테퍼 이웃 음 표기) */
+export const pShort = (p: number): string => `${NOTE_EN[p % 12]}${Math.floor(p / 12 - 1)}`;
 
 /** 조판 상수 — 전부 여기서만 정의 */
 export const LAYOUT = {

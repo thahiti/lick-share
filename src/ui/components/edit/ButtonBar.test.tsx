@@ -17,14 +17,14 @@ const cbs = {
 describe('ButtonBar (SPEC §3.8)', () => {
   test('중간 노트 선택: 양쪽 모두 "선택" 라벨', () => {
     const { container } = render(<ButtonBar song={demoSong} sel={5} {...cbs} />);
-    expect(container.querySelector('[data-btn="prev"]')?.textContent).toContain('선택');
-    expect(container.querySelector('[data-btn="next"]')?.textContent).toContain('선택');
+    expect(container.querySelector('[data-btn="prev"]')?.textContent).toContain('Select');
+    expect(container.querySelector('[data-btn="next"]')?.textContent).toContain('Select');
   });
 
   test('마지막 노트 선택 → ▶는 레드 ＋추가 전환', () => {
     const { container } = render(<ButtonBar song={demoSong} sel={13} {...cbs} />);
     const next = container.querySelector('[data-btn="next"]');
-    expect(next?.textContent).toContain('추가');
+    expect(next?.textContent).toContain('Add');
     expect(next?.className).toContain('add');
     expect(next?.querySelector('[data-icon="plus"]')).not.toBeNull();
   });
@@ -35,10 +35,10 @@ describe('ButtonBar (SPEC §3.8)', () => {
       notes: demoSong.notes.map((n) => ({ ...n, s: asStep(n.s + 4) })),
     };
     const canAdd = render(<ButtonBar song={shifted} sel={1} {...cbs} />);
-    expect(canAdd.container.querySelector('[data-btn="prev"]')?.textContent).toContain('추가');
+    expect(canAdd.container.querySelector('[data-btn="prev"]')?.textContent).toContain('Add');
 
     const atZero = render(<ButtonBar song={demoSong} sel={1} {...cbs} />);
-    expect(atZero.container.querySelector('[data-btn="prev"]')?.textContent).toContain('선택');
+    expect(atZero.container.querySelector('[data-btn="prev"]')?.textContent).toContain('Select');
   });
 
   test('선택 없음 → ▶는 추가(빈 곡 포함), 6버튼 콜백 배선', () => {

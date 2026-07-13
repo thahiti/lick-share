@@ -13,13 +13,20 @@ const makeNote = (id: number, [s, d, p]: readonly [number, number, number]): Not
   p: asMidi(p),
 });
 
+/**
+ * 프로토타입 데모 곡: demoSong과 동일하되 제목만 원본(한국어)이다.
+ * demoSong의 표시 제목은 영어화됐지만, 프로토타입 해시와의 바이트/디코딩
+ * 호환은 원본 콘텐츠 기준으로 계속 검증한다.
+ */
+const prototypeDemo: Song = { ...demoSong, title: '봄날의 스케치' };
+
 describe('codec (SPEC §7)', () => {
-  test('encode(데모 곡) = 프로토타입이 생성한 해시와 바이트 단위 동일', () => {
-    expect(encodeSong(demoSong)).toBe(hashes.normal);
+  test('encode(프로토타입 데모 곡) = 프로토타입이 생성한 해시와 바이트 단위 동일', () => {
+    expect(encodeSong(prototypeDemo)).toBe(hashes.normal);
   });
 
-  test('프로토타입 해시(일반) 디코딩 → 데모 곡 복원', () => {
-    expect(decodeSong(hashes.normal)).toEqual(demoSong);
+  test('프로토타입 해시(일반) 디코딩 → 원본 곡 복원', () => {
+    expect(decodeSong(hashes.normal)).toEqual(prototypeDemo);
   });
 
   test('프로토타입 해시(pickup) 디코딩', () => {

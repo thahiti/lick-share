@@ -51,7 +51,7 @@ export const ChordPicker = ({ song, curM, beat, onApply, onClear, onDone }: Chor
   return (
     <div className="chord-pick">
       <div className="cp-hd">
-        <span>{`${measLabel(song, curM)} · ${beatDisp}박 코드`}</span>
+        <span>{`${measLabel(song, curM)} · beat ${beatDisp} chord`}</span>
         <b>{current || '—'}</b>
       </div>
       <div className="cp-row">
@@ -95,10 +95,10 @@ export const ChordPicker = ({ song, curM, beat, onApply, onClear, onDone }: Chor
       </div>
       <div className="cp-ft">
         <button type="button" onClick={onClear}>
-          코드 지우기
+          Clear chord
         </button>
         <button type="button" onClick={onDone}>
-          완료
+          Done
         </button>
       </div>
     </div>

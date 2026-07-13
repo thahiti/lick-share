@@ -17,10 +17,10 @@ const cbs = {
 describe('Viewer (SPEC §4)', () => {
   test('히어로: "공유된 악보" + 제목, 배지 4종 값', () => {
     const { container } = render(<Viewer song={demoSong} playing={false} {...cbs} />);
-    expect(container.textContent).toContain('공유된 악보');
-    expect(container.textContent).toContain('봄날의 스케치');
+    expect(container.textContent).toContain('SHARED SCORE');
+    expect(container.textContent).toContain('Spring Sketch');
     const badges = [...container.querySelectorAll('[data-badge]')].map((el) => el.textContent);
-    expect(badges).toEqual(['C장조', '4/4', '♩=100', '4마디']);
+    expect(badges).toEqual(['C Major', '4/4', '♩=100', '4 bars']);
   });
 
   test('악보: 전체 멀티라인 + 음표 탭 → onNoteTap(id)', () => {

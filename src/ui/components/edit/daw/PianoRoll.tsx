@@ -4,7 +4,7 @@
  * 쉼표 행 없음: 삭제는 선택 후 재클릭 또는 Delete (쉼표는 파생, SPEC §5).
  */
 import { useLayoutEffect, useRef, type JSX } from 'react';
-import { BLACK_PC, NOTE_KO, PMAX, PMIN } from '../../../../core/constants';
+import { BLACK_PC, NOTE_EN, PMAX, PMIN } from '../../../../core/constants';
 import { measCountAll, measLen, measOf, measStart, total } from '../../../../core/geometry';
 import { asBar, asMidi, type Midi, type Song } from '../../../../core/types';
 
@@ -30,7 +30,8 @@ const rollRows = (song: Song): number[] => {
   return rows;
 };
 
-const rowLabel = (p: number): string => (p % 12 === 0 ? `도${p / 12 - 1}` : (NOTE_KO[p % 12] ?? ''));
+const rowLabel = (p: number): string =>
+  p % 12 === 0 ? `C${p / 12 - 1}` : (NOTE_EN[p % 12] ?? '');
 
 export const PianoRoll = ({ song, sel, playheadStep, onCellTap }: PianoRollProps): JSX.Element => {
   const rows = rollRows(song);
@@ -73,7 +74,7 @@ export const PianoRoll = ({ song, sel, playheadStep, onCellTap }: PianoRollProps
             data-m={m}
             data-p={p}
             data-st={st}
-            aria-label={`${rowLabel(p)} 마디${m + 1} ${st + 1}칸`}
+            aria-label={`${rowLabel(p)} bar ${m + 1} cell ${st + 1}`}
             onClick={() => onCellTap(m, asMidi(p), st)}
           />,
         );
@@ -94,7 +95,7 @@ export const PianoRoll = ({ song, sel, playheadStep, onCellTap }: PianoRollProps
         className={`roll-note${n.id === sel ? ' sel' : ''}`}
         style={{ gridRow: ri + 1, gridColumn: `${n.s + 1} / span ${n.d}` }}
         data-note={n.id}
-        aria-label={`노트 ${rowLabel(n.p)}`}
+        aria-label={`Note ${rowLabel(n.p)}`}
         onClick={() => onCellTap(m, n.p, st)}
       />
     );

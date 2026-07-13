@@ -54,7 +54,7 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
           <span className="lab">{n && n.p > PMIN ? pShort(n.p - 1) : '—'}</span>
           <Icon name="down" size={12} />
         </button>
-        <div className="cap">음높이</div>
+        <div className="cap">Pitch</div>
       </div>
 
       <div className="hsteppers">
@@ -66,11 +66,11 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
             onClick={() => onStepPos(-1)}
           >
             <Icon name="prev" size={12} />
-            <span className="lab">앞으로</span>
+            <span className="lab">Earlier</span>
           </button>
           <div className="cur">
             <b data-cur="pos">{posLabel(song, n)}</b>
-            <span className="ccap">위치 · 16분</span>
+            <span className="ccap">Position · 16th</span>
           </div>
           <button
             type="button"
@@ -78,7 +78,7 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
             disabled={dis || n.s + 1 + n.d > total(song)}
             onClick={() => onStepPos(1)}
           >
-            <span className="lab">뒤로</span>
+            <span className="lab">Later</span>
             <Icon name="next" size={12} />
           </button>
         </div>
@@ -95,7 +95,7 @@ export const Steppers = ({ song, sel, onStepPitch, onStepPos, onStepLen }: Stepp
           </button>
           <div className="cur">
             <b data-cur="len">{lenLabel(n)}</b>
-            <span className="ccap">길이</span>
+            <span className="ccap">Length</span>
           </div>
           <button
             type="button"

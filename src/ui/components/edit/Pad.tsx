@@ -3,7 +3,7 @@
  * ♯행은 현재 마디에 그 음이 존재할 때만 표시. 쉼표 행은 파생 점등.
  */
 import { useLayoutEffect, useRef, type JSX } from 'react';
-import { BLACK_PC, NOTE_KO, PMAX, PMIN } from '../../../core/constants';
+import { BLACK_PC, NOTE_EN, PMAX, PMIN } from '../../../core/constants';
 import { measLen, measStart } from '../../../core/geometry';
 import { noteAt } from '../../../core/editing';
 import { asMidi, type BarIndex, type Midi, type Note, type Song } from '../../../core/types';
@@ -90,7 +90,7 @@ export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
                 className={`pcell${i === 0 ? ' db' : ''}${empty ? ' on' : ''}`}
                 data-p="rest"
                 data-st={st}
-                aria-label={`쉼표 ${st + 1}칸`}
+                aria-label={`Rest cell ${st + 1}`}
                 onClick={() => onCellTap('rest', st)}
               />
             );
@@ -105,7 +105,7 @@ export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
               className={`pcell${dk ? ' dk' : ''}${i === 0 ? ' db' : ''}${state}`}
               data-p={p}
               data-st={st}
-              aria-label={`${NOTE_KO[p % 12]}${Math.floor(p / 12 - 1)} ${st + 1}칸`}
+              aria-label={`${NOTE_EN[p % 12]}${Math.floor(p / 12 - 1)} cell ${st + 1}`}
               onClick={() => onCellTap(p, st)}
             >
               {hit?.lead && <span className="tie lead">⤳</span>}
@@ -128,7 +128,7 @@ export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
       <div className="pad-scroll" data-testid="pad-scroll" ref={scrollRef}>
         {rows.map((p) => {
           const dk = BLACK_PC.has(p % 12);
-          const label = p % 12 === 0 ? `도${p / 12 - 1}` : NOTE_KO[p % 12];
+          const label = p % 12 === 0 ? `C${p / 12 - 1}` : NOTE_EN[p % 12];
           return (
             <div className="prow" data-row={p} key={p}>
               <div className={`pl${dk ? ' dk' : ''}`}>{label}</div>
@@ -138,7 +138,7 @@ export const Pad = ({ song, curM, sel, onCellTap }: PadProps): JSX.Element => {
         })}
       </div>
       <div className="prow rest">
-        <div className="pl dk">쉼</div>
+        <div className="pl dk">R</div>
         {cells('rest')}
       </div>
     </div>

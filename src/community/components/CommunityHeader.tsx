@@ -24,7 +24,7 @@ const NavLink = ({ to, label, active }: { to: string; label: string; active: boo
 
 export const CommunityHeader = ({ user, route, onSignIn, onSignOut }: Props): JSX.Element => (
   <header className="c-header">
-    <NavLink to="/" label="ScoreLink" active={false} />
+    <NavLink to="/" label="Lick Share" active={false} />
     <nav className="c-nav">
       <NavLink to="/" label="최신" active={route.name === 'feed'} />
       <NavLink to="/ranking" label="랭킹" active={route.name === 'ranking'} />

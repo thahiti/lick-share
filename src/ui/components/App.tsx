@@ -155,11 +155,11 @@ export const App = ({
     const hash = encodeSong(store.getState().song);
     hashStore.write(hash);
     const url = `${window.location.origin}${window.location.pathname}?mode=view#${hash}`;
-    const done = (): void => store.getState().showToast('열람 링크 복사됨');
+    const done = (): void => store.getState().showToast('View link copied');
     if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(url).then(done, () => window.prompt('링크를 복사하세요', url));
+      navigator.clipboard.writeText(url).then(done, () => window.prompt('Copy this link', url));
     } else {
-      window.prompt('링크를 복사하세요', url);
+      window.prompt('Copy this link', url);
     }
   };
 

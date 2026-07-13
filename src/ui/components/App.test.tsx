@@ -54,7 +54,7 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
     const { container } = setup();
     // 마지막 마디로 이동 후 마디 추가 → 빈 마디 5
     for (let i = 0; i < 4; i++) click(container, '[data-btn="mnext"]');
-    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('마디 5 / 5');
+    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('Bar 5 / 5');
     expect(container.querySelector('[data-rest="16"]')).not.toBeNull();
 
     click(container, '[data-p="60"][data-st="0"]'); // 입력
@@ -97,7 +97,7 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
   test('마디 탭 → 이동 + 첫 노트 선택 + 프리뷰', () => {
     const { container, sink } = setup();
     click(container, '[data-m="2"]');
-    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('마디 3 / 4');
+    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('Bar 3 / 4');
     expect(container.querySelector('[data-p="65"][data-st="0"]')?.className).toContain('sel');
     expect(sink.events.some((e) => e.kind === 'melody' && e.vol === 0.22)).toBe(true);
   });
@@ -108,7 +108,7 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
     click(container, '[data-btn="playall"]');
     time.t = EPOCH + 70 * SPS; // 마디 4 (step 64~80)
     act(() => clock.frame());
-    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('마디 5 / 5');
+    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('Bar 5 / 5');
     const hits = [...container.querySelectorAll('[data-m]')].map((el) => el.getAttribute('data-m'));
     expect(hits).toEqual(['4']); // 2번째 라인으로 전환
     expect(container.querySelector('[data-playhead]')).not.toBeNull();
@@ -192,7 +192,7 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
 
   test('mode=view 라우팅: Viewer만 렌더', () => {
     const { container } = setupView();
-    expect(container.textContent).toContain('공유된 악보');
+    expect(container.textContent).toContain('SHARED SCORE');
     expect(container.querySelector('.pad')).toBeNull();
   });
 
@@ -212,7 +212,7 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     const { container } = setupView();
     click(container, '[data-btn="toedit"]');
     expect(container.querySelector('.pad')).not.toBeNull();
-    expect(container.textContent).toContain('봄날의 스케치');
+    expect(container.textContent).toContain('Spring Sketch');
   });
 
   test('공유: ?mode=view#v1. URL 클립보드 복사 + 현재 해시 갱신 + 토스트', async () => {
@@ -222,7 +222,7 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     click(container, '[data-btn="share"]');
     expect(writeText).toHaveBeenCalledWith(expect.stringContaining('?mode=view#v1.'));
     expect(hashStore.read().startsWith('v1.')).toBe(true);
-    expect(await findByText('열람 링크 복사됨')).toBeTruthy();
+    expect(await findByText('View link copied')).toBeTruthy();
     vi.unstubAllGlobals();
   });
 });

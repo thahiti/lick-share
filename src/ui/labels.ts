@@ -14,6 +14,6 @@ export const posLabel = (song: Song, n: Note | null): string => {
   return `${measLabel(song, pm)} ${beat}.${(rel % 4) + 1}`;
 };
 
-/** 길이 라벨: 음표 이름 또는 "N×16분" */
+/** 길이 라벨: 음표 이름 또는 "N×16th" */
 export const lenLabel = (n: Note | null): string =>
-  n ? (LEN_NAME[n.d] ?? `${n.d}×16분`) : '—';
+  n ? (LEN_NAME[n.d] ?? `${n.d}×16th`) : '—';

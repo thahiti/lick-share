@@ -26,7 +26,7 @@ export const MeasureBar = ({ song, curM, onPrev, onNext }: MeasureBarProps): JSX
         type="button"
         data-btn="mprev"
         className={prevDim ? 'dim' : ''}
-        aria-label="이전 마디"
+        aria-label="Previous bar"
         onClick={onPrev}
       >
         <Icon
@@ -36,7 +36,7 @@ export const MeasureBar = ({ song, curM, onPrev, onNext }: MeasureBarProps): JSX
         />
       </button>
       <span data-mlabel="">{`${measLabel(song, curM)} / ${song.meas}`}</span>
-      <button type="button" data-btn="mnext" aria-label="다음 마디" onClick={onNext}>
+      <button type="button" data-btn="mnext" aria-label="Next bar" onClick={onNext}>
         <Icon name={last ? 'plus' : 'next'} color={last ? 'var(--red)' : 'var(--ink)'} size={13} />
       </button>
     </div>

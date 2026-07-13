@@ -32,9 +32,9 @@ describe('Inspector (DAW)', () => {
   test('선택 시 라벨: 음높이·위치·길이', () => {
     // id=2: s=4, d=2, p=69 (라 A4, 2박 1/16, 8분)
     const { container } = setup({ sel: 2 });
-    expect(container.querySelector('[data-cur="pitch"]')?.textContent).toBe('라 A4');
+    expect(container.querySelector('[data-cur="pitch"]')?.textContent).toBe('A4');
     expect(container.querySelector('[data-cur="pos"]')?.textContent).toContain('2.1');
-    expect(container.querySelector('[data-cur="len"]')?.textContent).toBe('8분');
+    expect(container.querySelector('[data-cur="len"]')?.textContent).toBe('8th');
   });
 
   test('± 버튼 → 스텝 액션 디스패치', () => {

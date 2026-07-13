@@ -38,7 +38,7 @@ export const lineOf = (song: BarSpec, m: BarIndex): number =>
 
 /** 마디 표기 라벨 */
 export const measLabel = (song: BarSpec, m: BarIndex): string =>
-  song.pickup && m === 0 ? '못갖춘' : `마디 ${song.pickup ? m : m + 1}`;
+  song.pickup && m === 0 ? 'Pickup' : `Bar ${song.pickup ? m : m + 1}`;
 
 /** 컨테이너 폭 → 일반 마디 폭 */
 export const computeMw = (song: BarSpec, width: number): number =>

@@ -41,8 +41,8 @@ describe('geometry: pickup=0', () => {
     expect(lineOf(noPickup, asBar(4))).toBe(1);
   });
   test('measLabel: 1-기반 표기', () => {
-    expect(measLabel(noPickup, asBar(0))).toBe('마디 1');
-    expect(measLabel(noPickup, asBar(3))).toBe('마디 4');
+    expect(measLabel(noPickup, asBar(0))).toBe('Bar 1');
+    expect(measLabel(noPickup, asBar(3))).toBe('Bar 4');
   });
 });
 
@@ -70,8 +70,8 @@ describe('geometry: pickup=8', () => {
     expect(total(withPickup)).toBe(8 + 8 * 16);
   });
   test('measLabel: 못갖춘 / 마디 m', () => {
-    expect(measLabel(withPickup, asBar(0))).toBe('못갖춘');
-    expect(measLabel(withPickup, asBar(1))).toBe('마디 1');
+    expect(measLabel(withPickup, asBar(0))).toBe('Pickup');
+    expect(measLabel(withPickup, asBar(1))).toBe('Bar 1');
   });
 });
 

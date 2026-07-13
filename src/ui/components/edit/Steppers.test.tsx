@@ -31,9 +31,9 @@ describe('Steppers (SPEC §3.7)', () => {
 
   test('음높이: 현재/이웃 라벨, 경계에서 방향 버튼 비활성', () => {
     const mid = render(<Steppers song={song([note(1, 0, 4, 64)])} sel={1} {...noop} />);
-    expect(mid.container.querySelector('[data-cur="pitch"]')?.textContent).toBe('미 E4');
-    expect(mid.container.querySelector('[data-dir="pitch-up"]')?.textContent).toContain('파4');
-    expect(mid.container.querySelector('[data-dir="pitch-down"]')?.textContent).toContain('레♯4');
+    expect(mid.container.querySelector('[data-cur="pitch"]')?.textContent).toBe('E4');
+    expect(mid.container.querySelector('[data-dir="pitch-up"]')?.textContent).toContain('F4');
+    expect(mid.container.querySelector('[data-dir="pitch-down"]')?.textContent).toContain('D♯4');
 
     const top = render(<Steppers song={song([note(1, 0, 4, 84)])} sel={1} {...noop} />);
     const up = top.container.querySelector('[data-dir="pitch-up"]');
@@ -43,12 +43,12 @@ describe('Steppers (SPEC §3.7)', () => {
 
   test('위치 라벨: "마디 1 1.1" / pickup 곡은 "못갖춘 3.1"', () => {
     const normal = render(<Steppers song={song([note(1, 0, 4, 64)])} sel={1} {...noop} />);
-    expect(normal.container.querySelector('[data-cur="pos"]')?.textContent).toBe('마디 1 1.1');
+    expect(normal.container.querySelector('[data-cur="pos"]')?.textContent).toBe('Bar 1 1.1');
 
     const pk = render(
       <Steppers song={song([note(1, 0, 4, 64)], { pickup: 8 })} sel={1} {...noop} />,
     );
-    expect(pk.container.querySelector('[data-cur="pos"]')?.textContent).toBe('못갖춘 3.1');
+    expect(pk.container.querySelector('[data-cur="pos"]')?.textContent).toBe('Pickup 3.1');
   });
 
   test('위치: s=0에서 앞으로 비활성, 끝에서 뒤로 비활성', () => {
@@ -60,9 +60,9 @@ describe('Steppers (SPEC §3.7)', () => {
 
   test('길이: 현재/이웃 단계명, 최대에서 다음 비활성', () => {
     const mid = render(<Steppers song={song([note(1, 0, 4, 64)])} sel={1} {...noop} />);
-    expect(mid.container.querySelector('[data-cur="len"]')?.textContent).toBe('4분');
-    expect(mid.container.querySelector('[data-dir="len-prev"]')?.textContent).toContain('점8분');
-    expect(mid.container.querySelector('[data-dir="len-next"]')?.textContent).toContain('점4분');
+    expect(mid.container.querySelector('[data-cur="len"]')?.textContent).toBe('Quarter');
+    expect(mid.container.querySelector('[data-dir="len-prev"]')?.textContent).toContain('8th.');
+    expect(mid.container.querySelector('[data-dir="len-next"]')?.textContent).toContain('Quarter.');
 
     const whole = render(<Steppers song={song([note(1, 0, 16, 64)], { meas: 1 })} sel={1} {...noop} />);
     expect(whole.container.querySelector('[data-dir="len-next"]')?.hasAttribute('disabled')).toBe(true);

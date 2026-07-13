@@ -46,14 +46,14 @@ export const DawTopBar = ({
     <header className="daw-top">
       <div className="daw-title">
         <h1>{song.title}</h1>
-        <span className="daw-meta">{`C장조 4/4 ${song.meas}마디${song.pickup ? ' + 못갖춘' : ''}`}</span>
+        <span className="daw-meta">{`C Major · 4/4 · ${song.meas} bars${song.pickup ? ' + pickup' : ''}`}</span>
       </div>
       <div className="daw-transport">
         <button
           type="button"
           data-btn="playall"
           className="icon-btn"
-          aria-label="전체 재생/정지"
+          aria-label="Play/Stop all"
           onClick={onTogglePlay}
         >
           <Icon name={playing ? 'pause' : 'play'} />
@@ -62,7 +62,7 @@ export const DawTopBar = ({
           type="button"
           data-btn="metro"
           className={`icon-btn${metroOn ? ' on' : ''}`}
-          aria-label="메트로놈"
+          aria-label="Metronome"
           onClick={onToggleMetro}
         >
           <Icon name="metro" color={metroOn ? 'var(--daw-bg, #fff)' : 'var(--ink)'} />
@@ -80,20 +80,20 @@ export const DawTopBar = ({
         </button>
       </div>
       <div className="daw-actions">
-        <button type="button" data-btn="undo" className="icon-btn" aria-label="실행취소" onClick={onUndo}>
+        <button type="button" data-btn="undo" className="icon-btn" aria-label="Undo" onClick={onUndo}>
           <Icon name="undo" />
         </button>
-        <button type="button" data-btn="redo" className="icon-btn" aria-label="재실행" onClick={onRedo}>
+        <button type="button" data-btn="redo" className="icon-btn" aria-label="Redo" onClick={onRedo}>
           <Icon name="redo" />
         </button>
-        <button type="button" data-btn="del" className="icon-btn" aria-label="선택 삭제" onClick={onDelete}>
+        <button type="button" data-btn="del" className="icon-btn" aria-label="Delete selection" onClick={onDelete}>
           <Icon name="del" color="var(--red)" />
         </button>
         <button type="button" data-btn="share" className="chip" onClick={onShare}>
-          공유
+          Share
         </button>
         <button type="button" data-btn="view" className="chip" onClick={onView}>
-          보기
+          View
         </button>
       </div>
 
@@ -117,7 +117,7 @@ export const DawTopBar = ({
             ＋
           </button>
           <button type="button" className="cls" onClick={() => setTempoPop(false)}>
-            닫기
+            Close
           </button>
         </div>
       )}

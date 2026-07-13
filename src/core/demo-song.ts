@@ -17,7 +17,7 @@ const notes: readonly Note[] = tuples.map(([s, d, p], i) => ({
 }));
 
 export const demoSong: Song = {
-  title: '봄날의 스케치',
+  title: 'Spring Sketch',
   tempo: 100,
   meas: 4,
   pickup: 0,

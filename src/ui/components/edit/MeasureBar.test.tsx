@@ -13,7 +13,7 @@ describe('MeasureBar (SPEC §3.6)', () => {
     const { container } = render(
       <MeasureBar song={demoSong} curM={asBar(0)} onPrev={vi.fn()} onNext={vi.fn()} />,
     );
-    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('마디 1 / 4');
+    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('Bar 1 / 4');
   });
 
   test('마지막 마디: ▶ = 레드 ＋(마디 추가)', () => {
