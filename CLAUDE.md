@@ -9,6 +9,8 @@
 - 의존 방향: `ui → adapters → ports`, `engine → core`. 화살표는 항상 안쪽. core/engine/ports는 완전 순수.
 - 순수 레이어(core/engine/ports)에서 금지: react, DOM, Web Audio, zustand import / Date, setTimeout, window, document, AudioContext, Math.random.
 - Step, Midi, Sec, BarIndex는 branded type — 맨 number를 섞어 쓰지 말 것 (src/core/types.ts).
+- `src/community/`는 `ui`와 동급 레이어 — supabase·DOM·crypto 사용 허용, core의 순수 규칙 적용 대상 아님.
+  단 의존 화살표는 안쪽만 향해야 하므로 `core`는 import할 수 있어도 그 반대(core가 community를 import)는 금지.
 
 ## 절대 규칙
 - SMP 유니코드 음악 기호(U+1D100~U+1D1FF: 𝄞 𝄽 𝅗𝅥 등) 사용 금지. 악보 기호는 전부 SVG 패스. (Android 폰트 부재)
@@ -18,6 +20,13 @@
 - 쉼표는 데이터로 저장하지 않는다 — 항상 파생.
 - 코드가 없는 구간(첫 코드 이전)의 반주는 완전 무음 (SPEC §5.5).
 - 골든 스냅샷(FakeAudioSink 로그)은 갱신 전 반드시 diff를 확인하고, 의도된 변화인지 검토 후에만 갱신.
+- 좋아요 대상은 항상 `canonical_id ?? id`(`likeTargetId`) — 원본에 좋아요가 모이는 귀속 규칙을
+  계산할 때 이 함수 외의 경로로 직접 id를 쓰지 말 것.
+- 커뮤니티 라우팅은 경로 기반(`/`, `/lick/:id`, `/user/:public_id` 등). URL 해시는 곡 blob(`v1.…`)이
+  점유하고 있으므로 해시 기반 라우팅 금지.
+- `service_role` key는 코드·환경 변수 어디에도 절대 넣지 않는다. 프론트는 `anon` key + RLS로만 권한을 통제한다.
+- `melody_hash` 직렬화 대상은 노트의 피치 델타·시작 오프셋·길이 삼중항뿐이다. 템포·코드·조성·제목은
+  절대 포함하지 않는다(docs/superpowers/specs/2026-07-12-community-design.md의 melody_hash 알고리즘 절 참조).
 
 ## 작업 방식
 - TDD 필수: 테스트 먼저 작성 → RED 확인 → 구현 → GREEN.
