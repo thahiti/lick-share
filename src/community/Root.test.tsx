@@ -71,4 +71,9 @@ describe('Root 라우팅', () => {
     renderAt('/zzz');
     expect(screen.getByText(/Page not found/)).toBeTruthy();
   });
+
+  it('상단 네비에 Publish 링크가 없다 (게시는 에디터 Share에서만)', () => {
+    renderAt('/');
+    expect(screen.queryByText('Publish')).toBeNull();
+  });
 });

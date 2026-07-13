@@ -37,7 +37,6 @@ export const CommunityHeader = ({ user, route, onSignIn, onSignOut }: Props): JS
       <NavLink to="/" label="Latest" active={route.name === 'feed'} />
       <NavLink to="/ranking" label="Ranking" active={route.name === 'ranking'} />
       <NavLink to="/edit" label="Create" active={route.name === 'edit'} />
-      <NavLink to="/publish" label="Publish" active={route.name === 'publish'} />
       {user ? (
         <>
           <NavLink to="/me" label="My licks" active={route.name === 'me'} />
