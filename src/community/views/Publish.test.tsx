@@ -25,6 +25,9 @@ const validHash = encodeSong(demoSong);
 const otherSong = { ...demoSong, title: '다른 릭', notes: demoSong.notes.slice(0, 3) };
 const otherHash = encodeSong(otherSong);
 
+// 빈 곡 회귀 테스트용 — 유효하게 디코딩되지만 notes가 빈 v1. 해시
+const emptyHash = encodeSong({ ...demoSong, title: '빈 릭', notes: [] });
+
 describe('Publish 게시 화면', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -42,6 +45,17 @@ describe('Publish 게시 화면', () => {
     fireEvent.change(textarea, { target: { value: '그냥 아무 텍스트' } });
     expect(screen.getByText('해석할 수 없는 링크이거나 음표가 없어요')).toBeTruthy();
     expect(screen.queryByText('게시')).toBeNull();
+  });
+
+  it('음표가 없는 유효 해시는 오류 문구만 뜨고 게시 버튼이 없으며 publishLick도 호출되지 않는다', () => {
+    render(<Publish user={fakeUser} />);
+    const textarea = screen.getByPlaceholderText('공유 URL 또는 해시를 붙여넣으세요');
+    fireEvent.change(textarea, { target: { value: emptyHash } });
+
+    expect(screen.getByText('해석할 수 없는 링크이거나 음표가 없어요')).toBeTruthy();
+    expect(screen.queryByText('게시')).toBeNull();
+    expect(document.querySelector('svg')).toBeNull();
+    expect(publishLick).not.toHaveBeenCalled();
   });
 
   it('유효한 해시를 붙여넣으면 미리보기(svg)와 제목·게시 버튼이 나타난다', () => {

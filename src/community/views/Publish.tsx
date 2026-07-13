@@ -58,14 +58,17 @@ export const Publish = ({ user }: Props): JSX.Element => {
 
   const hash = extractHash(input);
   const song = hash ? decodeSong(hash) : null;
-  const invalid = input.trim() !== '' && (song === null || song.notes.length === 0);
+  // 음표 없는 곡은 처음부터 끝까지 무효 취급 — 미리보기·게시 버튼·onPublish 전부 이 값 기준
+  // (melodyHash([])는 모든 빈 릭이 충돌하므로 게시 자체를 차단)
+  const validSong = song && song.notes.length > 0 ? song : null;
+  const invalid = input.trim() !== '' && validSong === null;
 
   const onPublish = async (): Promise<void> => {
-    if (!song || !hash) return;
+    if (!validSong || !hash) return;
     setStatus({ kind: 'submitting' });
     try {
-      const mh = await melodyHash(song.notes);
-      const result = await publishLick(title.trim() || song.title, hash, mh);
+      const mh = await melodyHash(validSong.notes);
+      const result = await publishLick(title.trim() || validSong.title, hash, mh);
       if (result.ok) {
         navigate('/lick/' + result.id);
         return;
@@ -99,10 +102,10 @@ export const Publish = ({ user }: Props): JSX.Element => {
         placeholder="공유 URL 또는 해시를 붙여넣으세요"
       />
       {invalid && <p className="c-state">해석할 수 없는 링크이거나 음표가 없어요</p>}
-      {song && (
+      {validSong && (
         <>
-          <Score song={song} mode="view" width={384} />
-          <TitleInput key={hash} initial={song.title} onChange={setTitle} />
+          <Score song={validSong} mode="view" width={384} />
+          <TitleInput key={hash} initial={validSong.title} onChange={setTitle} />
           <button
             type="button"
             className="c-btn"
