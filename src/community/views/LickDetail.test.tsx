@@ -61,6 +61,7 @@ const fakePlayer = (): Player =>
     play: vi.fn(),
     stop: vi.fn(),
     isPlaying: vi.fn(() => false),
+    setLoop: vi.fn(),
     toggleMetro: vi.fn(),
     toggleAcc: vi.fn(),
     onTick: vi.fn(() => () => {}),
@@ -78,6 +79,38 @@ describe('LickDetail 릭 상세', () => {
     vi.clearAllMocks();
     fetchLikeCounts.mockResolvedValue(new Map([['orig-1', 3]]));
     fetchMyLikedSet.mockResolvedValue(new Set());
+  });
+
+  it('시안 C 구조: 툴바·악보가 한 프레임 안(R1), 그 사이 구분선(R4), 재생 컨트롤은 프레임 밖에 없다(R5)', async () => {
+    fetchLick.mockResolvedValue(original);
+    const { container } = render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
+    await screen.findByText('Original lick');
+
+    const frame = container.querySelector('.c-frame');
+    expect(frame).not.toBeNull();
+    // R1: 툴바와 악보(svg)가 같은 프레임 컨테이너 안
+    expect(frame?.querySelector('.c-toolbar')).not.toBeNull();
+    expect(frame?.querySelector('svg')).not.toBeNull();
+    // R4: 툴바와 악보 사이 구분선
+    expect(frame?.querySelector('.c-frame-divider')).not.toBeNull();
+    // R5: 재생 버튼은 프레임 안에만 있다 (프레임 밖에 재생 컨트롤 없음)
+    const playBtn = screen.getByLabelText('Play');
+    expect(frame?.contains(playBtn)).toBe(true);
+    // 하단 푸터 DOM 순서: 액션(primary=Duplicate) 먼저, 태그 나중 (§6)
+    const footer = container.querySelector('.c-footer');
+    const kids = [...(footer?.children ?? [])];
+    expect(kids[0]?.classList.contains('c-actions')).toBe(true);
+    expect(footer?.querySelector('.c-dup')).not.toBeNull(); // primary 정확히 하나
+    expect(container.querySelectorAll('.c-dup')).toHaveLength(1);
+  });
+
+  it('조옮김·다운로드 관련 UI가 어디에도 없다 (§18)', async () => {
+    fetchLick.mockResolvedValue(original);
+    const { container } = render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
+    await screen.findByText('Original lick');
+    fireEvent.click(screen.getByLabelText('More actions')); // 메뉴까지 열어 확인
+    const text = container.textContent ?? '';
+    expect(/transpose|download|midi|musicxml|\.png/i.test(text)).toBe(false);
   });
 
   it('원본 릭: 제목·악보(svg)·좋아요 카운트가 렌더된다', async () => {
@@ -188,61 +221,68 @@ describe('LickDetail 릭 상세', () => {
     expect(addLike).not.toHaveBeenCalled();
   });
 
-  it('삭제 버튼은 작성자에게만 보인다', async () => {
+  it('오버플로 메뉴: 작성자만 ⋯ 버튼을 보고 Delete lick 항목이 있다', async () => {
     fetchLick.mockResolvedValue(original);
     const { unmount } = render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
     await screen.findByText('Original lick');
-    expect(screen.getByText('Delete')).toBeTruthy();
+    const more = screen.getByLabelText('More actions');
+    fireEvent.click(more);
+    expect(screen.getByText('Delete lick')).toBeTruthy();
     unmount();
 
+    // 비작성자: Report 미구현이라 ⋯ 버튼 자체가 없다
     fetchLick.mockResolvedValue(original);
     render(<LickDetail id="orig-1" user={user2} player={fakePlayer()} />);
     await screen.findByText('Original lick');
-    expect(screen.queryByText('Delete')).toBeNull();
+    expect(screen.queryByLabelText('More actions')).toBeNull();
   });
 
-  it('확인 대화상자에서 승인하면 deleteLick 후 피드로 이동한다', async () => {
+  it('삭제 다이얼로그 확인 → deleteLick 후 /me 로 이동한다', async () => {
     fetchLick.mockResolvedValue(original);
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
     render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
 
-    const deleteBtn = await screen.findByText('Delete');
-    fireEvent.click(deleteBtn);
+    await screen.findByText('Original lick');
+    fireEvent.click(screen.getByLabelText('More actions'));
+    fireEvent.click(await screen.findByText('Delete lick'));
+    // 확인 다이얼로그
+    expect(screen.getByText('Delete this lick?')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
 
     await waitFor(() => {
       expect(deleteLick).toHaveBeenCalledWith('orig-1');
-      expect(navigate).toHaveBeenCalledWith('/');
+      expect(navigate).toHaveBeenCalledWith('/me');
     });
-    confirmSpy.mockRestore();
   });
 
-  it('확인 대화상자에서 취소하면 deleteLick·navigate 모두 호출되지 않는다', async () => {
+  it('삭제 다이얼로그 취소 → deleteLick·navigate 모두 호출되지 않고 닫힌다', async () => {
     fetchLick.mockResolvedValue(original);
-    const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
     render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
 
-    const deleteBtn = await screen.findByText('Delete');
-    fireEvent.click(deleteBtn);
+    await screen.findByText('Original lick');
+    fireEvent.click(screen.getByLabelText('More actions'));
+    fireEvent.click(await screen.findByText('Delete lick'));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
 
-    expect(confirmSpy).toHaveBeenCalled();
     expect(deleteLick).not.toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
-    confirmSpy.mockRestore();
+    expect(screen.queryByText('Delete this lick?')).toBeNull();
   });
 
-  it('전곡 재생 버튼 클릭 → player.play(전체 구간), 언마운트 시 player.stop 호출', async () => {
+  it('툴바 Play 클릭 → player.play(세션 템포·전체 구간·loop=false), 언마운트 시 stop', async () => {
     fetchLick.mockResolvedValue(original);
     const player = fakePlayer();
     const { unmount } = render(<LickDetail id="orig-1" user={null} player={player} />);
 
-    const playBtn = await screen.findByText('Play all');
+    const playBtn = await screen.findByLabelText('Play');
     fireEvent.click(playBtn);
 
+    // 세션 bpm 기본값 = 원곡 tempo이므로 {...song, tempo} 는 demoSong과 동일
     expect(player.play).toHaveBeenCalledWith(
       demoSong,
       { melody: true, accomp: true, metro: true },
       0,
       total(demoSong),
+      false,
     );
 
     unmount();

@@ -716,3 +716,293 @@
     }
   }
 }
+
+/* ── 릭 상세 리디자인 (시안 C): 헤더 · 악보 프레임 · 툴바 · 푸터 · 다이얼로그 ──
+   기본은 모바일 우선. 데스크톱(≥1024px) 오버라이드는 파일 맨 아래 미디어 블록. */
+
+.c-lickhead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.c-lickhead-title {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 악보 프레임 (§4 R1~R7) */
+.c-frame {
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  overflow: hidden; /* R7: 가로 스크롤은 안쪽에서 */
+}
+.c-frame-divider {
+  height: 1px;
+  background: var(--line); /* R4: 툴바와 악보 사이 구분선 */
+}
+.c-frame-score {
+  overflow-x: auto;
+  padding: 10px 12px;
+}
+
+/* 툴바 (§5) — 프레임 내부 최상단 밀착 (R3) */
+.c-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+}
+.c-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.c-toolbar-spacer {
+  flex: 1;
+}
+.c-toolbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.c-tb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: none;
+  border-radius: var(--radius-ctl);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.c-tb-btn.accent {
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+}
+.c-tb-btn.on {
+  background: var(--brand-primary);
+}
+@media (hover: hover) {
+  .c-tb-btn:hover {
+    background: var(--brand-tint);
+  }
+  .c-tb-btn.accent:hover {
+    background: var(--brand-primary-hover);
+  }
+}
+
+/* 템포 컨트롤 (§5) */
+.c-tb-tempo {
+  position: relative;
+}
+.c-tb-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--paper);
+  box-shadow: var(--shadow-popover);
+}
+.c-tb-range {
+  width: 120px;
+}
+.c-tb-pop-val {
+  min-width: 30px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* 오버플로 메뉴 (§5) */
+.c-tb-overflow {
+  position: relative;
+}
+.c-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  background: var(--paper);
+  box-shadow: var(--shadow-popover);
+}
+.c-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.c-menu-item.danger {
+  color: var(--red);
+}
+@media (hover: hover) {
+  .c-menu-item:hover {
+    background: var(--brand-tint);
+  }
+  .c-menu-item.danger:hover {
+    background: var(--paper);
+    text-decoration: underline;
+  }
+}
+
+/* 푸터 (§6) — 기본(모바일): 태그 위로(order:-1), Duplicate 전체 폭, Like/Share 1:1 */
+.c-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.c-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.c-actions .c-dup {
+  grid-column: 1 / -1;
+}
+.c-tags {
+  order: -1;
+}
+
+/* 액션 버튼 등급 (§7). 높이 동일. 모바일 44px 터치 타깃. */
+.c-dup,
+.c-actions .c-like,
+.c-share {
+  min-height: 44px;
+}
+.c-dup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  border-radius: var(--radius-ctl);
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-primary-text);
+  background: var(--brand-primary); /* primary = 헤더 Create와 동일 variant */
+  cursor: pointer;
+}
+@media (hover: hover) {
+  .c-dup:hover {
+    background: var(--brand-primary-hover);
+  }
+}
+.c-share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  padding: 6px 14px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  cursor: pointer;
+}
+
+/* 삭제 다이얼로그 (§12) */
+.c-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.c-dialog {
+  width: 100%;
+  max-width: 340px;
+  padding: 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  box-shadow: var(--shadow-card);
+}
+.c-dialog-title {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 600;
+}
+.c-dialog-body {
+  margin: 0 0 14px;
+  font-size: 12px;
+  color: var(--mut2);
+}
+.c-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* 접근성: 키보드 포커스 링 (§15) */
+.c-tb-btn:focus-visible,
+.c-menu-item:focus-visible,
+.c-dup:focus-visible,
+.c-share:focus-visible,
+.c-tb-range:focus-visible {
+  outline: 2px solid var(--brand-outline);
+  outline-offset: 2px;
+}
+
+/* 데스크톱(≥1024px): 푸터 한 줄, 태그 우측 끝, 액션은 라벨 폭 */
+@media (min-width: 1024px) {
+  .c-footer {
+    flex-direction: row;
+    align-items: center;
+  }
+  .c-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: none; /* 태그가 많아도 액션을 밀어내지 않는다 (§6) */
+  }
+  .c-actions .c-dup {
+    grid-column: auto;
+  }
+  .c-dup,
+  .c-actions .c-like,
+  .c-share {
+    min-height: 0;
+  }
+  .c-tags {
+    order: 0;
+    margin-left: auto; /* 우측 끝 (§6) */
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+}
