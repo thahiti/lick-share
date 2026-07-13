@@ -86,3 +86,14 @@ Share 버튼을 단일 액션에서 작은 팝오버로 바꾼다. `Header`/`Daw
 ## 게이트
 
 `npm run typecheck && npm run lint && npm test && npm run check-smp` 전부 통과 후 커밋. 커밋 단위는 논리 단위(기능 1 / 기능 2)로 분리.
+
+## 개정 (2026-07-13): Publish 간소화
+
+에디터 Share→Publish가 곡을 직접 넘기게 되면서, 해시를 수동으로 붙여넣는 진입은 완전히 중복이 되었다. 이를 정리한다.
+
+- **상단 네비 "Publish" 링크 제거** (`CommunityHeader.tsx`). `/publish` 라우트는 유지하되 정식 진입점은 에디터 Share의 Publish 항목 하나로 통일. 곡을 얻는 경로는 (a) 에디터에서 직접 만들기, (b) 릭 상세 "Duplicate & edit"로 가져오기 두 가지뿐이며 둘 다 에디터로 수렴한다.
+- **Publish 뷰를 해시 기반으로 재설계** (`Publish.tsx`). 진입 시 `window.location.hash`의 곡 blob(`v1.…`)을 조용히 디코드하고, **인코딩 문자열(textarea)을 화면에 노출하지 않는다.** 표시 요소는 악보 미리보기 + 제목(편집 가능) + 게시 버튼 + 상태 메시지뿐.
+  - 상태별 처리: 해시 없음 → "No score to publish" + 에디터 링크 / 디코드 불가 → "Couldn't read this score" / 유효하나 음표 없음 → "This lick has no notes" / 비로그인 → "Sign in to publish".
+  - textarea 제거로 stale-title 방어 로직(해시 교체 시 `TitleInput` 리마운트 등)은 불필요해져 함께 제거. 해시는 네비게이션당 고정이므로 제목은 디코드된 `song.title`로 1회 초기화.
+- `melodyHash`·중복 판정·`publishLick`은 변경 없음 — 입력 소스(textarea → URL 해시)와 UI만 변경.
+- 테스트: `Root.test`에 네비 Publish 링크 부재 가드 추가, `Publish.test`는 붙여넣기 기반 → 해시 기반으로 재작성.
