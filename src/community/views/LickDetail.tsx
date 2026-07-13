@@ -27,7 +27,8 @@ type Phase =
   | { readonly kind: 'baddecode' }
   | { readonly kind: 'ready'; readonly lick: LickRow; readonly song: Song };
 
-const VIEW_OPTS = { melody: true, accomp: false, metro: false };
+// 열람 재생: 각 종류를 모두 내보내고 실제 소리는 곡 데이터(accPat/metro)가 결정
+const VIEW_OPTS = { melody: true, accomp: true, metro: true };
 
 const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
   const [phase, setPhase] = useState<Phase>({ kind: 'loading' });

@@ -240,7 +240,7 @@ describe('LickDetail 릭 상세', () => {
 
     expect(player.play).toHaveBeenCalledWith(
       demoSong,
-      { melody: true, accomp: false, metro: false },
+      { melody: true, accomp: true, metro: true },
       0,
       total(demoSong),
     );

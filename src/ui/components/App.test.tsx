@@ -209,16 +209,23 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     expect(container.querySelector('.pad')).toBeNull();
   });
 
-  test('view 재생: 반주·메트로놈 0건, 음표 탭 → 그 위치부터', () => {
+  test('view 재생: 곡 데이터대로 반주 포함(데모=pad, metro off), 음표 탭 → 그 위치부터', () => {
     const { container, sink } = setupView();
     click(container, '[data-btn="playv"]');
-    expect(sink.events.length).toBeGreaterThan(0);
-    expect(sink.events.every((e) => e.kind === 'melody')).toBe(true);
+    // 데모곡: 반주 pad + 메트로놈 off → 멜로디+반주, 메트로놈은 없음
+    expect(sink.events.some((e) => e.kind === 'melody')).toBe(true);
+    expect(sink.events.some((e) => e.kind === 'acc')).toBe(true);
+    expect(sink.events.some((e) => e.kind === 'metro')).toBe(false);
 
     click(container, '[data-note="3"]'); // s=6부터
-    expect(sink.events.every((e) => e.kind === 'melody')).toBe(true);
-    expect(sink.events).toHaveLength(11); // [6,64)와 겹치는 노트
+    expect(sink.events.some((e) => e.kind === 'acc')).toBe(true);
     expect(sink.events[0]?.t).toBe(0);
+  });
+
+  test('view 재생: 메트로놈이 켜진 곡은 열람에서도 클릭이 난다', () => {
+    const { container, sink } = setupView(encodeSong({ ...demoSong, metro: 'quarter' }));
+    click(container, '[data-btn="playv"]');
+    expect(sink.events.some((e) => e.kind === 'metro')).toBe(true);
   });
 
   test('복제해서 편집 → edit 전환 + 데이터 유지', () => {

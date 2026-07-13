@@ -179,8 +179,8 @@ export const App = ({
     onPublish?.(encodeSong(store.getState().song));
   };
 
-  /* 열람 재생: 멜로디만 (SPEC §4) */
-  const viewOpts = { melody: true, accomp: false, metro: false };
+  /* 열람 재생: 멜로디 + 반주 + 메트로놈 종류를 모두 내보내고, 실제 소리는 곡 데이터가 결정 */
+  const viewOpts = { melody: true, accomp: true, metro: true };
 
   const viewTogglePlay = (): void => {
     if (player.isPlaying()) {
