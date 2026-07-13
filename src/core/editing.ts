@@ -306,6 +306,133 @@ export const setTempo = (ctx: EditCtx, v: number): EditOut => {
   return { ...ctx, song: { ...ctx.song, tempo }, changed: true };
 };
 
+// ── 데스크톱 워크스페이스 편집 (editor-workspace-design §6) ──
+
+const clamp = (v: number, lo: number, hi: number): number => Math.max(lo, Math.min(hi, v));
+
+/** 음이름(A~G) → 피치 클래스 (C=0 기준) */
+const LETTER_PC: Readonly<Record<string, number>> = {
+  c: 0,
+  d: 2,
+  e: 4,
+  f: 5,
+  g: 7,
+  a: 9,
+  b: 11,
+};
+
+/** 음이름을 기준 피치에서 가장 가까운 옥타브로 변환. 거리 동률이면 아래쪽, PMIN~PMAX 클램프 */
+export const letterPitch = (ref: Midi, letter: string): Midi => {
+  const pc = LETTER_PC[letter.toLowerCase()];
+  if (pc === undefined) return ref;
+  // ref 근처 옥타브의 후보 중 최근접(동률이면 아래) 선택
+  const base = Math.round((ref - pc) / 12) * 12 + pc;
+  let best = base;
+  for (const cand of [base - 12, base, base + 12]) {
+    const dBest = Math.abs(best - ref);
+    const dCand = Math.abs(cand - ref);
+    // 더 가깝거나, 동률이면 더 낮은 쪽 채택
+    if (dCand < dBest || (dCand === dBest && cand < best)) best = cand;
+  }
+  // 범위를 벗어나면 같은 음이름의 가장 가까운 in-range 옥타브로
+  while (best < PMIN) best += 12;
+  while (best > PMAX) best -= 12;
+  return asMidi(clamp(best, PMIN, PMAX));
+};
+
+/** 선택 노트를 음이름의 최근접 옥타브로 재배치 (없으면 no-op, 같은 피치면 no-op) */
+export const renoteSel = (ctx: EditCtx, letter: string): EditOut => {
+  const n = getSel(ctx);
+  if (!n) return keep(ctx);
+  const np = letterPitch(n.p, letter);
+  if (np === n.p) return keep(ctx);
+  const moved = { ...n, p: np };
+  return {
+    song: { ...ctx.song, notes: ctx.song.notes.map((x) => (x.id === n.id ? moved : x)) },
+    sel: ctx.sel,
+    curM: ctx.curM,
+    changed: true,
+    preview: moved,
+  };
+};
+
+/** 현재 마디의 다음 빈 박(박 시작 스텝이 비어있는 첫 박)에 입력 + 선택 */
+export const insertAtFreeBeat = (ctx: EditCtx, p: Midi, len: number): EditOut => {
+  const { song, curM } = ctx;
+  const ms = measStart(song, curM);
+  const beats = Math.floor(measLen(song, curM) / 4);
+  for (let b = 0; b < beats; b++) {
+    const abs = ms + b * 4;
+    if (noteAt(song, asStep(abs)) === null) {
+      const n: Note = {
+        id: nextId(song),
+        s: asStep(abs),
+        d: Math.max(1, Math.min(len, total(song) - abs)),
+        p,
+      };
+      return {
+        song: { ...song, notes: resolveOverlap([...song.notes, n], n) },
+        sel: n.id,
+        curM,
+        changed: true,
+        preview: n,
+      };
+    }
+  }
+  return keep(ctx, '빈 박이 없습니다');
+};
+
+/** 선택 노트 길이를 지정값으로 설정 (곡 끝 클램프 + 겹침 해소) */
+export const setNoteLen = (ctx: EditCtx, len: number): EditOut => {
+  const n = getSel(ctx);
+  if (!n) return keep(ctx);
+  const nd = Math.max(1, Math.min(len, total(ctx.song) - n.s));
+  if (nd === n.d) return keep(ctx);
+  const resized = { ...n, d: nd };
+  return {
+    song: {
+      ...ctx.song,
+      notes: resolveOverlap(
+        ctx.song.notes.map((x) => (x.id === n.id ? resized : x)),
+        resized,
+      ),
+    },
+    sel: ctx.sel,
+    curM: ctx.curM,
+    changed: true,
+  };
+};
+
+/** 드래그 편집: 노트의 시작/피치/길이를 패치 (전부 클램프 + 겹침 해소). pointerup 단일 커밋용 */
+export const updateNote = (
+  ctx: EditCtx,
+  id: number,
+  patch: { readonly s?: number; readonly p?: Midi; readonly d?: number },
+): EditOut => {
+  const n = ctx.song.notes.find((x) => x.id === id);
+  if (!n) return keep(ctx);
+  const T = total(ctx.song);
+  const nd0 = patch.d !== undefined ? clamp(patch.d, 1, T) : n.d;
+  const ns = patch.s !== undefined ? clamp(patch.s, 0, T - 1) : n.s;
+  const nd = Math.max(1, Math.min(nd0, T - ns));
+  const np = patch.p !== undefined ? clamp(patch.p, PMIN, PMAX) : n.p;
+  const moved = { ...n, s: asStep(ns), d: nd, p: asMidi(np) };
+  if (moved.s === n.s && moved.d === n.d && moved.p === n.p) return keep(ctx);
+  return {
+    song: {
+      ...ctx.song,
+      notes: resolveOverlap(
+        ctx.song.notes.map((x) => (x.id === n.id ? moved : x)),
+        moved,
+      ),
+    },
+    sel: ctx.sel,
+    curM: measOf(ctx.song, moved.s),
+    changed: true,
+    ...(patch.p !== undefined ? { preview: moved } : {}),
+  };
+};
+
 const ACC_CYCLE: readonly (MeasureAcc | undefined)[] = [undefined, 'pad', 'comp', 'arp', 'off'];
 
 /** 현재 마디 반주 오버라이드 순환: 기본→pad→comp→arp→off→기본 */
