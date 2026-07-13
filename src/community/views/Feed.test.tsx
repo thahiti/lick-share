@@ -66,6 +66,23 @@ describe('Feed 최신 피드', () => {
     expect(fetchLikeCounts).toHaveBeenCalledWith(['orig-1']);
   });
 
+  it('홈 피드는 정렬 pill(Latest/Popular)을 보여주고 클릭 시 active가 전환된다', async () => {
+    render(<Feed />);
+    const latest = await screen.findByRole('tab', { name: 'Latest' });
+    const popular = screen.getByRole('tab', { name: 'Popular' });
+    expect(latest.className).toContain('active');
+    fireEvent.click(popular);
+    expect(popular.className).toContain('active');
+    expect(latest.className).not.toContain('active');
+  });
+
+  it('작성자 필터(유저 페이지)에서는 정렬 pill을 숨긴다', async () => {
+    fetchFeedPage.mockResolvedValue([original]);
+    render(<Feed authorId="author-1" />);
+    await screen.findByText('Original lick');
+    expect(screen.queryByRole('tab', { name: 'Popular' })).toBeNull();
+  });
+
   it('StrictMode 이중 이펙트에서도 첫 페이지 요청은 정확히 1회', async () => {
     render(
       <StrictMode>
