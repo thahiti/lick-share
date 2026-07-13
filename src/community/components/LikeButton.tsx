@@ -13,6 +13,8 @@ export const LikeButton = ({ liked, count, onToggle, disabled = false }: Props):
   <button
     type="button"
     className={liked ? 'c-like on' : 'c-like'}
+    aria-pressed={liked}
+    aria-label={liked ? `Unlike, ${count} likes` : `Like, ${count} likes`}
     disabled={disabled}
     onClick={onToggle}
   >
