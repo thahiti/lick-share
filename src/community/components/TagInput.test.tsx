@@ -38,6 +38,20 @@ describe('TagInput 태그 칩 입력', () => {
     expect(screen.getByText('#bebop')).toBeTruthy();
   });
 
+  it('스페이스로도 커밋한다', () => {
+    render(<Harness />);
+    type('bebop');
+    press(' ');
+    expect(screen.getByText('#bebop')).toBeTruthy();
+    expect(field().value).toBe('');
+  });
+
+  it('빈 필드에서 스페이스는 칩을 만들지 않는다', () => {
+    render(<Harness />);
+    press(' ');
+    expect(document.querySelector('.c-tag')).toBeNull();
+  });
+
   it('정규화 결과가 null이면 칩을 추가하지 않는다', () => {
     render(<Harness />);
     type('!!!');
@@ -89,7 +103,7 @@ describe('TagInput 태그 칩 입력', () => {
 
   it('제스처 힌트 문구를 상시 노출한다', () => {
     render(<Harness />);
-    expect(screen.getByText(/press enter or comma/i)).toBeTruthy();
+    expect(screen.getByText(/space, enter, or comma/i)).toBeTruthy();
   });
 
   it('추천 태그 칩을 클릭하면 해당 태그가 추가된다', () => {
@@ -105,7 +119,7 @@ describe('TagInput 태그 칩 입력', () => {
 
   it('칩이 3개(가득)면 추천 태그·힌트를 노출하지 않는다', () => {
     render(<Harness initial={['a', 'b', 'c']} />);
-    expect(screen.queryByText(/press enter or comma/i)).toBeNull();
+    expect(screen.queryByText(/space, enter, or comma/i)).toBeNull();
     expect(screen.queryByRole('button', { name: /^Add tag / })).toBeNull();
   });
 });

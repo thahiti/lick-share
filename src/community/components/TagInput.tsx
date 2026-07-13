@@ -1,6 +1,6 @@
 /**
  * 태그 칩 입력 (publish-tags 설계 §5 + 입력 UX 개선).
- * - Enter/',' 또는 필드 blur 시 정규화 커밋 (blur 커밋으로 미확정 draft 유실 방지)
+ * - Enter/','/스페이스 또는 필드 blur 시 정규화 커밋 (blur 커밋으로 미확정 draft 유실 방지)
  * - × 클릭·빈 필드 Backspace로 제거, 3개 도달 시 필드 비활성 + 안내
  * - 상시 제스처 힌트 + 추천 태그 칩(클릭해 추가)으로 발견성 보강
  */
@@ -33,7 +33,8 @@ export const TagInput = ({ value, onChange }: Props): JSX.Element => {
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    if (e.key === 'Enter' || e.key === ',') {
+    // Enter/','/스페이스로 커밋. 스페이스를 구분자로 쓰므로 선행 공백은 preventDefault로 막는다.
+    if (e.key === 'Enter' || e.key === ',' || e.key === ' ') {
       e.preventDefault();
       commitDraft();
       return;
@@ -77,7 +78,7 @@ export const TagInput = ({ value, onChange }: Props): JSX.Element => {
         <span className="c-tag-hint">Up to 3 tags</span>
       ) : (
         <>
-          <span className="c-tag-hint">Press Enter or comma · up to 3</span>
+          <span className="c-tag-hint">Press space, Enter, or comma · up to 3</span>
           {suggestions.length > 0 && (
             <div className="c-tagsug">
               <span className="c-tagsug-label">Try</span>
