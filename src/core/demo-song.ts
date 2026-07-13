@@ -22,6 +22,7 @@ export const demoSong: Song = {
   meas: 4,
   pickup: 0,
   accPat: 'pad',
+  metro: 'off',
   mAcc: {},
   notes,
   chords: { 0: 'C', 4: 'Am', 8: 'F', 12: 'G7' },

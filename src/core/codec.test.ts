@@ -71,7 +71,8 @@ describe('codec (SPEC §7)', () => {
         tempo: fc.integer({ min: 40, max: 240 }),
         meas: fc.integer({ min: 1, max: 8 }),
         pickup: fc.constantFrom(0 as const, 8 as const),
-        accPat: fc.constantFrom('pad' as const, 'comp' as const, 'arp' as const),
+        accPat: fc.constantFrom('pad' as const, 'comp' as const, 'arp' as const, 'off' as const),
+        metro: fc.constantFrom('off' as const, 'quarter' as const),
         mAcc: fc.dictionary(
           fc.nat({ max: 8 }).map(String),
           fc.constantFrom('pad' as const, 'comp' as const, 'arp' as const, 'off' as const),

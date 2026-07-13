@@ -32,7 +32,10 @@ export interface Note {
 }
 
 export type AccPattern = 'pad' | 'comp' | 'arp';
+/** 반주 패턴 값. 'off'(반주 없음)도 하나의 패턴 — 별도 on/off 플래그를 두지 않는다 */
 export type MeasureAcc = AccPattern | 'off';
+/** 메트로놈 패턴 값. 'off'(끔)와 'quarter'(4분음표 클릭). 미래 리듬 패턴은 여기에 추가 */
+export type MetroPattern = 'off' | 'quarter';
 
 export interface Song {
   readonly title: string;
@@ -42,8 +45,10 @@ export interface Song {
   readonly meas: number;
   /** 못갖춘마디 (0=없음, 8=2박) */
   readonly pickup: 0 | 8;
-  /** 전역 반주 패턴, 기본 'pad' */
-  readonly accPat: AccPattern;
+  /** 전역 반주 패턴 ('off'=반주 없음), 기본 'pad' */
+  readonly accPat: MeasureAcc;
+  /** 메트로놈 패턴 ('off'=끔), 기본 'off' */
+  readonly metro: MetroPattern;
   /** 마디별 오버라이드 (키=마디 인덱스) */
   readonly mAcc: Readonly<Record<number, MeasureAcc>>;
   readonly notes: readonly Note[];

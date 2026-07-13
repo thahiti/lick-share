@@ -4,7 +4,14 @@
  * 누락 필드는 기본값. 미래 버전 해시(v1. 아님)는 조용히 깨지지 않고 null로 거부.
  */
 import { BPM_M } from './constants';
-import { asMidi, asStep, type AccPattern, type MeasureAcc, type Note, type Song } from './types';
+import {
+  asMidi,
+  asStep,
+  type MeasureAcc,
+  type MetroPattern,
+  type Note,
+  type Song,
+} from './types';
 
 /* base64url 문자표 — 프로토타입의 btoa 후 +→- /→_ 치환과 동일한 결과 */
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
@@ -51,13 +58,16 @@ interface EncodedSong {
   m?: number;
   p?: number;
   ap?: string;
+  mt?: string;
   am?: Record<string, string>;
   cb?: number;
   n?: (number | string)[][];
   c?: Record<string, string>;
 }
 
-const ACC_PATTERNS: readonly AccPattern[] = ['pad', 'comp', 'arp'];
+/** 반주 패턴 유효값 ('off' 포함) — 전역·마디별 공용 검증 */
+const MEAS_ACC: readonly MeasureAcc[] = ['pad', 'comp', 'arp', 'off'];
+const METRO_PATTERNS: readonly MetroPattern[] = ['off', 'quarter'];
 
 export const encodeSong = (song: Song): string => {
   const o = {
@@ -66,6 +76,8 @@ export const encodeSong = (song: Song): string => {
     m: song.meas,
     p: song.pickup,
     ap: song.accPat,
+    // 메트로놈이 'off'면 필드 자체를 생략 — 프로토타입 해시(메트로놈 이전)와 바이트 호환 유지
+    ...(song.metro !== 'off' ? { mt: song.metro } : {}),
     am: song.mAcc,
     cb: 1,
     n: song.notes.map((n) => [n.s, n.d, n.p]),
@@ -98,7 +110,7 @@ export const decodeSong = (hash: string): Song | null => {
 
     const mAcc: Record<number, MeasureAcc> = {};
     for (const [k, v] of Object.entries(o.am ?? {})) {
-      if (v === 'off' || ACC_PATTERNS.includes(v as AccPattern)) mAcc[+k] = v as MeasureAcc;
+      if (MEAS_ACC.includes(v as MeasureAcc)) mAcc[+k] = v as MeasureAcc;
     }
 
     return {
@@ -106,7 +118,8 @@ export const decodeSong = (hash: string): Song | null => {
       tempo: o.q || 100,
       meas: o.m || 4,
       pickup: o.p === 8 ? 8 : 0,
-      accPat: ACC_PATTERNS.includes(o.ap as AccPattern) ? (o.ap as AccPattern) : 'pad',
+      accPat: MEAS_ACC.includes(o.ap as MeasureAcc) ? (o.ap as MeasureAcc) : 'pad',
+      metro: METRO_PATTERNS.includes(o.mt as MetroPattern) ? (o.mt as MetroPattern) : 'off',
       mAcc,
       notes,
       chords,
