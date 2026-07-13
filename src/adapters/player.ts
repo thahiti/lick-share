@@ -16,8 +16,10 @@ export interface PlayerDeps {
 
 export interface Player {
   isPlaying(): boolean;
-  play(song: Song, opts: PlayOpts, fromStep: Step, toStep?: Step): void;
+  play(song: Song, opts: PlayOpts, fromStep: Step, toStep?: Step, loop?: boolean): void;
   stop(): void;
+  /** 재생 중 반복 토글: on=toStep 도달 시 fromStep부터 되감아 계속 */
+  setLoop(on: boolean): void;
   /** 재생 중 메트로놈 토글: on=현재 이후 박만 스케줄, off=클릭 노드만 정지.
    *  song을 주면 새 곡(metro 패턴 변경 반영)으로 재스케줄 */
   toggleMetro(on: boolean, song?: Song): void;
@@ -34,9 +36,11 @@ export interface Player {
 interface Session {
   song: Song;
   opts: PlayOpts;
+  loop: boolean;
   readonly fromStep: Step;
   readonly toStep: Step;
-  readonly t0: number;
+  /** sink epoch 기준 시작 시각 — 반복 되감김 시 갱신되므로 가변 */
+  t0: number;
   readonly sps: number;
   readonly unsubFrame: () => void;
 }
@@ -68,7 +72,7 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
   return {
     isPlaying: () => session !== null,
 
-    play(song, opts, fromStep, toStep) {
+    play(song, opts, fromStep, toStep, loop = false) {
       stop();
       /* 세션이 없었어도 항상 리셋 — 프리뷰가 남긴 스테일 epoch로
          과거 시각에 스케줄되면 무음이 된다 (회귀 테스트 참조) */
@@ -79,16 +83,36 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
         if (!session) return;
         const el = elapsed(session);
         if (el >= session.toStep) {
+          if (session.loop) {
+            // 되감기: 새 epoch으로 fromStep부터 다시 스케줄 (정지·onEnded 없음)
+            session.t0 = sink.now() + 0.06;
+            sink.stop();
+            sink.play(schedule(session.song, session.opts, session.fromStep, session.toStep));
+            return;
+          }
           stop();
           return;
         }
         tickCbs.forEach((cb) => cb(el));
       });
-      session = { song, opts, fromStep, toStep: toStep ?? asStep(total(song)), t0, sps, unsubFrame };
+      session = {
+        song,
+        opts,
+        loop,
+        fromStep,
+        toStep: toStep ?? asStep(total(song)),
+        t0,
+        sps,
+        unsubFrame,
+      };
       sink.play(schedule(song, opts, fromStep, session.toStep));
     },
 
     stop,
+
+    setLoop(on) {
+      if (session) session.loop = on;
+    },
 
     toggleMetro(on, song) {
       if (!session) return;

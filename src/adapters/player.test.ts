@@ -145,6 +145,29 @@ describe('player: 종료 알림 (P8 조립용)', () => {
   });
 });
 
+describe('player: 반복(loop)', () => {
+  test('loop=true면 toStep 도달 시 정지하지 않고 fromStep부터 되감아 재생', () => {
+    const ended = vi.fn();
+    player.onEnded(ended);
+    player.play(demoSong, { melody: true, accomp: false, metro: false }, asStep(0), asStep(16), true);
+    time.t = EPOCH + 16 * SPS + 0.01;
+    clock.frame();
+    expect(ended).not.toHaveBeenCalled();
+    expect(player.isPlaying()).toBe(true);
+    // 정지(stop)는 이벤트 로그를 비우지만, 되감기는 fromStep부터 새로 스케줄한다
+    expect(sink.events.some((e) => e.kind === 'melody')).toBe(true);
+    expect(sink.events[0]?.t).toBe(0);
+  });
+
+  test('setLoop(false)로 반복 해제 시 다음 toStep에서 정지', () => {
+    player.play(demoSong, { melody: true, accomp: false, metro: false }, asStep(0), asStep(16), true);
+    player.setLoop(false);
+    time.t = EPOCH + 16 * SPS + 0.01;
+    clock.frame();
+    expect(player.isPlaying()).toBe(false);
+  });
+});
+
 describe('player: 스테일 epoch 무음 버그 회귀 (프로토타입은 항상 즉시 재생)', () => {
   test('play()는 이전 세션이 없어도 sink를 리셋 (프리뷰 잔여·스테일 epoch 제거)', () => {
     player.preview(64);
