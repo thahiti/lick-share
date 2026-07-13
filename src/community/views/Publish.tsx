@@ -61,7 +61,8 @@ export const Publish = ({ user }: Props): JSX.Element => {
     setStatus({ kind: 'submitting' });
     try {
       const mh = await melodyHash(validSong.notes);
-      const result = await publishLick(title.trim() || validSong.title, hash, mh);
+      // TODO(publish-tags T4): TagInput 배선 전까지 태그 없이 게시
+      const result = await publishLick(title.trim() || validSong.title, hash, mh, []);
       if (result.ok) {
         navigate('/lick/' + result.id);
         return;

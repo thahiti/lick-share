@@ -14,6 +14,7 @@ const lick = (over: Partial<LickRow> & Pick<LickRow, 'id'>): LickRow => ({
   blob,
   author_id: 'author-1',
   canonical_id: null,
+  tags: [],
   created_at: '2026-01-02T00:00:00.000Z',
   profiles: { public_id: 'pub-1', display_name: 'Author A' },
   ...over,

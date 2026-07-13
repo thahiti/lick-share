@@ -7,6 +7,7 @@ import type { RankingRow } from '../api/licks';
 
 const row = (over: Partial<RankingRow> & Pick<RankingRow, 'id' | 'title'>): RankingRow => ({
   blob: 'invalid-blob',
+  tags: [],
   created_at: '2026-01-02T00:00:00.000Z',
   author_public_id: 'pub-1',
   author_name: 'Author A',
