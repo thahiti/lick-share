@@ -11,7 +11,8 @@ const cbs = {
   onToggleMetro: vi.fn(),
   onTogglePlay: vi.fn(),
   onTempoApply: vi.fn(),
-  onShare: vi.fn(),
+  onPublish: vi.fn(),
+  onCopyLink: vi.fn(),
   onView: vi.fn(),
 };
 
@@ -77,10 +78,20 @@ describe('Header (SPEC §3.1)', () => {
     expect(cbs.onTempoApply).toHaveBeenCalledWith(300); // 클램프는 core
   });
 
-  test('공유·보기 버튼', () => {
+  test('공유 팝오버: Publish / Copy link 각각 콜백 + 선택 시 닫힘', () => {
     const { container } = renderHeader();
     fireEvent.click($(container, '[data-btn="share"]'));
-    expect(cbs.onShare).toHaveBeenCalled();
+    fireEvent.click($(container, '[data-share="publish"]'));
+    expect(cbs.onPublish).toHaveBeenCalled();
+    expect(container.querySelector('[data-share]')).toBeNull(); // 선택 즉시 닫힘
+
+    fireEvent.click($(container, '[data-btn="share"]'));
+    fireEvent.click($(container, '[data-share="copy"]'));
+    expect(cbs.onCopyLink).toHaveBeenCalled();
+  });
+
+  test('보기 버튼', () => {
+    const { container } = renderHeader();
     fireEvent.click($(container, '[data-btn="view"]'));
     expect(cbs.onView).toHaveBeenCalled();
   });

@@ -15,7 +15,8 @@ export interface HeaderProps {
   readonly onTogglePlay: () => void;
   /** 클램프는 core setTempo가 담당 — 원시 값 전달 */
   readonly onTempoApply: (v: number) => void;
-  readonly onShare: () => void;
+  readonly onPublish: () => void;
+  readonly onCopyLink: () => void;
   readonly onView: () => void;
 }
 
@@ -35,11 +36,13 @@ export const Header = ({
   onToggleMetro,
   onTogglePlay,
   onTempoApply,
-  onShare,
+  onPublish,
+  onCopyLink,
   onView,
 }: HeaderProps): JSX.Element => {
   const [accPop, setAccPop] = useState(false);
   const [tempoPop, setTempoPop] = useState(false);
+  const [sharePop, setSharePop] = useState(false);
   const [tempoInput, setTempoInput] = useState(String(song.tempo));
 
   const applyTempo = (v: number): void => {
@@ -93,7 +96,7 @@ export const Header = ({
           >
             {`♩=${song.tempo}`}
           </button>
-          <button type="button" data-btn="share" className="icon-btn" aria-label="Share" onClick={onShare}>
+          <button type="button" data-btn="share" className="icon-btn" aria-label="Share" onClick={() => setSharePop((v) => !v)}>
             <Icon name="share" size={15} />
           </button>
           <button type="button" data-btn="view" className="icon-btn" aria-label="View mode" onClick={onView}>
@@ -145,6 +148,31 @@ export const Header = ({
           </button>
           <button type="button" className="cls" onClick={() => setTempoPop(false)}>
             Close
+          </button>
+        </div>
+      )}
+
+      {sharePop && (
+        <div className="popover share-pop">
+          <button
+            type="button"
+            data-share="publish"
+            onClick={() => {
+              onPublish();
+              setSharePop(false);
+            }}
+          >
+            Publish
+          </button>
+          <button
+            type="button"
+            data-share="copy"
+            onClick={() => {
+              onCopyLink();
+              setSharePop(false);
+            }}
+          >
+            Copy link
           </button>
         </div>
       )}
