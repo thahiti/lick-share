@@ -31,8 +31,9 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
   const loadMore = useCallback(async (): Promise<boolean> => {
     try {
       const page = await fetchFeedPage(cursor.current, authorId);
-      cursor.current = page.at(-1)?.created_at ?? cursor.current;
       const c = await fetchLikeCounts(canonicalIds(page));
+      // 커서는 페이지가 화면에 반영될 때만 전진 — 카운트 조회 실패 시 재시도가 같은 페이지를 다시 받는다
+      cursor.current = page.at(-1)?.created_at ?? cursor.current;
       setCounts((prev) => new Map([...prev, ...c]));
       setLicks((prev) => [...prev, ...page]);
       const hasMore = page.length === PAGE_SIZE;
