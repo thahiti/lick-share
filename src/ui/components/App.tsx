@@ -34,6 +34,8 @@ export interface AppProps {
   readonly hashStore: HashStore;
   /** 미지정 시 ?mode=view 쿼리로 결정 */
   readonly initialMode?: AppMode;
+  /** 게시 진입 — community Root가 주입 (ui→community 의존 회피) */
+  readonly onPublish?: (hash: string) => void;
 }
 
 const modeFromLocation = (): AppMode =>
@@ -44,6 +46,7 @@ export const App = ({
   player,
   hashStore,
   initialMode,
+  onPublish,
 }: AppProps): JSX.Element => {
   const s = useStore(store);
   const [mode, setMode] = useState<AppMode>(initialMode ?? modeFromLocation());
@@ -167,6 +170,11 @@ export const App = ({
     }
   };
 
+  /** 게시: 현재 곡 해시를 Root가 주입한 네비게이션 콜백으로 전달 */
+  const publishShare = (): void => {
+    onPublish?.(encodeSong(store.getState().song));
+  };
+
   /* 열람 재생: 멜로디만 (SPEC §4) */
   const viewOpts = { melody: true, accomp: false, metro: false };
 
@@ -273,7 +281,8 @@ export const App = ({
           onUndo={() => store.getState().undoAction()}
           onRedo={() => store.getState().redoAction()}
           onDelete={() => store.getState().deleteSel()}
-          onShare={copyShare}
+          onPublish={publishShare}
+          onCopyLink={copyShare}
           onView={() => {
             player.stop();
             setMode('view');
@@ -296,7 +305,8 @@ export const App = ({
           onToggleMetro={metroToggle}
           onTogglePlay={togglePlay}
           onTempoApply={(v) => store.getState().setTempo(v)}
-          onShare={copyShare}
+          onPublish={publishShare}
+          onCopyLink={copyShare}
           onView={() => {
             player.stop();
             setMode('view');

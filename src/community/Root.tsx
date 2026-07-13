@@ -35,7 +35,15 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
   }, []);
 
   // 편집기·레거시 열람은 기존 App을 그대로 마운트 (커뮤니티 헤더 없음)
-  if (route.name === 'edit') return <App player={player} hashStore={hashStore} initialMode="edit" />;
+  if (route.name === 'edit')
+    return (
+      <App
+        player={player}
+        hashStore={hashStore}
+        initialMode="edit"
+        onPublish={(hash) => navigate('/publish#' + hash)}
+      />
+    );
   if (route.name === 'legacyView')
     return <App player={player} hashStore={hashStore} initialMode="view" />;
 

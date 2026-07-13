@@ -228,15 +228,34 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     expect(container.textContent).toContain('Spring Sketch');
   });
 
-  test('공유: ?mode=view#v1. URL 클립보드 복사 + 현재 해시 갱신 + 토스트', async () => {
+  test('공유→Copy link: ?mode=view#v1. URL 클립보드 복사 + 현재 해시 갱신 + 토스트', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('navigator', { clipboard: { writeText } });
     const { container, hashStore, findByText } = setup();
     click(container, '[data-btn="share"]');
+    click(container, '[data-share="copy"]');
     expect(writeText).toHaveBeenCalledWith(expect.stringContaining('?mode=view#v1.'));
     expect(hashStore.read().startsWith('v1.')).toBe(true);
     expect(await findByText('View link copied')).toBeTruthy();
     vi.unstubAllGlobals();
+  });
+
+  test('공유→Publish: 현재 곡 해시로 onPublish 호출', () => {
+    const onPublish = vi.fn();
+    const store = createSongStore();
+    const time = { t: 0 };
+    const player = createPlayer({
+      sink: createFakeAudioSink(() => time.t),
+      clock: createFakeClock(),
+    });
+    const hashStore = createMemoryHashStore('');
+    const { container } = render(
+      <App store={store} player={player} hashStore={hashStore} onPublish={onPublish} />,
+    );
+    click(container, '[data-btn="share"]');
+    click(container, '[data-share="publish"]');
+    expect(onPublish).toHaveBeenCalledTimes(1);
+    expect((onPublish.mock.calls[0]?.[0] as string).startsWith('v1.')).toBe(true);
   });
 });
 
