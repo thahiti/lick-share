@@ -35,7 +35,7 @@ export const TagInput = ({ value, onChange }: Props): JSX.Element => {
   };
 
   return (
-    <div className="c-tags">
+    <div className="c-taginput">
       {value.map((tag) => (
         <span key={tag} className="c-tag">
           {'#' + tag}

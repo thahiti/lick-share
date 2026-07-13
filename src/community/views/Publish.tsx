@@ -96,7 +96,7 @@ export const Publish = ({ user }: Props): JSX.Element => {
       <TagInput value={tags} onChange={setTags} />
       <button
         type="button"
-        className="c-btn"
+        className="c-btn c-btn-primary"
         disabled={status.kind === 'submitting'}
         onClick={() => void onPublish()}
       >
