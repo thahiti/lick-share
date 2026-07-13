@@ -10,4 +10,4 @@ interface Props {
 }
 
 export const MyLicks = ({ user }: Props): JSX.Element =>
-  user ? <Feed authorId={user.id} deletable /> : <p className="c-state">로그인이 필요해요</p>;
+  user ? <Feed authorId={user.id} deletable /> : <p className="c-state">Sign in required</p>;

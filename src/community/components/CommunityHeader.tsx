@@ -9,7 +9,15 @@ interface Props {
   readonly onSignOut: () => void;
 }
 
-const NavLink = ({ to, label, active }: { to: string; label: string; active: boolean }): JSX.Element => (
+const NavLink = ({
+  to,
+  label,
+  active,
+}: {
+  to: string;
+  label: string;
+  active: boolean;
+}): JSX.Element => (
   <a
     href={to}
     className={active ? 'active' : ''}
@@ -26,20 +34,20 @@ export const CommunityHeader = ({ user, route, onSignIn, onSignOut }: Props): JS
   <header className="c-header">
     <NavLink to="/" label="Lick Share" active={false} />
     <nav className="c-nav">
-      <NavLink to="/" label="최신" active={route.name === 'feed'} />
-      <NavLink to="/ranking" label="랭킹" active={route.name === 'ranking'} />
-      <NavLink to="/edit" label="만들기" active={route.name === 'edit'} />
-      <NavLink to="/publish" label="게시" active={route.name === 'publish'} />
+      <NavLink to="/" label="Latest" active={route.name === 'feed'} />
+      <NavLink to="/ranking" label="Ranking" active={route.name === 'ranking'} />
+      <NavLink to="/edit" label="Create" active={route.name === 'edit'} />
+      <NavLink to="/publish" label="Publish" active={route.name === 'publish'} />
       {user ? (
         <>
-          <NavLink to="/me" label="내 릭" active={route.name === 'me'} />
+          <NavLink to="/me" label="My licks" active={route.name === 'me'} />
           <button type="button" className="c-linkbtn" onClick={onSignOut}>
-            로그아웃
+            Sign out
           </button>
         </>
       ) : (
         <button type="button" className="c-linkbtn" onClick={onSignIn}>
-          Google 로그인
+          Sign in with Google
         </button>
       )}
     </nav>

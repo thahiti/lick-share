@@ -57,7 +57,12 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
   }, [loadMore]);
 
   const onDelete = (lick: LickRow) => async (): Promise<void> => {
-    if (!window.confirm('이 릭을 삭제할까요? 원본이면 좋아요는 다음 유사릭이 승계해요.')) return;
+    if (
+      !window.confirm(
+        "Delete this lick? If it's the original, its likes pass to the next similar lick.",
+      )
+    )
+      return;
     await deleteLick(lick.id);
     setLicks((prev) => prev.filter((x) => x.id !== lick.id));
   };
@@ -75,15 +80,13 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
       {loaded && !done && <div ref={sentinelRef} className="c-sentinel" />}
       {error ? (
         <p className="c-state">
-          목록을 불러오지 못했어요{' '}
+          Couldn't load the list{' '}
           <button type="button" className="c-btn" onClick={() => void loadMore()}>
-            다시 시도
+            Retry
           </button>
         </p>
       ) : (
-        <p className="c-state">
-          {done ? (licks.length ? '끝이에요' : '아직 게시된 릭이 없어요') : '불러오는 중…'}
-        </p>
+        <p className="c-state">{done ? (licks.length ? 'No more' : 'No licks yet') : 'Loading…'}</p>
       )}
     </div>
   );

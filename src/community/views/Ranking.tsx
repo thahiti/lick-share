@@ -56,12 +56,12 @@ export const Ranking = (_props: Props): JSX.Element => {
         return (
           <article key={row.id} className="c-card">
             <button type="button" className="c-cardhit" onClick={() => navigate('/lick/' + row.id)}>
-              <span className="c-eyebrow">{i + 1}위</span>
+              <span className="c-eyebrow">{`#${i + 1}`}</span>
               <div className="c-title">{row.title}</div>
               {song ? (
                 <Score song={song} mode="view" width={420} />
               ) : (
-                <p className="c-state">악보를 읽을 수 없어요</p>
+                <p className="c-state">Couldn't read this score</p>
               )}
             </button>
             <div className="c-meta">
@@ -75,7 +75,7 @@ export const Ranking = (_props: Props): JSX.Element => {
                 {row.author_name}
               </a>
               <span>♥ {row.like_count}</span>
-              <span>{new Date(row.created_at).toLocaleDateString('ko-KR')}</span>
+              <span>{new Date(row.created_at).toLocaleDateString('en-US')}</span>
             </div>
           </article>
         );
@@ -83,13 +83,15 @@ export const Ranking = (_props: Props): JSX.Element => {
       {loaded && !done && <div ref={sentinelRef} className="c-sentinel" />}
       {error ? (
         <p className="c-state">
-          목록을 불러오지 못했어요{' '}
+          Couldn't load the list{' '}
           <button type="button" className="c-btn" onClick={() => void loadMore()}>
-            다시 시도
+            Retry
           </button>
         </p>
       ) : (
-        <p className="c-state">{done ? (rows.length ? '끝이에요' : '아직 랭킹이 없어요') : '불러오는 중…'}</p>
+        <p className="c-state">
+          {done ? (rows.length ? 'No more' : 'No rankings yet') : 'Loading…'}
+        </p>
       )}
     </div>
   );

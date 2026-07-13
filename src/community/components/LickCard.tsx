@@ -21,7 +21,7 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
         {song ? (
           <Score song={song} mode="view" width={420} />
         ) : (
-          <p className="c-state">악보를 읽을 수 없어요</p>
+          <p className="c-state">Couldn't read this score</p>
         )}
       </button>
       <div className="c-meta">
@@ -37,11 +37,11 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
           </a>
         )}
         <span>♥ {likeCount}</span>
-        <span>{new Date(lick.created_at).toLocaleDateString('ko-KR')}</span>
-        {lick.canonical_id && <span className="c-badge">유사릭</span>}
+        <span>{new Date(lick.created_at).toLocaleDateString('en-US')}</span>
+        {lick.canonical_id && <span className="c-badge">similar</span>}
         {onDelete && (
           <button type="button" className="c-danger" onClick={onDelete}>
-            삭제
+            Delete
           </button>
         )}
       </div>

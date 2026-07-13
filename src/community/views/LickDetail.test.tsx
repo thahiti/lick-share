@@ -10,22 +10,22 @@ import type { LickRow } from '../api/licks';
 const blob = encodeSong(demoSong);
 
 const lick = (over: Partial<LickRow> & Pick<LickRow, 'id'>): LickRow => ({
-  title: '오리지널 릭',
+  title: 'Original lick',
   blob,
   author_id: 'author-1',
   canonical_id: null,
   created_at: '2026-01-02T00:00:00.000Z',
-  profiles: { public_id: 'pub-1', display_name: '작성자A' },
+  profiles: { public_id: 'pub-1', display_name: 'Author A' },
   ...over,
 });
 
 const original = lick({ id: 'orig-1' });
 const similar = lick({
   id: 'sim-1',
-  title: '유사한 릭',
+  title: 'Similar lick',
   author_id: 'author-2',
   canonical_id: 'orig-1',
-  profiles: { public_id: 'pub-2', display_name: '작성자B' },
+  profiles: { public_id: 'pub-2', display_name: 'Author B' },
 });
 
 const fetchLick = vi.fn<(id: string) => Promise<LickRow | null>>();
@@ -81,11 +81,9 @@ describe('LickDetail 릭 상세', () => {
 
   it('원본 릭: 제목·악보(svg)·좋아요 카운트가 렌더된다', async () => {
     fetchLick.mockResolvedValue(original);
-    const { container } = render(
-      <LickDetail id="orig-1" user={null} player={fakePlayer()} />,
-    );
+    const { container } = render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
 
-    expect(await screen.findByText('오리지널 릭')).toBeTruthy();
+    expect(await screen.findByText('Original lick')).toBeTruthy();
     expect(container.querySelector('svg')).not.toBeNull();
     expect(await screen.findByText('♥ 3')).toBeTruthy();
     expect(fetchLick).toHaveBeenCalledWith('orig-1');
@@ -95,20 +93,18 @@ describe('LickDetail 릭 상세', () => {
     fetchLick.mockResolvedValue(similar);
     render(<LickDetail id="sim-1" user={null} player={fakePlayer()} />);
 
-    expect(await screen.findByText(/이 릭은 유사릭이에요/)).toBeTruthy();
+    expect(await screen.findByText(/This is a similar lick/)).toBeTruthy();
     expect(fetchLikeCounts).toHaveBeenCalledWith(['orig-1']);
 
-    fireEvent.click(screen.getByText('원본 릭'));
+    fireEvent.click(screen.getByText('original lick'));
     expect(navigate).toHaveBeenCalledWith('/lick/orig-1');
   });
 
   it('로그인 상태에서 좋아요 토글 → addLike(원본 대상) 호출·카운트 +1·on 클래스', async () => {
     fetchLick.mockResolvedValue(similar);
-    const { container } = render(
-      <LickDetail id="sim-1" user={user2} player={fakePlayer()} />,
-    );
+    const { container } = render(<LickDetail id="sim-1" user={user2} player={fakePlayer()} />);
 
-    await screen.findByText(/이 릭은 유사릭이에요/);
+    await screen.findByText(/This is a similar lick/);
     const likeBtn = container.querySelector('.c-like');
     if (!likeBtn) throw new Error('좋아요 버튼 없음');
     await waitFor(() => expect(likeBtn.textContent).toContain('♥ 3'));
@@ -129,11 +125,9 @@ describe('LickDetail 릭 상세', () => {
         resolveAdd = resolve;
       }),
     );
-    const { container } = render(
-      <LickDetail id="orig-1" user={user2} player={fakePlayer()} />,
-    );
+    const { container } = render(<LickDetail id="orig-1" user={user2} player={fakePlayer()} />);
 
-    await screen.findByText('오리지널 릭');
+    await screen.findByText('Original lick');
     const likeBtn = container.querySelector<HTMLButtonElement>('.c-like');
     if (!likeBtn) throw new Error('좋아요 버튼 없음');
     await waitFor(() => expect(likeBtn.textContent).toContain('♥ 3'));
@@ -156,32 +150,28 @@ describe('LickDetail 릭 상세', () => {
 
   it('비로그인 상태에서 좋아요 클릭 → 로그인 안내, addLike는 호출되지 않는다', async () => {
     fetchLick.mockResolvedValue(original);
-    const { container } = render(
-      <LickDetail id="orig-1" user={null} player={fakePlayer()} />,
-    );
+    const { container } = render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
 
-    await screen.findByText('오리지널 릭');
+    await screen.findByText('Original lick');
     const likeBtn = container.querySelector('.c-like');
     if (!likeBtn) throw new Error('좋아요 버튼 없음');
     fireEvent.click(likeBtn);
 
-    expect(screen.getByText(/로그인 후에/)).toBeTruthy();
+    expect(screen.getByText(/Sign in to like/)).toBeTruthy();
     expect(addLike).not.toHaveBeenCalled();
   });
 
   it('삭제 버튼은 작성자에게만 보인다', async () => {
     fetchLick.mockResolvedValue(original);
-    const { unmount } = render(
-      <LickDetail id="orig-1" user={user1} player={fakePlayer()} />,
-    );
-    await screen.findByText('오리지널 릭');
-    expect(screen.getByText('삭제')).toBeTruthy();
+    const { unmount } = render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
+    await screen.findByText('Original lick');
+    expect(screen.getByText('Delete')).toBeTruthy();
     unmount();
 
     fetchLick.mockResolvedValue(original);
     render(<LickDetail id="orig-1" user={user2} player={fakePlayer()} />);
-    await screen.findByText('오리지널 릭');
-    expect(screen.queryByText('삭제')).toBeNull();
+    await screen.findByText('Original lick');
+    expect(screen.queryByText('Delete')).toBeNull();
   });
 
   it('확인 대화상자에서 승인하면 deleteLick 후 피드로 이동한다', async () => {
@@ -189,7 +179,7 @@ describe('LickDetail 릭 상세', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
     render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
 
-    const deleteBtn = await screen.findByText('삭제');
+    const deleteBtn = await screen.findByText('Delete');
     fireEvent.click(deleteBtn);
 
     await waitFor(() => {
@@ -204,7 +194,7 @@ describe('LickDetail 릭 상세', () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(false);
     render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
 
-    const deleteBtn = await screen.findByText('삭제');
+    const deleteBtn = await screen.findByText('Delete');
     fireEvent.click(deleteBtn);
 
     expect(confirmSpy).toHaveBeenCalled();
@@ -216,11 +206,9 @@ describe('LickDetail 릭 상세', () => {
   it('전곡 재생 버튼 클릭 → player.play(전체 구간), 언마운트 시 player.stop 호출', async () => {
     fetchLick.mockResolvedValue(original);
     const player = fakePlayer();
-    const { unmount } = render(
-      <LickDetail id="orig-1" user={null} player={player} />,
-    );
+    const { unmount } = render(<LickDetail id="orig-1" user={null} player={player} />);
 
-    const playBtn = await screen.findByText('전곡 재생');
+    const playBtn = await screen.findByText('Play all');
     fireEvent.click(playBtn);
 
     expect(player.play).toHaveBeenCalledWith(

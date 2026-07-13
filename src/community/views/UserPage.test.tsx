@@ -43,15 +43,15 @@ describe('UserPage 유저 페이지', () => {
     fetchProfileByPublicId.mockResolvedValue({
       id: 'u-1',
       public_id: 'pub-1',
-      display_name: '작성자A',
+      display_name: 'Author A',
       avatar_url: null,
     });
 
     render(<UserPage publicId="pub-1" player={fakePlayer} />);
 
-    expect(await screen.findByText('작성자A')).toBeTruthy();
+    expect(await screen.findByText('Author A')).toBeTruthy();
     expect(fetchProfileByPublicId).toHaveBeenCalledWith('pub-1');
-    expect(await screen.findByText('아직 게시된 릭이 없어요')).toBeTruthy();
+    expect(await screen.findByText('No licks yet')).toBeTruthy();
   });
 
   it('프로필이 없으면 안내 문구를 보여준다', async () => {
@@ -59,6 +59,6 @@ describe('UserPage 유저 페이지', () => {
 
     render(<UserPage publicId="ghost" player={fakePlayer} />);
 
-    expect(await screen.findByText('사용자를 찾을 수 없어요')).toBeTruthy();
+    expect(await screen.findByText('User not found')).toBeTruthy();
   });
 });

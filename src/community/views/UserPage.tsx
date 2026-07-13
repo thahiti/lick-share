@@ -37,8 +37,8 @@ const UserPageView = ({ publicId }: Props): JSX.Element => {
     };
   }, [publicId]);
 
-  if (phase.kind === 'loading') return <p className="c-state">불러오는 중…</p>;
-  if (phase.kind === 'notfound') return <p className="c-state">사용자를 찾을 수 없어요</p>;
+  if (phase.kind === 'loading') return <p className="c-state">Loading…</p>;
+  if (phase.kind === 'notfound') return <p className="c-state">User not found</p>;
 
   const { profile } = phase;
   return (
@@ -53,4 +53,6 @@ const UserPageView = ({ publicId }: Props): JSX.Element => {
 };
 
 /** publicId별로 완전히 새 인스턴스 (Feed·LickDetail과 동일한 key 리마운트 패턴) */
-export const UserPage = (props: Props): JSX.Element => <UserPageView key={props.publicId} {...props} />;
+export const UserPage = (props: Props): JSX.Element => (
+  <UserPageView key={props.publicId} {...props} />
+);

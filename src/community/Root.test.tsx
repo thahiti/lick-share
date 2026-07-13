@@ -59,16 +59,16 @@ describe('Root 라우팅', () => {
 
   it('/ 는 피드 (빈 목록이면 빈 상태 문구)', async () => {
     renderAt('/');
-    expect(await screen.findByText(/아직 게시된 릭이 없어요/)).toBeTruthy();
+    expect(await screen.findByText(/No licks yet/)).toBeTruthy();
   });
 
   it('/ranking 은 랭킹 (빈 목록이면 빈 상태 문구)', async () => {
     renderAt('/ranking');
-    expect(await screen.findByText(/아직 랭킹이 없어요/)).toBeTruthy();
+    expect(await screen.findByText(/No rankings yet/)).toBeTruthy();
   });
 
   it('알 수 없는 경로는 NotFound', () => {
     renderAt('/zzz');
-    expect(screen.getByText(/없는 페이지/)).toBeTruthy();
+    expect(screen.getByText(/Page not found/)).toBeTruthy();
   });
 });

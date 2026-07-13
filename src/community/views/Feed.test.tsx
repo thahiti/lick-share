@@ -9,18 +9,18 @@ const lick = (over: Partial<LickRow> & Pick<LickRow, 'id' | 'title'>): LickRow =
   author_id: 'author-1',
   canonical_id: null,
   created_at: '2026-01-02T00:00:00.000Z',
-  profiles: { public_id: 'pub-1', display_name: '작성자A' },
+  profiles: { public_id: 'pub-1', display_name: 'Author A' },
   ...over,
 });
 
-const original = lick({ id: 'orig-1', title: '오리지널 릭' });
+const original = lick({ id: 'orig-1', title: 'Original lick' });
 const similar = lick({
   id: 'sim-1',
-  title: '유사한 릭',
+  title: 'Similar lick',
   author_id: 'author-2',
   canonical_id: 'orig-1',
   created_at: '2026-01-01T00:00:00.000Z',
-  profiles: { public_id: 'pub-2', display_name: '작성자B' },
+  profiles: { public_id: 'pub-2', display_name: 'Author B' },
 });
 
 const fetchFeedPage = vi.fn<(cursor: string | null, authorId?: string) => Promise<LickRow[]>>();
@@ -53,14 +53,14 @@ describe('Feed 최신 피드', () => {
   it('마운트 시 첫 페이지를 로드해 카드 2개 · 원본 기준 좋아요 수 · 유사릭 배지를 보여준다', async () => {
     render(<Feed />);
 
-    expect(await screen.findByText('오리지널 릭')).toBeTruthy();
-    expect(screen.getByText('유사한 릭')).toBeTruthy();
+    expect(await screen.findByText('Original lick')).toBeTruthy();
+    expect(screen.getByText('Similar lick')).toBeTruthy();
 
     // 좋아요 수는 canonical(원본) 기준 — 유사릭도 원본의 카운트를 그대로 표시
     expect(screen.getAllByText('♥ 7')).toHaveLength(2);
 
     // 유사릭(canonical_id 존재)만 배지 표시
-    expect(screen.getByText('유사릭')).toBeTruthy();
+    expect(screen.getByText('similar')).toBeTruthy();
 
     expect(fetchFeedPage).toHaveBeenCalledWith(null, undefined);
     expect(fetchLikeCounts).toHaveBeenCalledWith(['orig-1']);
@@ -73,26 +73,26 @@ describe('Feed 최신 피드', () => {
       </StrictMode>,
     );
 
-    expect(await screen.findByText('오리지널 릭')).toBeTruthy();
-    expect(screen.getAllByText('오리지널 릭')).toHaveLength(1);
+    expect(await screen.findByText('Original lick')).toBeTruthy();
+    expect(screen.getAllByText('Original lick')).toHaveLength(1);
     expect(fetchFeedPage).toHaveBeenCalledTimes(1);
   });
 
   it('authorId가 바뀌면 상태를 초기화하고 새 작성자의 첫 페이지만 보여준다', async () => {
-    const a1Lick = lick({ id: 'a1-1', title: 'A1의 릭', author_id: 'a1' });
-    const a2Lick = lick({ id: 'a2-1', title: 'A2의 릭', author_id: 'a2' });
+    const a1Lick = lick({ id: 'a1-1', title: "A1's lick", author_id: 'a1' });
+    const a2Lick = lick({ id: 'a2-1', title: "A2's lick", author_id: 'a2' });
     fetchFeedPage.mockImplementation(async (_cursor, authorId) =>
       authorId === 'a2' ? [a2Lick] : [a1Lick],
     );
 
     const { rerender } = render(<Feed authorId="a1" />);
-    expect(await screen.findByText('A1의 릭')).toBeTruthy();
+    expect(await screen.findByText("A1's lick")).toBeTruthy();
 
     rerender(<Feed authorId="a2" />);
-    expect(await screen.findByText('A2의 릭')).toBeTruthy();
+    expect(await screen.findByText("A2's lick")).toBeTruthy();
 
     // 이전 작성자 목록에 append되지 않고 완전히 교체됨
-    expect(screen.queryByText('A1의 릭')).toBeNull();
+    expect(screen.queryByText("A1's lick")).toBeNull();
 
     // 새 작성자의 첫 페이지는 커서 null부터 다시 시작
     expect(fetchFeedPage).toHaveBeenLastCalledWith(null, 'a2');
@@ -103,13 +103,13 @@ describe('Feed 최신 피드', () => {
 
     render(<Feed />);
 
-    expect(await screen.findByText('목록을 불러오지 못했어요')).toBeTruthy();
-    const retry = screen.getByRole('button', { name: '다시 시도' });
+    expect(await screen.findByText("Couldn't load the list")).toBeTruthy();
+    const retry = screen.getByRole('button', { name: 'Retry' });
 
     fetchFeedPage.mockResolvedValueOnce([original, similar]);
     fireEvent.click(retry);
 
-    expect(await screen.findByText('오리지널 릭')).toBeTruthy();
-    expect(screen.queryByText('목록을 불러오지 못했어요')).toBeNull();
+    expect(await screen.findByText('Original lick')).toBeTruthy();
+    expect(screen.queryByText("Couldn't load the list")).toBeNull();
   });
 });

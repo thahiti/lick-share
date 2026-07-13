@@ -54,7 +54,7 @@ export const Publish = ({ user }: Props): JSX.Element => {
   const [title, setTitle] = useState('');
   const [status, setStatus] = useState<Status>({ kind: 'idle' });
 
-  if (!user) return <p className="c-state">게시하려면 로그인이 필요해요</p>;
+  if (!user) return <p className="c-state">Sign in to publish</p>;
 
   const hash = extractHash(input);
   const song = hash ? decodeSong(hash) : null;
@@ -83,7 +83,7 @@ export const Publish = ({ user }: Props): JSX.Element => {
         );
       }
     } catch {
-      setStatus({ kind: 'error', message: '게시에 실패했어요' });
+      setStatus({ kind: 'error', message: 'Publish failed' });
     }
   };
 
@@ -99,9 +99,9 @@ export const Publish = ({ user }: Props): JSX.Element => {
           if (extractHash(e.target.value) !== hash) setTitle('');
           setStatus({ kind: 'idle' });
         }}
-        placeholder="공유 URL 또는 해시를 붙여넣으세요"
+        placeholder="Paste a share URL or hash"
       />
-      {invalid && <p className="c-state">해석할 수 없는 링크이거나 음표가 없어요</p>}
+      {invalid && <p className="c-state">Invalid link or no notes</p>}
       {validSong && (
         <>
           <Score song={validSong} mode="view" width={384} />
@@ -112,14 +112,12 @@ export const Publish = ({ user }: Props): JSX.Element => {
             disabled={status.kind === 'submitting'}
             onClick={() => void onPublish()}
           >
-            {status.kind === 'submitting' ? '게시 중…' : '게시'}
+            {status.kind === 'submitting' ? 'Publishing…' : 'Publish'}
           </button>
         </>
       )}
-      {status.kind === 'duplicate' && <p className="c-state">이미 게시한 릭이에요</p>}
-      {status.kind === 'error' && (
-        <p className="c-state">{status.message ?? '게시에 실패했어요'}</p>
-      )}
+      {status.kind === 'duplicate' && <p className="c-state">You already published this lick</p>}
+      {status.kind === 'error' && <p className="c-state">{status.message ?? 'Publish failed'}</p>}
     </div>
   );
 };

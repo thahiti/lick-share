@@ -9,19 +9,19 @@ const row = (over: Partial<RankingRow> & Pick<RankingRow, 'id' | 'title'>): Rank
   blob: 'invalid-blob',
   created_at: '2026-01-02T00:00:00.000Z',
   author_public_id: 'pub-1',
-  author_name: '작성자A',
+  author_name: 'Author A',
   avatar_url: null,
   like_count: 0,
   ...over,
 });
 
-const first = row({ id: 'r-1', title: '인기 릭', like_count: 9 });
+const first = row({ id: 'r-1', title: 'Popular lick', like_count: 9 });
 const second = row({
   id: 'r-2',
-  title: '두번째 릭',
+  title: 'Second lick',
   like_count: 3,
   author_public_id: 'pub-2',
-  author_name: '작성자B',
+  author_name: 'Author B',
 });
 
 const fetchRankingPage = vi.fn<(offset: number) => Promise<RankingRow[]>>();
@@ -55,11 +55,11 @@ describe('Ranking 랭킹', () => {
   it('마운트 시 offset 0으로 첫 페이지를 불러와 좋아요 내림차순 순위를 보여준다', async () => {
     render(<Ranking player={fakePlayer} />);
 
-    expect(await screen.findByText('인기 릭')).toBeTruthy();
-    expect(screen.getByText('두번째 릭')).toBeTruthy();
+    expect(await screen.findByText('Popular lick')).toBeTruthy();
+    expect(screen.getByText('Second lick')).toBeTruthy();
 
-    expect(screen.getByText('1위')).toBeTruthy();
-    expect(screen.getByText('2위')).toBeTruthy();
+    expect(screen.getByText('#1')).toBeTruthy();
+    expect(screen.getByText('#2')).toBeTruthy();
     expect(screen.getByText('♥ 9')).toBeTruthy();
     expect(screen.getByText('♥ 3')).toBeTruthy();
 
@@ -73,7 +73,7 @@ describe('Ranking 랭킹', () => {
       </StrictMode>,
     );
 
-    expect(await screen.findByText('인기 릭')).toBeTruthy();
+    expect(await screen.findByText('Popular lick')).toBeTruthy();
     expect(fetchRankingPage).toHaveBeenCalledTimes(1);
   });
 
@@ -81,7 +81,7 @@ describe('Ranking 랭킹', () => {
     fetchRankingPage.mockResolvedValue([]);
     render(<Ranking player={fakePlayer} />);
 
-    expect(await screen.findByText('아직 랭킹이 없어요')).toBeTruthy();
+    expect(await screen.findByText('No rankings yet')).toBeTruthy();
   });
 
   it('첫 페이지 로드 실패 시 에러 안내와 재시도 버튼을 보여주고, 재시도 성공 시 목록이 렌더된다', async () => {
@@ -89,13 +89,13 @@ describe('Ranking 랭킹', () => {
 
     render(<Ranking player={fakePlayer} />);
 
-    expect(await screen.findByText('목록을 불러오지 못했어요')).toBeTruthy();
-    const retry = screen.getByRole('button', { name: '다시 시도' });
+    expect(await screen.findByText("Couldn't load the list")).toBeTruthy();
+    const retry = screen.getByRole('button', { name: 'Retry' });
 
     fetchRankingPage.mockResolvedValueOnce([first, second]);
     fireEvent.click(retry);
 
-    expect(await screen.findByText('인기 릭')).toBeTruthy();
-    expect(screen.queryByText('목록을 불러오지 못했어요')).toBeNull();
+    expect(await screen.findByText('Popular lick')).toBeTruthy();
+    expect(screen.queryByText("Couldn't load the list")).toBeNull();
   });
 });

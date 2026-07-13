@@ -24,7 +24,7 @@ const init = (): SupabaseClient => {
   const { url, key } = env();
   if (!url || !key) {
     throw new Error(
-      'Supabase 환경변수(VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)가 없습니다. .env.example을 참고해 .env를 만드세요.',
+      'Missing Supabase environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY). See .env.example and create a .env file.',
     );
   }
   cached = createClient(url, key);

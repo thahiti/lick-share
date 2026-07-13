@@ -85,9 +85,9 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
     };
   }, [player]);
 
-  if (phase.kind === 'loading') return <p className="c-state">불러오는 중…</p>;
-  if (phase.kind === 'notfound') return <p className="c-state">릭을 찾을 수 없어요</p>;
-  if (phase.kind === 'baddecode') return <p className="c-state">악보를 읽을 수 없어요</p>;
+  if (phase.kind === 'loading') return <p className="c-state">Loading…</p>;
+  if (phase.kind === 'notfound') return <p className="c-state">Lick not found</p>;
+  if (phase.kind === 'baddecode') return <p className="c-state">Couldn't read this score</p>;
 
   const { lick, song } = phase;
   const profiles = lick.profiles;
@@ -115,7 +115,7 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
   const onToggleLike = (): void => {
     if (likeBusy) return;
     if (!user) {
-      setLikeMsg('좋아요는 로그인 후에 누를 수 있어요');
+      setLikeMsg('Sign in to like');
       return;
     }
     const target = likeTargetId(lick);
@@ -129,7 +129,7 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
         if (!alive.current) return;
         setLiked(!next);
         setCount((c) => c + (next ? -1 : 1));
-        setLikeMsg('좋아요 처리에 실패했어요');
+        setLikeMsg('Like failed');
       })
       .finally(() => {
         if (alive.current) setLikeBusy(false);
@@ -137,20 +137,29 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
   };
 
   const onDeleteClick = async (): Promise<void> => {
-    if (!window.confirm('이 릭을 삭제할까요? 원본이면 좋아요는 다음 유사릭이 승계해요.')) return;
+    if (
+      !window.confirm(
+        "Delete this lick? If it's the original, its likes pass to the next similar lick.",
+      )
+    )
+      return;
     await deleteLick(lick.id);
     navigate('/');
   };
 
-  const toUser = (publicId: string) => (e: { preventDefault: () => void }): void => {
-    e.preventDefault();
-    navigate('/user/' + publicId);
-  };
+  const toUser =
+    (publicId: string) =>
+    (e: { preventDefault: () => void }): void => {
+      e.preventDefault();
+      navigate('/user/' + publicId);
+    };
 
-  const toCanonical = (canonicalId: string) => (e: { preventDefault: () => void }): void => {
-    e.preventDefault();
-    navigate('/lick/' + canonicalId);
-  };
+  const toCanonical =
+    (canonicalId: string) =>
+    (e: { preventDefault: () => void }): void => {
+      e.preventDefault();
+      navigate('/lick/' + canonicalId);
+    };
 
   return (
     <div className="c-detail">
@@ -161,28 +170,28 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
             {profiles.display_name}
           </a>
         )}
-        <span>{new Date(lick.created_at).toLocaleDateString('ko-KR')}</span>
+        <span>{new Date(lick.created_at).toLocaleDateString('en-US')}</span>
       </div>
       {lick.canonical_id && (
         <p className="c-notice">
-          이 릭은 유사릭이에요. 좋아요는{' '}
+          This is a similar lick. Likes are collected on the{' '}
           <a href={'/lick/' + lick.canonical_id} onClick={toCanonical(lick.canonical_id)}>
-            원본 릭
-          </a>
-          에 모여요 (♥ {count})
+            original lick
+          </a>{' '}
+          (♥ {count})
         </p>
       )}
       <Score song={song} mode="view" width={420} onNoteTap={onNoteTap} />
       <div className="c-row">
         <button type="button" className="c-btn" onClick={onTogglePlay}>
-          {playing ? '정지' : '전곡 재생'}
+          {playing ? 'Stop' : 'Play all'}
         </button>
         <LikeButton liked={liked} count={count} onToggle={onToggleLike} disabled={likeBusy} />
       </div>
       {likeMsg && <p className="c-state">{likeMsg}</p>}
       {isAuthor && (
         <button type="button" className="c-danger" onClick={() => void onDeleteClick()}>
-          삭제
+          Delete
         </button>
       )}
     </div>
@@ -190,4 +199,6 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
 };
 
 /** id별로 완전히 새 인스턴스 — 유사릭 원본 링크 등 같은 라우트 내 id 전환 시에도 상태를 리셋 (Feed의 key 리마운트와 동일 패턴) */
-export const LickDetail = (props: Props): JSX.Element => <LickDetailView key={props.id} {...props} />;
+export const LickDetail = (props: Props): JSX.Element => (
+  <LickDetailView key={props.id} {...props} />
+);
