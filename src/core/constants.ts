@@ -7,8 +7,8 @@
 export const SPM = 16;
 /** 마디당 박 수 (4/4) */
 export const BPM_M = 4;
-/** 최저 피치: 미3 */
-export const PMIN = 52;
+/** 최저 피치: 도3 */
+export const PMIN = 36;
 /** 최고 피치: 도6 */
 export const PMAX = 84;
 /** 허용 음길이 단계 (16분음표 개수) */

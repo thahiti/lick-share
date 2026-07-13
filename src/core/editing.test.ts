@@ -106,10 +106,10 @@ describe('stepPitch (SPEC §3.7)', () => {
     expect(out.preview).toBeDefined();
   });
 
-  test('PMIN(52)~PMAX(84) 클램프', () => {
+  test('PMIN(36)~PMAX(84) 클램프', () => {
     const hi = song({ meas: 1, notes: [note(1, 0, 4, 84)] });
     expect(stepPitch(ctx(hi, 1), 1).changed).toBe(false);
-    const lo = song({ meas: 1, notes: [note(1, 0, 4, 52)] });
+    const lo = song({ meas: 1, notes: [note(1, 0, 4, 36)] });
     expect(stepPitch(ctx(lo, 1), -1).changed).toBe(false);
   });
 
