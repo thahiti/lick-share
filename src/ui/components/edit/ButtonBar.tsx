@@ -8,6 +8,8 @@ import { Icon } from '../common/Icon';
 export interface ButtonBarProps {
   readonly song: Song;
   readonly sel: number | null;
+  /** 재생 중이면 마디 버튼이 정지(토글) 아이콘으로 전환 */
+  readonly playing?: boolean;
   readonly onSelectDir: (dir: 1 | -1) => void;
   readonly onPlayMeasure: () => void;
   readonly onUndo: () => void;
@@ -18,6 +20,7 @@ export interface ButtonBarProps {
 export const ButtonBar = ({
   song,
   sel,
+  playing = false,
   onSelectDir,
   onPlayMeasure,
   onUndo,
@@ -41,7 +44,7 @@ export const ButtonBar = ({
         <span>{atStart ? 'Add' : 'Select'}</span>
       </button>
       <button type="button" data-btn="play" className="bb pri" onClick={onPlayMeasure}>
-        <Icon name="play" color="#fff" />
+        <Icon name={playing ? 'pause' : 'play'} color="#fff" />
         <span>Bar</span>
       </button>
       <button type="button" data-btn="undo" className="bb" onClick={onUndo}>

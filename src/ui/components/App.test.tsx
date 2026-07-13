@@ -174,6 +174,19 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
     const melodies = sink.events.filter((e) => e.kind === 'melody' && e.vol === 0.24);
     expect(melodies).toHaveLength(3); // 마디 1과 겹치는 노트 3개
   });
+
+  test('마디 재생 버튼 play↔pause 토글, 재생 중 재클릭 시 정지', () => {
+    const { container, sink, player } = setup();
+    const btn = '[data-btn="play"]';
+    expect(container.querySelector(`${btn} [data-icon="play"]`)).not.toBeNull();
+    click(container, btn); // 마디 재생 시작
+    expect(player.isPlaying()).toBe(true);
+    expect(container.querySelector(`${btn} [data-icon="pause"]`)).not.toBeNull();
+    click(container, btn); // 재클릭 → 정지
+    expect(player.isPlaying()).toBe(false);
+    expect(container.querySelector(`${btn} [data-icon="play"]`)).not.toBeNull();
+    expect(sink.events).toHaveLength(0);
+  });
 });
 
 describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {

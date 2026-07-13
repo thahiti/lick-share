@@ -121,6 +121,10 @@ export const App = ({
   };
 
   const playMeasure = (): void => {
+    if (player.isPlaying()) {
+      player.stop();
+      return;
+    }
     const from = measStart(s.song, s.curM);
     player.play(s.song, playOpts, from, asStep(from + measLen(s.song, s.curM)));
     setPlaying(true);
@@ -344,6 +348,7 @@ export const App = ({
         <ButtonBar
           song={s.song}
           sel={s.sel}
+          playing={playing}
           onSelectDir={(d) => store.getState().selectDir(d)}
           onPlayMeasure={playMeasure}
           onUndo={() => store.getState().undoAction()}
