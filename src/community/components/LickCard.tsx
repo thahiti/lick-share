@@ -18,7 +18,10 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
   return (
     <article className="c-card">
       <button type="button" className="c-cardhit" onClick={() => navigate('/lick/' + lick.id)}>
-        <div className="c-title">{lick.title}</div>
+        <div className="c-cardhead">
+          <span className="c-title">{lick.title}</span>
+          <span className="c-date">{new Date(lick.created_at).toLocaleDateString('en-US')}</span>
+        </div>
         {song ? (
           <Score song={song} mode="view" width={420} />
         ) : (
@@ -39,7 +42,6 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
           </a>
         )}
         <span>♥ {likeCount}</span>
-        <span>{new Date(lick.created_at).toLocaleDateString('en-US')}</span>
         {lick.canonical_id && <span className="c-badge">similar</span>}
         {onDelete && (
           <button type="button" className="c-danger" onClick={onDelete}>

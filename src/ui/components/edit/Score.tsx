@@ -117,7 +117,7 @@ const NoteSeg = ({
   const y2 = stemDown ? y + 26 : y - 26;
   return (
     <g>
-      {selected && <circle cx={x} cy={y} r={11} fill="var(--red)" opacity={0.12} />}
+      {selected && <circle cx={x} cy={y} r={11} fill="var(--brand-primary)" opacity={0.12} />}
       {open ? (
         <ellipse cx={x} cy={y} rx={5.4} ry={4} fill="none" stroke={color} strokeWidth={1.4} />
       ) : (
@@ -198,7 +198,7 @@ export const Score = ({
               y={top - 34}
               width={measW(song, mw, shade)}
               height={98}
-              fill="var(--red)"
+              fill="var(--brand-outline)"
               opacity={0.055}
             />
             <line
@@ -206,7 +206,7 @@ export const Score = ({
               y1={top - 34}
               x2={measX(song, mw, shade)}
               y2={top + 64}
-              stroke="var(--red)"
+              stroke="var(--brand-outline)"
               strokeWidth={1.5}
               opacity={0.75}
             />
@@ -215,7 +215,7 @@ export const Score = ({
               y1={top - 34}
               x2={measX(song, mw, shade) + measW(song, mw, shade)}
               y2={top + 64}
-              stroke="var(--red)"
+              stroke="var(--brand-outline)"
               strokeWidth={1.5}
               opacity={0.75}
             />
@@ -302,7 +302,7 @@ export const Score = ({
           const pd = pitchDia(n.p);
           const yy = top + 4 * LINEGAP - pd.step * (LINEGAP / 2);
           const selected = single && n.id === sel;
-          const color = selected ? 'var(--red)' : 'var(--ink)';
+          const color = selected ? 'var(--brand-primary)' : 'var(--ink)';
 
           const ledgers: JSX.Element[] = [];
           if (pd.step < 0) {
@@ -346,7 +346,7 @@ export const Score = ({
             <g key={`seg-${n.id}-${segIdx}`}>
               {ledgers}
               {pd.acc && (
-                <text x={x - 16} y={yy + 3.5} fontSize={12} fill="var(--red)" fontWeight={700}>
+                <text x={x - 16} y={yy + 3.5} fontSize={12} fill="var(--brand-primary)" fontWeight={700}>
                   ♯
                 </text>
               )}
@@ -402,8 +402,8 @@ export const Score = ({
     const x = posX(song, mw, m, (playheadStep - measStart(song, m)) / measLen(song, m));
     return (
       <g data-playhead="">
-        <line x1={x} y1={top - 34} x2={x} y2={top + 64} stroke="var(--red)" strokeWidth={2} />
-        <path d={`M ${x - 4} ${top - 34} L ${x + 4} ${top - 34} L ${x} ${top - 28} Z`} fill="var(--red)" />
+        <line x1={x} y1={top - 34} x2={x} y2={top + 64} stroke="var(--playhead)" strokeWidth={2} />
+        <path d={`M ${x - 4} ${top - 34} L ${x + 4} ${top - 34} L ${x} ${top - 28} Z`} fill="var(--playhead)" />
       </g>
     );
   })();

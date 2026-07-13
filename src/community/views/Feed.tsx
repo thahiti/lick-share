@@ -5,6 +5,7 @@ import { PAGE_SIZE, deleteLick, fetchFeedPage, type LickRow } from '../api/licks
 import { canonicalIds, fetchLikeCounts, likeTargetId } from '../api/likes';
 import { LickCard } from '../components/LickCard';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import { Ranking } from './Ranking';
 
 interface Props {
   readonly user?: User | null;
@@ -97,6 +98,39 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
  * 이후 페이지는 sentinel의 IntersectionObserver로 로드한다 (authorId를 주면 유저 페이지/내 릭 재사용).
  * authorId가 바뀌면 key 리마운트로 커서·목록·카운트를 전부 초기화하고 새 작성자의 첫 페이지부터 로드한다.
  */
-export const Feed = ({ authorId, deletable }: Props): JSX.Element => (
-  <FeedList key={authorId ?? ''} authorId={authorId} deletable={deletable} />
-);
+export const Feed = ({ player, authorId, deletable }: Props): JSX.Element => {
+  const [sort, setSort] = useState<'latest' | 'popular'>('latest');
+  // 정렬 pill은 홈 피드(authorId 없음)에만. Popular는 기존 ranking 데이터 정렬을 재사용한다.
+  if (authorId !== undefined)
+    return <FeedList key={authorId} authorId={authorId} deletable={deletable} />;
+
+  return (
+    <>
+      <div className="c-sort" role="tablist" aria-label="Sort">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={sort === 'latest'}
+          className={sort === 'latest' ? 'active' : ''}
+          onClick={() => setSort('latest')}
+        >
+          Latest
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={sort === 'popular'}
+          className={sort === 'popular' ? 'active' : ''}
+          onClick={() => setSort('popular')}
+        >
+          Popular
+        </button>
+      </div>
+      {sort === 'popular' && player ? (
+        <Ranking player={player} />
+      ) : (
+        <FeedList key="" authorId={undefined} deletable={deletable} />
+      )}
+    </>
+  );
+};

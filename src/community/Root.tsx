@@ -4,7 +4,10 @@ import type { Player } from '../adapters/player';
 import type { HashStore } from '../ports/hash-store';
 import { App } from '../ui/components/App';
 import { getSessionUser, onAuthChange, signInWithGoogle, signOut } from './api/auth';
+import { AppBar } from './components/AppBar';
 import { CommunityHeader } from './components/CommunityHeader';
+import { Sidebar } from './components/Sidebar';
+import { TopLicks } from './components/TopLicks';
 import { navigate, useRoute } from './routing';
 import { Feed } from './views/Feed';
 import { LickDetail } from './views/LickDetail';
@@ -66,10 +69,17 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
     }
   })();
 
+  // 데스크톱(≥1024px)은 AppBar + 3컬럼 셸, 모바일(<1024px)은 CommunityHeader + 단일 컬럼.
+  // 두 헤더 모두 DOM에 두고 표시 전환은 CSS 미디어쿼리가 담당한다.
   return (
     <div className="community">
       <CommunityHeader user={user} route={route} onSignIn={onSignIn} onSignOut={onSignOut} />
-      {view}
+      <AppBar user={user} onSignIn={onSignIn} onSignOut={onSignOut} />
+      <div className="community-shell">
+        <Sidebar route={route} user={user} />
+        <main className="c-main">{view}</main>
+        <TopLicks />
+      </div>
     </div>
   );
 };

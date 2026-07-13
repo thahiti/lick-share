@@ -61,4 +61,6 @@ export const LAYOUT = {
   INSET_RATIO: 0.18,
   /** posX 우측 여유 */
   EDGE_GAP: 6,
+  /** 데스크톱 워크스페이스 거터/피치 레이블 열 폭 (악보·피아노롤 공통 — 정렬 기준) */
+  GUTTER_W: 44,
 } as const;

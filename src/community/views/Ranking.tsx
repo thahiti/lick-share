@@ -57,7 +57,7 @@ export const Ranking = (_props: Props): JSX.Element => {
         return (
           <article key={row.id} className="c-card">
             <button type="button" className="c-cardhit" onClick={() => navigate('/lick/' + row.id)}>
-              <span className="c-eyebrow">{`#${i + 1}`}</span>
+              <span className={i < 3 ? 'c-rankbadge top' : 'c-rankbadge'}>{i + 1}</span>
               <div className="c-title">{row.title}</div>
               {song ? (
                 <Score song={song} mode="view" width={420} />

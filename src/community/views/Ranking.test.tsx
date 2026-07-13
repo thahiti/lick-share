@@ -59,8 +59,10 @@ describe('Ranking 랭킹', () => {
     expect(await screen.findByText('Popular lick')).toBeTruthy();
     expect(screen.getByText('Second lick')).toBeTruthy();
 
-    expect(screen.getByText('#1')).toBeTruthy();
-    expect(screen.getByText('#2')).toBeTruthy();
+    // 순위 뱃지는 숫자만 표시 (1~3위는 amber 강조 클래스)
+    const badge1 = screen.getByText('1', { selector: '.c-rankbadge' });
+    expect(badge1.className).toContain('top');
+    expect(screen.getByText('2', { selector: '.c-rankbadge' })).toBeTruthy();
     expect(screen.getByText('♥ 9')).toBeTruthy();
     expect(screen.getByText('♥ 3')).toBeTruthy();
 

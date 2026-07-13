@@ -30,7 +30,7 @@
 }
 
 .c-nav a.active {
-  color: var(--red);
+  color: var(--brand-primary);
 }
 
 .c-linkbtn {
@@ -61,6 +61,20 @@
   font-weight: 600;
 }
 
+.c-cardhead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.c-date {
+  flex: none;
+  font-size: 13px;
+  color: var(--mut2);
+}
+
 .c-cardhit {
   display: block;
   width: 100%;
@@ -85,8 +99,8 @@
 .c-badge {
   font-size: 10.5px;
   font-weight: 600;
-  color: var(--red);
-  border: 1px solid var(--red);
+  color: var(--brand-primary);
+  border: 1px solid var(--brand-outline);
   border-radius: var(--radius);
   padding: 1px 6px;
 }
@@ -132,8 +146,9 @@
 }
 
 .c-like.on {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+  border-color: var(--brand-primary);
 }
 
 .c-like:disabled {
@@ -164,7 +179,7 @@
 }
 
 .c-notice a {
-  color: var(--red);
+  color: var(--brand-primary);
   font-weight: 600;
   text-decoration: none;
 }
@@ -270,4 +285,350 @@
 .c-btn:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* ── 데스크톱 셸 컴포넌트 (community-layout §5) ──
+   AppBar·Sidebar·TopLicks는 기본(모바일)에서 숨기고 ≥1024px에서만 표시한다. */
+.c-appbar,
+.c-side,
+.c-toplicks {
+  display: none;
+}
+
+/* Create primary 버튼 (AppBar) */
+.c-create {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  border-radius: var(--radius-ctl);
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-primary-text);
+  background: var(--brand-primary);
+  cursor: pointer;
+}
+
+/* 정렬 pill (Feed) */
+.c-sort {
+  display: flex;
+  gap: 8px;
+  padding: 12px 0 0;
+}
+
+.c-sort button {
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--mut2);
+  background: var(--bg-card);
+  cursor: pointer;
+}
+
+.c-sort button.active {
+  color: var(--brand-tint-text);
+  border-color: var(--brand-outline);
+  background: var(--brand-tint);
+  font-weight: 600;
+}
+
+/* 순위 뱃지 (Ranking 카드) */
+.c-rankbadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mut2);
+  background: var(--bg-page);
+  border: 1px solid var(--line);
+}
+
+.c-rankbadge.top {
+  color: #fff;
+  background: var(--rank-accent);
+  border-color: var(--rank-accent);
+}
+
+@media (min-width: 1024px) {
+  .community {
+    max-width: 1240px;
+  }
+
+  /* 모바일 헤더 숨기고 AppBar 표시 */
+  .c-header {
+    display: none;
+  }
+
+  .c-appbar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .c-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--brand-primary);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .c-searchwrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--bg-card);
+  }
+
+  .c-search {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 8px 0;
+    font: inherit;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .c-search:disabled {
+    cursor: not-allowed;
+  }
+
+  .c-avatarwrap {
+    position: relative;
+  }
+
+  .c-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--brand-tint);
+    color: var(--brand-tint-text);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .c-avatarmenu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: 140px;
+    padding: 6px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-ctl);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-popover);
+    z-index: 20;
+  }
+
+  .c-avatarmenu button {
+    text-align: left;
+    border: none;
+    background: none;
+    padding: 8px 10px;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  .c-avatarmenu button:hover {
+    background: var(--bg-page);
+  }
+
+  /* 3컬럼 셸 */
+  .community-shell {
+    display: grid;
+    grid-template-columns: 200px 1fr 260px;
+    gap: 24px;
+    padding: 20px;
+    align-items: start;
+  }
+
+  .c-side {
+    display: block;
+    position: sticky;
+    top: 20px;
+  }
+
+  .c-sidenav {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .c-sidenav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: var(--radius-ctl);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mut2);
+    text-decoration: none;
+  }
+
+  .c-sidenav a.active {
+    color: var(--brand-tint-text);
+    background: var(--brand-tint);
+  }
+
+  .c-sidetags {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+  }
+
+  .c-sidetags-h {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mut2);
+    margin-bottom: 8px;
+  }
+
+  .c-sidetags ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .c-sidetag {
+    font-size: 13px;
+    color: var(--brand-tint-text);
+  }
+
+  .c-main {
+    min-width: 0;
+  }
+
+  /* 우측 Top Licks 위젯 */
+  .c-toplicks {
+    display: block;
+    position: sticky;
+    top: 20px;
+    padding: 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .c-toplicks-h {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .c-toplicks-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    counter-reset: none;
+  }
+
+  .c-toplicks-list button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    border: none;
+    background: none;
+    padding: 6px 0;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .c-rank {
+    flex: none;
+    width: 18px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mut2);
+  }
+
+  .c-rank-1 {
+    color: var(--rank-accent);
+  }
+
+  .c-toplicks-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    color: var(--ink);
+  }
+
+  .c-toplicks-likes {
+    flex: none;
+    font-size: 12px;
+    color: var(--mut2);
+  }
+
+  /* 2열 카드 그리드 + 카드 리디자인 */
+  .c-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    padding: 16px 0;
+  }
+
+  .c-card {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-card);
+    padding: 16px;
+    transition: border-color 0.12s ease;
+  }
+
+  .c-card .c-title {
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  @media (hover: hover) {
+    .c-card:hover {
+      border-color: var(--brand-outline);
+    }
+  }
 }

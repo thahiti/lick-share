@@ -108,7 +108,7 @@
 }
 
 .rail-meas.cur {
-  border-left-color: var(--red);
+  border-left-color: var(--brand-outline);
 }
 
 .rslot {
@@ -229,7 +229,7 @@
   top: 0;
   bottom: 0;
   width: 2px;
-  background: var(--red);
+  background: var(--playhead);
   z-index: 3;
   pointer-events: none;
 }
