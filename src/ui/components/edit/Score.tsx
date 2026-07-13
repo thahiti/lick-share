@@ -37,7 +37,8 @@ export interface ScoreProps {
   readonly onNoteTap?: (id: number) => void;
 }
 
-const ClefPath = ({ x, top }: { x: number; top: number }): JSX.Element => (
+/** 음자리표(높은음자리표) 글리프 — StaffLane 재사용 위해 export (조판 수치 중복 정의 금지) */
+export const ClefPath = ({ x, top }: { x: number; top: number }): JSX.Element => (
   <g stroke="var(--ink)" strokeWidth={1.5} fill="none">
     <path
       d={`M ${x + 8} ${top - 5} C ${x + 12} ${top} ${x + 12} ${top + 6} ${x + 8} ${top + 11}
@@ -50,8 +51,8 @@ const ClefPath = ({ x, top }: { x: number; top: number }): JSX.Element => (
   </g>
 );
 
-/** 쉼표 글리프: 16=온, 8=2분, 4=4분, 2=8분, 1=16분 */
-const RestGlyph = ({ x, top, take }: { x: number; top: number; take: number }): JSX.Element => {
+/** 쉼표 글리프: 16=온, 8=2분, 4=4분, 2=8분, 1=16분. StaffLane 재사용 위해 export */
+export const RestGlyph = ({ x, top, take }: { x: number; top: number; take: number }): JSX.Element => {
   const c = 'var(--rest-glyph)';
   if (take === 16)
     return <rect data-rest={16} x={x - 4} y={top + 10.5} width={9} height={3.4} fill={c} />;
@@ -94,8 +95,8 @@ const RestGlyph = ({ x, top, take }: { x: number; top: number; take: number }): 
   );
 };
 
-/** 음표 세그먼트: 머리·기둥·꼬리·점 (덧줄·임시표는 호출부에서) */
-const NoteSeg = ({
+/** 음표 세그먼트: 머리·기둥·꼬리·점 (덧줄·임시표는 호출부에서). StaffLane 재사용 위해 export */
+export const NoteSeg = ({
   x,
   y,
   d16,
