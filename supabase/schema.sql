@@ -53,6 +53,17 @@ create index licks_hash_idx on licks (melody_hash);
 create index licks_feed_idx on licks (created_at desc);
 create index licks_author_idx on licks (author_id, created_at desc);
 
+-- 게시 시각은 서버가 정한다 (미래 시각 피드 고정·과거 시각 승계 탈취 차단)
+create function public.force_lick_created_at() returns trigger
+language plpgsql as $$
+begin
+  new.created_at := now();
+  return new;
+end $$;
+
+create trigger trg_lick_created_at before insert on licks
+  for each row execute function public.force_lick_created_at();
+
 -- 4) RLS
 alter table profiles enable row level security;
 alter table licks enable row level security;
@@ -95,6 +106,9 @@ begin
       update licks set canonical_id = null where id = successor;
       update licks set canonical_id = successor
         where canonical_id = old.id and id <> successor;
+      -- 승계자와 원본 양쪽에 좋아요가 있는 사용자의 원본 좋아요는 버린다 (PK 충돌 방지)
+      delete from likes where lick_id = old.id
+        and user_id in (select user_id from likes where lick_id = successor);
       update likes set lick_id = successor where lick_id = old.id;
     end if;
   end if;
