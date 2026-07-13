@@ -45,6 +45,9 @@ ui       React 컴포넌트 + Zustand 스토어(core 순수 함수 래핑만)
 정적 호스팅이면 충분하다 (GitHub Pages, Netlify, Cloudflare Pages 등).
 `dist/`를 그대로 올리면 된다. 서버 상태 없음 — 공유 링크의 해시가 데이터 전부다.
 
+운영 배포는 Cloudflare Pages를 사용한다. 빌드·배포 명령, 필수 설정(SPA rewrite,
+환경 변수), 캐시·롤백 절차는 `docs/DEPLOY.md` 참조.
+
 ## 커뮤니티
 
 로그인한 사용자가 편집을 마친 릭을 게시하고, 좋아요·랭킹·게시판으로 서로 공유하는 기능.
