@@ -1,9 +1,19 @@
 -- 0) 확장과 id 생성기
-create extension if not exists pgcrypto;
+-- pgcrypto는 Supabase 관례대로 extensions 스키마에 설치한다.
+-- (public에 설치하면 supabase_auth_admin의 search_path에서 gen_random_bytes가 안 잡힌다)
+create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
 
+-- gen_random_bytes는 pg_catalog가 아니라 pgcrypto(=extensions) 소속이라 스키마를 명시해야 한다.
+-- 이 함수는 profiles.public_id / licks.id의 컬럼 DEFAULT로 호출되는데,
+-- 가입 trigger는 search_path에 extensions가 없는 supabase_auth_admin 세션에서 발화한다.
+-- 따라서 search_path를 ''로 고정하고 extensions.gen_random_bytes로 정규화한다
+-- (translate·encode는 pg_catalog 소속이라 빈 search_path에서도 항상 해석된다).
 create function gen_short_id(len int default 8) returns text
-language sql volatile as
-$$ select translate(encode(gen_random_bytes(len), 'base64'), '+/=', '-_') $$;
+language sql volatile
+set search_path = ''
+as
+$$ select translate(encode(extensions.gen_random_bytes(len), 'base64'), '+/=', '-_') $$;
 
 -- 1) 프로필과 가입 trigger
 create table profiles (
