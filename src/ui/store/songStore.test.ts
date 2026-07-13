@@ -90,15 +90,13 @@ describe('songStore: 세션 상태 (설계 문서 §3, SPEC §3.1)', () => {
     expect(store.getState().song.tempo).toBe(100);
   });
 
-  test('setAccGlobal: 패턴 선택 = 반주 켬 + 전역 패턴, 끔 = accOn false (패턴 유지)', () => {
+  test('setAccGlobal: 전역 반주 패턴 설정 (off도 하나의 패턴)', () => {
     const store = createSongStore();
-    expect(store.getState().accOn).toBe(true);
+    expect(store.getState().song.accPat).toBe('pad');
     store.getState().setAccGlobal('comp');
-    expect(store.getState().accOn).toBe(true);
     expect(store.getState().song.accPat).toBe('comp');
     store.getState().setAccGlobal('off');
-    expect(store.getState().accOn).toBe(false);
-    expect(store.getState().song.accPat).toBe('comp');
+    expect(store.getState().song.accPat).toBe('off');
   });
 
   test('setAccGlobal: 같은 패턴 재선택은 undo를 쌓지 않음', () => {

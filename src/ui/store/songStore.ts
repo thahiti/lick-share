@@ -31,8 +31,8 @@ import { emptyUndo, pushUndo, redoStep, undoStep, type UndoStack } from '../../c
 import {
   asBar,
   asMidi,
-  type AccPattern,
   type BarIndex,
+  type MeasureAcc,
   type Midi,
   type Note,
   type Song,
@@ -45,8 +45,6 @@ export interface SongStore {
   readonly undo: UndoStack;
   readonly toast: string | null;
   readonly preview: Note | null;
-  /** 반주 켜짐 (세션, SPEC §3.1) */
-  readonly accOn: boolean;
   /** 메트로놈 켜짐 (세션) */
   readonly metroOn: boolean;
   /** 새 음 입력 시 기본 길이 (세션, 워크스페이스 음길이 세그먼트) */
@@ -65,8 +63,8 @@ export interface SongStore {
   setChord(beatKey: number, chord: string | null): void;
   cycleMeasureAcc(): void;
   setTempo(v: number): void;
-  /** 헤더 반주 팝오버: 패턴 = 켬 + 전역 패턴 설정, 'off' = 끔 (패턴 유지) */
-  setAccGlobal(v: AccPattern | 'off'): void;
+  /** 헤더 반주 팝오버: 전역 반주 패턴 설정 ('off'=반주 없음). 값이 곧 곡 데이터 */
+  setAccGlobal(v: MeasureAcc): void;
   toggleMetro(): void;
   /** 마디 탭/이동: 첫 노트 자동 선택 + 프리뷰 (SPEC §3.2) */
   gotoMeasure(m: number): void;
@@ -121,7 +119,6 @@ export const createSongStore = (initial: Song = demoSong) =>
       undo: emptyUndo,
       toast: null,
       preview: null,
-      accOn: true,
       metroOn: false,
       inputLen: INPUT_LEN,
 
@@ -139,15 +136,11 @@ export const createSongStore = (initial: Song = demoSong) =>
       setTempo: (v) => apply((c) => setTempo(c, v)),
 
       setAccGlobal: (v) =>
-        set((s) => {
-          if (v === 'off') return { accOn: false };
-          if (s.song.accPat === v) return { accOn: true };
-          return {
-            accOn: true,
-            song: { ...s.song, accPat: v },
-            undo: pushUndo(s.undo, s.song),
-          };
-        }),
+        set((s) =>
+          s.song.accPat === v
+            ? s
+            : { song: { ...s.song, accPat: v }, undo: pushUndo(s.undo, s.song) },
+        ),
       dragNote: (id, patch) => apply((c) => updateNote(c, id, patch)),
       setLen: (len) => {
         set({ inputLen: len });

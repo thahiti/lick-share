@@ -112,7 +112,9 @@ export const App = ({
     };
   }, [player, store]);
 
-  const playOpts = { melody: true, accomp: s.accOn, metro: s.metroOn };
+  // 반주 켬/끔은 곡 데이터(accPat/mAcc)가 결정 — 스케줄러는 항상 반주 종류를 낸다
+  const accOn = s.song.accPat !== 'off';
+  const playOpts = { melody: true, accomp: true, metro: s.metroOn };
 
   const togglePlay = (): void => {
     if (player.isPlaying()) {
@@ -249,7 +251,7 @@ export const App = ({
           song={s.song}
           sel={s.sel}
           curM={s.curM}
-          accOn={s.accOn}
+          accOn={accOn}
           metroOn={s.metroOn}
           playing={playing}
           playEl={playEl}
@@ -304,7 +306,7 @@ export const App = ({
       <div className="pane-score" ref={shellRef}>
         <Header
           song={s.song}
-          accOn={s.accOn}
+          accOn={accOn}
           metroOn={s.metroOn}
           playing={playing}
           onAccSelect={accSelect}
