@@ -78,4 +78,34 @@ describe('TagInput 태그 칩 입력', () => {
     expect(field().disabled).toBe(true);
     expect(screen.getByText('Up to 3 tags')).toBeTruthy();
   });
+
+  it('필드 blur 시 입력 중이던 draft를 자동으로 칩 커밋한다 (유실 방지)', () => {
+    render(<Harness />);
+    type('ballad');
+    fireEvent.blur(field());
+    expect(screen.getByText('#ballad')).toBeTruthy();
+    expect(field().value).toBe('');
+  });
+
+  it('제스처 힌트 문구를 상시 노출한다', () => {
+    render(<Harness />);
+    expect(screen.getByText(/press enter or comma/i)).toBeTruthy();
+  });
+
+  it('추천 태그 칩을 클릭하면 해당 태그가 추가된다', () => {
+    render(<Harness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Add tag bebop' }));
+    expect(screen.getByText('#bebop')).toBeTruthy();
+  });
+
+  it('이미 추가된 추천 태그 칩은 노출하지 않는다', () => {
+    render(<Harness initial={['bebop']} />);
+    expect(screen.queryByRole('button', { name: 'Add tag bebop' })).toBeNull();
+  });
+
+  it('칩이 3개(가득)면 추천 태그·힌트를 노출하지 않는다', () => {
+    render(<Harness initial={['a', 'b', 'c']} />);
+    expect(screen.queryByText(/press enter or comma/i)).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Add tag / })).toBeNull();
+  });
 });

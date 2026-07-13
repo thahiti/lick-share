@@ -287,9 +287,51 @@
   opacity: 0.5;
 }
 
+/* 태그 입력 필드 래퍼 — 입력 박스 + 힌트 + 추천 칩을 세로로 */
+.c-tagfield {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .c-tag-hint {
-  font-size: 10.5px;
-  color: var(--mut);
+  font-size: 11.5px;
+  color: var(--mut2);
+}
+
+/* 추천 태그 줄 */
+.c-tagsug {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.c-tagsug-label {
+  font-size: 11.5px;
+  color: var(--mut2);
+}
+
+/* 추천 칩 — 아직 추가되지 않은 상태라 outline(점선)으로 '추가 가능'을 표시 */
+.c-tag-sug {
+  display: inline-flex;
+  align-items: center;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--brand-tint-text);
+  background: none;
+  border: 1px dashed var(--brand-outline);
+  border-radius: 20px;
+  padding: 2px 9px;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .c-tag-sug:hover {
+    background: var(--brand-tint);
+    border-style: solid;
+  }
 }
 
 .c-btn {
