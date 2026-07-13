@@ -17,7 +17,8 @@ export interface DawTopBarProps {
   readonly onUndo: () => void;
   readonly onRedo: () => void;
   readonly onDelete: () => void;
-  readonly onShare: () => void;
+  readonly onPublish: () => void;
+  readonly onCopyLink: () => void;
   readonly onView: () => void;
 }
 
@@ -31,11 +32,13 @@ export const DawTopBar = ({
   onUndo,
   onRedo,
   onDelete,
-  onShare,
+  onPublish,
+  onCopyLink,
   onView,
 }: DawTopBarProps): JSX.Element => {
   const [tempoPop, setTempoPop] = useState(false);
   const [tempoInput, setTempoInput] = useState(String(song.tempo));
+  const [sharePop, setSharePop] = useState(false);
 
   const applyTempo = (v: number): void => {
     onTempoApply(v);
@@ -89,7 +92,7 @@ export const DawTopBar = ({
         <button type="button" data-btn="del" className="icon-btn" aria-label="Delete selection" onClick={onDelete}>
           <Icon name="del" color="var(--red)" />
         </button>
-        <button type="button" data-btn="share" className="chip" onClick={onShare}>
+        <button type="button" data-btn="share" className="chip" onClick={() => setSharePop((v) => !v)}>
           Share
         </button>
         <button type="button" data-btn="view" className="chip" onClick={onView}>
@@ -118,6 +121,31 @@ export const DawTopBar = ({
           </button>
           <button type="button" className="cls" onClick={() => setTempoPop(false)}>
             Close
+          </button>
+        </div>
+      )}
+
+      {sharePop && (
+        <div className="popover share-pop">
+          <button
+            type="button"
+            data-share="publish"
+            onClick={() => {
+              onPublish();
+              setSharePop(false);
+            }}
+          >
+            Publish
+          </button>
+          <button
+            type="button"
+            data-share="copy"
+            onClick={() => {
+              onCopyLink();
+              setSharePop(false);
+            }}
+          >
+            Copy link
           </button>
         </div>
       )}

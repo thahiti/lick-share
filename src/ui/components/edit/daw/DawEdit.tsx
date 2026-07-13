@@ -45,7 +45,8 @@ export interface DawEditProps {
   readonly onUndo: () => void;
   readonly onRedo: () => void;
   readonly onDelete: () => void;
-  readonly onShare: () => void;
+  readonly onPublish: () => void;
+  readonly onCopyLink: () => void;
   readonly onView: () => void;
 }
 
@@ -77,7 +78,8 @@ export const DawEdit = ({
   onUndo,
   onRedo,
   onDelete,
-  onShare,
+  onPublish,
+  onCopyLink,
   onView,
 }: DawEditProps): JSX.Element => (
   <div className="daw-shell">
@@ -91,7 +93,8 @@ export const DawEdit = ({
       onUndo={onUndo}
       onRedo={onRedo}
       onDelete={onDelete}
-      onShare={onShare}
+      onPublish={onPublish}
+      onCopyLink={onCopyLink}
       onView={onView}
     />
     <div className="daw-main">
