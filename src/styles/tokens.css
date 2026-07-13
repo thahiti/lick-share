@@ -11,9 +11,21 @@
   --celldb: #e8e8e8; /* 정박 셀 */
   --celldk: #e0e0e0; /* ♯행 셀 */
   --celldkdb: #d6d6d6; /* ♯행 정박 셀 */
-  --on: #8f8f8f; /* 켜진 셀 */
+  --on: #8f8f8f; /* 켜진 셀 (레거시 폴백 — 신규 표면은 --note-block) */
   --rest: #c4b28e; /* 쉼표 행 켜진 셀 (탠) */
   --paper: #fff; /* 반전 텍스트/배경용 화이트 */
+
+  /* 브랜드 팔레트 (desktop-community-layout-design §4 — 전역 적용) */
+  --brand-primary: #0f6e56; /* deep teal — primary 버튼·활성 상태 */
+  --brand-primary-text: #e1f5ee; /* brand 위 텍스트 */
+  --brand-tint: #e1f5ee; /* 연한 brand 배경 (활성 내비·선택 세그먼트) */
+  --brand-tint-text: #085041; /* tint 위 텍스트 */
+  --brand-outline: #1d9e75; /* 포커스·선택 보더 */
+  --brand-primary-hover: #0c5a46; /* primary hover (약간 어둡게) */
+  --note-block: #5dcaa5; /* 패드·피아노롤 켜진 셀 */
+  --note-block-selected: #0f6e56; /* 선택 음표/셀 */
+  --playhead: #d85a30; /* 재생 헤드 (코랄) */
+  --rank-accent: #ba7517; /* 랭킹 1위 (amber) */
 
   /* 악보 내부 전용 */
   --staff: #c9c9c9; /* 보표/마디선 */
@@ -32,10 +44,17 @@
 
   /* §7 레이아웃 */
   --app-max-width: 420px;
-  --bg-outer: #f0f0f0;
+  --bg-page: #f7f6f3; /* 페이지 배경 (off-white) — 카드가 놓이는 면 */
+  --bg-card: #fff; /* 카드·패널 표면 */
+  --bg-outer: var(--bg-page); /* 기존 참조를 off-white로 재지정 */
   --bg-pad-zone: #fafafa;
   --bg-stepper-zone: #f5f5f5;
   --bg-nav-btn: #f5f5f5;
+
+  /* 신규 커뮤니티·데스크톱 표면 라운드 (모바일 에디터 --radius=2px는 유지) */
+  --radius-card: 12px;
+  --radius-ctl: 6px;
+  --shadow-card: 0 1px 2px rgba(17, 17, 17, 0.05), 0 1px 3px rgba(17, 17, 17, 0.04);
 }
 
 /* ── 데스크톱 DAW 라이트 테마 ──
@@ -52,11 +71,11 @@
   --daw-cell-db: var(--celldb); /* 정박 셀 */
   --daw-cell-dk: var(--celldk); /* ♯행 셀 */
 
-  /* 노트 — 모바일 패드 on/선택과 동일 (회색 블록 + 빨강 포인트) */
-  --daw-note: var(--on);
-  --daw-note-bd: #6b6b6b;
-  --daw-note-sel: var(--red);
-  --daw-note-sel-bd: #b52a23;
+  /* 노트 — 브랜드 팔레트 (민트 블록 + teal 선택) */
+  --daw-note: var(--note-block);
+  --daw-note-bd: #3fae89;
+  --daw-note-sel: var(--note-block-selected);
+  --daw-note-sel-bd: #0a4a3a;
 
   /* 코드 레일 — 모바일 코드 슬롯과 동일 (흰 배경·ink 테두리·italic) */
   --daw-chord: var(--paper);

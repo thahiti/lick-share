@@ -237,7 +237,7 @@ body {
 }
 
 .pad .pcell.on {
-  background: var(--on);
+  background: var(--note-block);
 }
 
 .pad .prow.rest .pcell.on {
@@ -245,7 +245,7 @@ body {
 }
 
 .pad .pcell.sel {
-  background: var(--red);
+  background: var(--note-block-selected);
   outline: 1.5px solid var(--ink);
   outline-offset: -1.5px;
 }
@@ -469,8 +469,8 @@ body {
 }
 
 .stepper.vert .cur {
-  border-top: 1.5px solid var(--red);
-  border-bottom: 1.5px solid var(--red);
+  border-top: 1.5px solid var(--brand-outline);
+  border-bottom: 1.5px solid var(--brand-outline);
   align-self: stretch;
 }
 
@@ -518,12 +518,12 @@ body {
 }
 
 .button-bar .bb.pri:active {
-  background: #333;
+  background: var(--brand-primary-hover);
 }
 
 .button-bar .bb.pri {
-  background: var(--ink);
-  color: #fff;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
 }
 
 .button-bar .bb.warn {
@@ -535,7 +535,7 @@ body {
 }
 
 .button-bar .bb.add {
-  color: var(--red);
+  color: var(--brand-primary);
   font-weight: 700;
 }
 
@@ -658,7 +658,7 @@ body {
     background: var(--bg-stepper-zone);
   }
   .chord-row .cslot:hover {
-    border-color: var(--red);
+    border-color: var(--brand-outline);
   }
   .pad .pcell:hover {
     outline: 1px solid var(--mut2);
@@ -673,6 +673,6 @@ body {
 .stepper button:focus-visible,
 .chord-row .cslot:focus-visible,
 .pad .pcell:focus-visible {
-  outline: 2px solid var(--red);
+  outline: 2px solid var(--brand-outline);
   outline-offset: -2px;
 }
