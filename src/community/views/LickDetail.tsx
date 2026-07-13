@@ -31,6 +31,7 @@ type Phase =
   | { readonly kind: 'loading' }
   | { readonly kind: 'notfound' }
   | { readonly kind: 'baddecode' }
+  | { readonly kind: 'loaderror' }
   | { readonly kind: 'ready'; readonly lick: LickRow; readonly song: Song };
 
 // 열람 재생: 각 종류를 모두 내보내고 실제 소리는 곡 데이터(accPat/metro)가 결정
@@ -54,35 +55,47 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteErr, setDeleteErr] = useState<string | null>(null);
+  const [reloadN, setReloadN] = useState(0);
 
   const started = useRef(false);
   const alive = useRef(true);
   const lastEl = useRef(0);
 
-  /* 릭·악보 로드 — StrictMode 이중 이펙트에서도 fetchLick은 정확히 1회 (Feed와 동일 패턴) */
+  /* 릭·악보 로드 — StrictMode 이중 이펙트에서도 fetchLick은 정확히 1회 (Feed와 동일 패턴).
+     실패는 loaderror로 구분해 재시도 버튼을 보인다 (핸드오프 §13). */
   useEffect(() => {
     alive.current = true;
     if (!started.current) {
       started.current = true;
-      void fetchLick(id).then((lick) => {
-        if (!alive.current) return;
-        if (!lick) {
-          setPhase({ kind: 'notfound' });
-          return;
-        }
-        const song = decodeSong(lick.blob);
-        if (!song) {
-          setPhase({ kind: 'baddecode' });
-          return;
-        }
-        setPhase({ kind: 'ready', lick, song });
-        setBpm(song.tempo); // 세션 기본 템포 = 원곡 템포
-      });
+      setPhase({ kind: 'loading' });
+      void fetchLick(id)
+        .then((lick) => {
+          if (!alive.current) return;
+          if (!lick) {
+            setPhase({ kind: 'notfound' });
+            return;
+          }
+          const song = decodeSong(lick.blob);
+          if (!song) {
+            setPhase({ kind: 'baddecode' });
+            return;
+          }
+          setPhase({ kind: 'ready', lick, song });
+          setBpm(song.tempo); // 세션 기본 템포 = 원곡 템포
+        })
+        .catch(() => {
+          if (alive.current) setPhase({ kind: 'loaderror' });
+        });
     }
     return () => {
       alive.current = false;
     };
-  }, [id]);
+  }, [id, reloadN]);
+
+  const retry = (): void => {
+    started.current = false;
+    setReloadN((n) => n + 1);
+  };
 
   /* 좋아요 카운트·내 좋아요 여부 — 대상은 항상 canonical_id ?? id */
   useEffect(() => {
@@ -122,7 +135,23 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
     return () => clearTimeout(t);
   }, [toast]);
 
-  if (phase.kind === 'loading') return <p className="c-state">Loading…</p>;
+  // 로딩: 자리를 미리 잡는 스켈레톤 (레이아웃 시프트 없음, 프레임 경계는 보인다) §13
+  if (phase.kind === 'loading')
+    return (
+      <div className="c-detail" aria-busy="true">
+        <div className="c-skel c-skel-title" />
+        <div className="c-frame c-skel-frame">
+          <div className="c-toolbar">
+            <div className="c-skel c-skel-tb" />
+          </div>
+          <div className="c-frame-divider" />
+          <div className="c-frame-score">
+            <div className="c-skel c-skel-score" />
+          </div>
+        </div>
+        <div className="c-skel c-skel-actions" />
+      </div>
+    );
   if (phase.kind === 'notfound')
     return (
       <div className="c-detail">
@@ -139,6 +168,16 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
         <a href="/" onClick={(e) => (e.preventDefault(), navigate('/'))}>
           Back to Latest
         </a>
+      </div>
+    );
+  // 로드 실패: 무엇이 실패했는지 알리고 재시도 (사과 문구 없이) §13
+  if (phase.kind === 'loaderror')
+    return (
+      <div className="c-detail">
+        <p className="c-state">Couldn&apos;t load this lick.</p>
+        <button type="button" className="c-share" onClick={retry}>
+          Retry
+        </button>
       </div>
     );
 

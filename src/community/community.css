@@ -968,6 +968,52 @@
   gap: 8px;
 }
 
+/* 로딩 스켈레톤 (§13) — 자리를 미리 잡아 레이아웃 시프트를 없앤다 */
+.c-skel {
+  background: var(--line);
+  border-radius: var(--radius);
+  animation: c-skel-pulse 1.2s ease-in-out infinite;
+}
+.c-skel-title {
+  height: 20px;
+  width: 60%;
+}
+.c-skel-frame {
+  background: var(--paper); /* 프레임 경계는 로딩 중에도 보인다 */
+}
+.c-skel-tb {
+  height: 28px;
+  width: 160px;
+}
+.c-skel-score {
+  height: 96px;
+  width: 100%;
+}
+.c-skel-actions {
+  height: 44px;
+  width: 100%;
+}
+@keyframes c-skel-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* 모션 최소화 존중 (§15) */
+@media (prefers-reduced-motion: reduce) {
+  .c-skel {
+    animation: none;
+  }
+  .c-tb-btn,
+  .c-dup {
+    transition: none;
+  }
+}
+
 /* 접근성: 키보드 포커스 링 (§15) */
 .c-tb-btn:focus-visible,
 .c-menu-item:focus-visible,

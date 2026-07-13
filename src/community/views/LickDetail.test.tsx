@@ -113,6 +113,16 @@ describe('LickDetail 릭 상세', () => {
     expect(/transpose|download|midi|musicxml|\.png/i.test(text)).toBe(false);
   });
 
+  it('로드 실패 → 에러 메시지 + Retry, 재시도하면 릭이 뜬다 (§13)', async () => {
+    fetchLick.mockRejectedValueOnce(new Error('network'));
+    render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
+
+    const retry = await screen.findByText('Retry');
+    fetchLick.mockResolvedValue(original); // 재시도 시엔 성공
+    fireEvent.click(retry);
+    expect(await screen.findByText('Original lick')).toBeTruthy();
+  });
+
   it('원본 릭: 제목·악보(svg)·좋아요 카운트가 렌더된다', async () => {
     fetchLick.mockResolvedValue(original);
     const { container } = render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
