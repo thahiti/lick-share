@@ -114,6 +114,16 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
     expect(container.querySelector('[data-playhead]')).not.toBeNull();
   });
 
+  test('재생 중 현재 음이 선택됨 + 정지 시 마지막 재생된 음 선택 유지', () => {
+    const { container, time, clock, store } = setup();
+    click(container, '[data-btn="playall"]');
+    time.t = EPOCH + 21 * SPS; // step 21 → 데모곡 [20,4,67] id=6 재생 중
+    act(() => clock.frame());
+    expect(store.getState().sel).toBe(6);
+    click(container, '[data-btn="playall"]'); // 정지
+    expect(store.getState().sel).toBe(6); // 마지막 재생된 음 선택 유지
+  });
+
   test('편집 후 500ms 뒤 해시 갱신, 재마운트 시 동일 곡 복원', () => {
     vi.useFakeTimers();
     const first = setup();

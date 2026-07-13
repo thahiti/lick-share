@@ -7,6 +7,7 @@ import { useEffect, useRef, useState, type JSX } from 'react';
 import { useStore, type StoreApi } from 'zustand';
 import type { Player } from '../../adapters/player';
 import { decodeSong, encodeSong } from '../../core/codec';
+import { noteAt } from '../../core/editing';
 import { measCountAll, measLen, measOf, measStart, total } from '../../core/geometry';
 import { asStep, type AccPattern } from '../../core/types';
 import type { HashStore } from '../../ports/hash-store';
@@ -93,6 +94,10 @@ export const App = ({
       const st = store.getState();
       const m = Math.min(measOf(st.song, asStep(el)), measCountAll(st.song) - 1);
       if (m !== st.curM) st.setCurM(m);
+      // 재생 중인 음을 선택 상태로 — 정지 시 마지막 재생 음이 선택된 채로 남는다.
+      // 쉼표 구간(noteAt=null)에서는 직전 선택을 유지한다.
+      const n = noteAt(st.song, el);
+      if (n && n.id !== st.sel) st.setSel(n.id);
     });
     const unsubEnd = player.onEnded(() => {
       setPlaying(false);

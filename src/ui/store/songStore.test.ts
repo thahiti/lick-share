@@ -158,6 +158,13 @@ describe('songStore: 조립용 액션 (P8)', () => {
     expect(store.getState().preview).toBeNull();
   });
 
+  test('setSel: 재생 중 현재 음 선택 — sel 갱신, 프리뷰 없음(소리 중복 방지)', () => {
+    const store = createSongStore();
+    store.getState().setSel(6);
+    expect(store.getState().sel).toBe(6);
+    expect(store.getState().preview).toBeNull();
+  });
+
   test('loadSong: 곡 교체 + undo/세션 초기화', () => {
     const store = createSongStore();
     store.getState().padTap(asMidi(60), 0);

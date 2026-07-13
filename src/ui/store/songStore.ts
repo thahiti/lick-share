@@ -63,6 +63,8 @@ export interface SongStore {
   gotoMeasure(m: number): void;
   /** 재생 추적: 선택·프리뷰 없이 curM만 */
   setCurM(m: number): void;
+  /** 재생 추적: 현재 재생 음을 선택 — 프리뷰 없이 sel만 (소리 중복 방지) */
+  setSel(id: number): void;
   /** 해시 로드: 곡 교체 + undo/세션 초기화 */
   loadSong(song: Song): void;
   showToast(msg: string): void;
@@ -128,6 +130,7 @@ export const createSongStore = (initial: Song = demoSong) =>
       toggleMetro: () => set((s) => ({ metroOn: !s.metroOn })),
       gotoMeasure: (m) => apply((c) => gotoMeasure(c, asBar(m))),
       setCurM: (m) => set({ curM: asBar(m), preview: null }),
+      setSel: (id) => set({ sel: id, preview: null }),
       loadSong: (song) =>
         set({
           song,
