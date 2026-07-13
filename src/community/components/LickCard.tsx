@@ -4,6 +4,7 @@ import { decodeSong } from '../../core/codec';
 import { Score } from '../../ui/components/edit/Score';
 import type { LickRow } from '../api/licks';
 import { navigate } from '../routing';
+import { TagChips } from './TagChips';
 
 interface Props {
   readonly lick: LickRow;
@@ -24,6 +25,7 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
           <p className="c-state">Couldn't read this score</p>
         )}
       </button>
+      <TagChips tags={lick.tags} />
       <div className="c-meta">
         {profiles && (
           <a

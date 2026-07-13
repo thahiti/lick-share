@@ -12,6 +12,7 @@ import { Score } from '../../ui/components/edit/Score';
 import { deleteLick, fetchLick, type LickRow } from '../api/licks';
 import { addLike, fetchLikeCounts, fetchMyLikedSet, likeTargetId, removeLike } from '../api/likes';
 import { LikeButton } from '../components/LikeButton';
+import { TagChips } from '../components/TagChips';
 import { navigate } from '../routing';
 
 interface Props {
@@ -182,6 +183,7 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
         </p>
       )}
       <Score song={song} mode="view" width={420} onNoteTap={onNoteTap} />
+      <TagChips tags={lick.tags} />
       <div className="c-row">
         <button type="button" className="c-btn" onClick={onTogglePlay}>
           {playing ? 'Stop' : 'Play all'}

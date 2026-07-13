@@ -10,6 +10,7 @@ import { Score } from '../../ui/components/edit/Score';
 import { PAGE_SIZE, fetchRankingPage, type RankingRow } from '../api/licks';
 import { appendDeduped } from '../api/likes';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import { TagChips } from '../components/TagChips';
 import { navigate } from '../routing';
 
 interface Props {
@@ -64,6 +65,7 @@ export const Ranking = (_props: Props): JSX.Element => {
                 <p className="c-state">Couldn't read this score</p>
               )}
             </button>
+            <TagChips tags={row.tags} />
             <div className="c-meta">
               <a
                 href={'/user/' + row.author_public_id}

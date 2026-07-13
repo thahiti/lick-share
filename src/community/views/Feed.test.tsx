@@ -67,6 +67,18 @@ describe('Feed 최신 피드', () => {
     expect(fetchLikeCounts).toHaveBeenCalledWith(['orig-1']);
   });
 
+  it('태그가 있는 카드는 칩을 렌더하고, 없는 카드는 칩을 렌더하지 않는다', async () => {
+    const tagged = lick({ id: 'tag-1', title: 'Tagged lick', tags: ['jazz', 'blues'] });
+    fetchFeedPage.mockResolvedValue([tagged, original]);
+
+    render(<Feed />);
+
+    expect(await screen.findByText('#jazz')).toBeTruthy();
+    expect(screen.getByText('#blues')).toBeTruthy();
+    // original(tags: [])은 칩이 없으므로 칩은 tagged의 2개뿐
+    expect(document.querySelectorAll('.c-tag')).toHaveLength(2);
+  });
+
   it('StrictMode 이중 이펙트에서도 첫 페이지 요청은 정확히 1회', async () => {
     render(
       <StrictMode>

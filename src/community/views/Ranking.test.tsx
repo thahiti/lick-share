@@ -67,6 +67,15 @@ describe('Ranking 랭킹', () => {
     expect(fetchRankingPage).toHaveBeenCalledWith(0);
   });
 
+  it('태그가 있는 행은 칩을 렌더한다', async () => {
+    fetchRankingPage.mockResolvedValue([
+      row({ id: 'r-3', title: 'Tagged lick', tags: ['bebop'] }),
+    ]);
+    render(<Ranking player={fakePlayer} />);
+
+    expect(await screen.findByText('#bebop')).toBeTruthy();
+  });
+
   it('StrictMode 이중 이펙트에서도 첫 페이지 요청은 정확히 1회', async () => {
     render(
       <StrictMode>
