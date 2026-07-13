@@ -72,8 +72,31 @@ describe('resolveShortcut', () => {
     expect(resolveShortcut(ev('Process', { code: 'KeyJ' }))).toBe('pitchDown');
   });
 
-  test('영문 자판 의미는 유지 (미지정 비라틴 키는 null)', () => {
-    expect(resolveShortcut(ev('ㅁ', { code: 'KeyA' }))).toBeNull();
+  test('미지정 물리 코드의 비라틴 키는 null (KeyQ 등)', () => {
+    expect(resolveShortcut(ev('ㅂ', { code: 'KeyQ' }))).toBeNull();
+  });
+
+  test('A~G 음 입력 (shift 무관, Vim 키 h/j/k/l/z 제외)', () => {
+    expect(resolveShortcut(ev('a'))).toBe('noteA');
+    expect(resolveShortcut(ev('b'))).toBe('noteB');
+    expect(resolveShortcut(ev('c'))).toBe('noteC');
+    expect(resolveShortcut(ev('d'))).toBe('noteD');
+    expect(resolveShortcut(ev('e'))).toBe('noteE');
+    expect(resolveShortcut(ev('f'))).toBe('noteF');
+    expect(resolveShortcut(ev('g'))).toBe('noteG');
+    expect(resolveShortcut(ev('C', { shiftKey: true }))).toBe('noteC');
+    // h/j/k/l/z는 이동/undo로 유지 (음 입력 아님)
+    expect(resolveShortcut(ev('h'))).toBe('selectPrev');
+  });
+
+  test('한글 자판: ㅁ(KeyA 위치) → A 음 입력', () => {
+    expect(resolveShortcut(ev('ㅁ', { code: 'KeyA' }))).toBe('noteA');
+    expect(resolveShortcut(ev('ㅐ', { code: 'KeyC' }))).toBe('noteC');
+  });
+
+  test('Cmd/Ctrl+C 등 조합은 브라우저에 양보(null)', () => {
+    expect(resolveShortcut(ev('c', { metaKey: true }))).toBeNull();
+    expect(resolveShortcut(ev('a', { ctrlKey: true }))).toBeNull();
   });
 });
 
@@ -95,6 +118,13 @@ const emptyHandlers = (): Record<ShortcutAction, () => void> => ({
   undo: noop,
   redo: noop,
   escape: noop,
+  noteA: noop,
+  noteB: noop,
+  noteC: noop,
+  noteD: noop,
+  noteE: noop,
+  noteF: noop,
+  noteG: noop,
 });
 
 const Harness = ({

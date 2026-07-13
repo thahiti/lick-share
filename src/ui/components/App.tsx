@@ -211,6 +211,13 @@ export const App = ({
     undo: () => store.getState().undoAction(),
     redo: () => store.getState().redoAction(),
     escape: () => setCpBeat(null),
+    noteA: () => store.getState().noteLetter('A'),
+    noteB: () => store.getState().noteLetter('B'),
+    noteC: () => store.getState().noteLetter('C'),
+    noteD: () => store.getState().noteLetter('D'),
+    noteE: () => store.getState().noteLetter('E'),
+    noteF: () => store.getState().noteLetter('F'),
+    noteG: () => store.getState().noteLetter('G'),
   };
   useKeyboardShortcuts(shortcuts, mode === 'edit');
 

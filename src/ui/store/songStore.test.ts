@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { demoSong } from '../../core/demo-song';
-import { asMidi } from '../../core/types';
+import { asMidi, asStep } from '../../core/types';
 import { createSongStore } from './songStore';
 
 describe('songStore (core 순수 함수 래핑)', () => {
@@ -196,7 +196,7 @@ describe('songStore: showToast (P9)', () => {
 describe('songStore: 데스크톱 워크스페이스 액션', () => {
   test('dragNote: 이동 커밋이 undo 1회로 원복된다', () => {
     const store = createSongStore();
-    store.getState().loadSong({ ...demoSong, meas: 2, notes: [{ id: 1, s: 0, d: 4, p: 64 }] });
+    store.getState().loadSong({ ...demoSong, meas: 2, notes: [{ id: 1, s: asStep(0), d: 4, p: asMidi(64) }] });
     store.getState().dragNote(1, { s: 8 });
     expect(store.getState().song.notes[0]).toMatchObject({ s: 8, d: 4, p: 64 });
     expect(store.getState().undo.past).toHaveLength(1);
@@ -206,7 +206,7 @@ describe('songStore: 데스크톱 워크스페이스 액션', () => {
 
   test('setLen: inputLen 세션 갱신 + 선택 노트 길이 설정', () => {
     const store = createSongStore();
-    store.getState().loadSong({ ...demoSong, meas: 1, notes: [{ id: 1, s: 0, d: 4, p: 64 }] });
+    store.getState().loadSong({ ...demoSong, meas: 1, notes: [{ id: 1, s: asStep(0), d: 4, p: asMidi(64) }] });
     store.getState().setSel(1);
     store.getState().setLen(8);
     expect(store.getState().inputLen).toBe(8);
@@ -223,7 +223,7 @@ describe('songStore: 데스크톱 워크스페이스 액션', () => {
 
   test('noteLetter: 선택 있으면 해당 음이름으로 재배치', () => {
     const store = createSongStore();
-    store.getState().loadSong({ ...demoSong, meas: 1, notes: [{ id: 1, s: 0, d: 4, p: 72 }] });
+    store.getState().loadSong({ ...demoSong, meas: 1, notes: [{ id: 1, s: asStep(0), d: 4, p: asMidi(72) }] });
     store.getState().setSel(1);
     store.getState().noteLetter('G');
     expect(store.getState().song.notes[0]?.p).toBe(67); // G4

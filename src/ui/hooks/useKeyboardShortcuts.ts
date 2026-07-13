@@ -17,15 +17,41 @@ export type ShortcutAction =
   | 'measNext'
   | 'undo'
   | 'redo'
-  | 'escape';
+  | 'escape'
+  // A~G 음 입력 (데스크톱 워크스페이스)
+  | 'noteA'
+  | 'noteB'
+  | 'noteC'
+  | 'noteD'
+  | 'noteE'
+  | 'noteF'
+  | 'noteG';
 
-/** 물리 키 위치 보정 — 한글 등 비라틴 자판에서도 hjkl·z가 같은 자리로 동작 */
+/** 물리 키 위치 보정 — 한글 등 비라틴 자판에서도 hjkl·z·A~G가 같은 자리로 동작 */
 const CODE_KEYS: Readonly<Record<string, string>> = {
   KeyH: 'h',
   KeyJ: 'j',
   KeyK: 'k',
   KeyL: 'l',
   KeyZ: 'z',
+  KeyA: 'a',
+  KeyB: 'b',
+  KeyC: 'c',
+  KeyD: 'd',
+  KeyE: 'e',
+  KeyF: 'f',
+  KeyG: 'g',
+};
+
+/** a~g → 음 입력 액션 (h/j/k/l/z는 Vim 이동이라 제외) */
+const NOTE_ACTIONS: Readonly<Record<string, ShortcutAction>> = {
+  a: 'noteA',
+  b: 'noteB',
+  c: 'noteC',
+  d: 'noteD',
+  e: 'noteE',
+  f: 'noteF',
+  g: 'noteG',
 };
 
 /** e.key가 비라틴 문자(ㅗ 등)거나 IME 'Process'면 e.code로 보정 */
@@ -73,7 +99,8 @@ export const resolveShortcut = (e: KeyboardEvent): ShortcutAction | null => {
     case 'escape':
       return 'escape';
     default:
-      return null;
+      // a~g 음 입력 (shift 무관). h/j/k/l/z는 위에서 이미 처리됨
+      return NOTE_ACTIONS[lower] ?? null;
   }
 };
 
