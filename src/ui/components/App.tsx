@@ -14,7 +14,7 @@ import type { HashStore } from '../../ports/hash-store';
 import { songStore, type SongStore } from '../store/songStore';
 import { useKeyboardShortcuts, type ShortcutAction } from '../hooks/useKeyboardShortcuts';
 import { useMediaQuery } from '../hooks/useMediaQuery';
-import { DawEdit } from './edit/daw/DawEdit';
+import { Workspace } from './edit/ws/Workspace';
 import { Toast } from './common/Toast';
 import { ButtonBar } from './edit/ButtonBar';
 import { ChordPicker } from './edit/ChordPicker';
@@ -57,8 +57,8 @@ export const App = ({
   const loaded = useRef(false);
   const shellRef = useRef<HTMLDivElement>(null);
   const [scoreW, setScoreW] = useState(384);
-  /* 데스크톱(≥900px) 편집은 DAW 레이아웃 (P11 v2) */
-  const desktop = useMediaQuery('(min-width: 900px)');
+  /* 데스크톱(≥1024px) 편집은 라이트 워크스페이스 */
+  const desktop = useMediaQuery('(min-width: 1024px)');
 
   /* 악보 pane 폭 측정 → 조판 재계산 (SPEC §8). 모드·레이아웃 전환 시 대상 재부착 */
   useEffect(() => {
@@ -244,8 +244,8 @@ export const App = ({
 
   if (desktop) {
     return (
-      <div className="daw">
-        <DawEdit
+      <>
+        <Workspace
           song={s.song}
           sel={s.sel}
           curM={s.curM}
@@ -254,9 +254,9 @@ export const App = ({
           playing={playing}
           playEl={playEl}
           cpBeat={cpBeat}
-          scoreW={scoreW}
-          scoreRef={shellRef}
+          inputLen={s.inputLen}
           onCellTap={(m, pv, st) => store.getState().padTapAt(m, pv, st)}
+          onDragNote={(id, patch) => store.getState().dragNote(id, patch)}
           onSlotTap={(m, b) => {
             if (m === s.curM && cpBeat === b) {
               setCpBeat(null);
@@ -273,30 +273,29 @@ export const App = ({
             setCpBeat(null);
           }}
           onPickerDone={() => setCpBeat(null)}
-          onMeasureTap={(m) => {
-            setCpBeat(null);
-            store.getState().gotoMeasure(m);
-          }}
           onStepPitch={(d) => store.getState().stepPitch(d)}
           onStepPos={(d) => store.getState().stepPos(d)}
           onStepLen={(d) => store.getState().stepLen(d)}
+          onSetLen={(len) => store.getState().setLen(len)}
+          onDelete={() => store.getState().deleteSel()}
           onAccSelect={accSelect}
           onCycleAcc={() => store.getState().cycleMeasureAcc()}
+          onSetTitle={(title) => store.getState().setTitle(title)}
+          onTempoApply={(v) => store.getState().setTempo(v)}
+          onKeyTap={(p) => store.getState().keyTap(p)}
           onTogglePlay={togglePlay}
           onToggleMetro={metroToggle}
-          onTempoApply={(v) => store.getState().setTempo(v)}
           onUndo={() => store.getState().undoAction()}
           onRedo={() => store.getState().redoAction()}
-          onDelete={() => store.getState().deleteSel()}
-          onPublish={publishShare}
           onCopyLink={copyShare}
-          onView={() => {
+          onPublish={publishShare}
+          onBack={() => {
             player.stop();
             setMode('view');
           }}
         />
         <Toast msg={s.toast} onDone={() => store.getState().clearToast()} />
-      </div>
+      </>
     );
   }
 

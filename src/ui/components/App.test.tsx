@@ -15,7 +15,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-/** 데스크톱(≥900px) matchMedia 스텁 */
+/** 데스크톱(≥1024px) matchMedia 스텁 */
 const stubDesktop = (): void => {
   vi.stubGlobal('matchMedia', (q: string) => ({
     matches: true,
@@ -301,15 +301,15 @@ describe('App: 리사이즈 재계산 (IMPLEMENTATION_PLAN P9)', () => {
   });
 });
 
-describe('DAW 데스크톱 편집 (P11 v2)', () => {
-  test('≥900px: DAW 구획 렌더 + 모바일 패드 없음', () => {
+describe('데스크톱 워크스페이스 편집 (editor-workspace)', () => {
+  test('≥1024px: 워크스페이스 렌더 + 모바일 패드 없음', () => {
     stubDesktop();
     const { container } = setup();
-    expect(container.querySelector('.daw-shell')).not.toBeNull();
+    expect(container.querySelector('.ws')).not.toBeNull();
     expect(container.querySelector('.roll-grid')).not.toBeNull();
-    expect(container.querySelector('.inspector')).not.toBeNull();
-    expect(container.querySelector('.chord-rail')).not.toBeNull();
-    expect(container.querySelector('.daw-score svg')).not.toBeNull();
+    expect(container.querySelector('.pp')).not.toBeNull();
+    expect(container.querySelector('.sl-body')).not.toBeNull();
+    expect(container.querySelector('.pk')).not.toBeNull();
     expect(container.querySelector('.pad')).toBeNull();
   });
 
@@ -322,13 +322,32 @@ describe('DAW 데스크톱 편집 (P11 v2)', () => {
     expect(store.getState().curM).toBe(1);
   });
 
-  test('코드 슬롯 클릭 → 피커 열림 → Esc 닫힘', () => {
+  test('속성 패널 코드 슬롯 클릭 → 피커 열림 → Esc 닫힘', () => {
     stubDesktop();
     const { container } = setup();
-    click(container, '[data-rm-b="2:0"]');
+    click(container, '.pp [data-b="0"]');
     expect(container.querySelector('.chord-pick')).not.toBeNull();
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(container.querySelector('.chord-pick')).toBeNull();
+  });
+
+  test('A~G 단축키 → 다음 빈 박에 음 입력', () => {
+    stubDesktop();
+    const { store } = setup();
+    // 마디 추가 → 빈 마디 확보 (curM 이동)
+    store.getState().addMeasure();
+    const before = store.getState().song.notes.length;
+    fireEvent.keyDown(window, { key: 'c' });
+    expect(store.getState().song.notes.length).toBe(before + 1);
+  });
+
+  test('건반 클릭 → 음 입력', () => {
+    stubDesktop();
+    const { container, store } = setup();
+    store.getState().addMeasure();
+    const before = store.getState().song.notes.length;
+    click(container, '.pk [data-key="72"]');
+    expect(store.getState().song.notes.length).toBe(before + 1);
   });
 
   test('키보드 Space 재생 유지', () => {

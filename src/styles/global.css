@@ -638,8 +638,8 @@ body {
   color: var(--mut2);
 }
 
-/* ── 데스크톱 열람 (DESIGN §7) — 편집은 DAW 레이아웃(daw.css)이 담당 ── */
-@media (min-width: 900px) {
+/* ── 데스크톱 열람 (DESIGN §7) — 편집은 워크스페이스(ws.css)가 담당 ── */
+@media (min-width: 1024px) {
   .app--view {
     max-width: 680px;
   }
