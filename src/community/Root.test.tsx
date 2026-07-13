@@ -9,16 +9,17 @@ vi.mock('./api/auth', () => ({
 }));
 
 // Feed(views/Feed.tsx)의 '../api/…' 임포트와 같은 모듈로 해석됨 — 실제 네트워크 차단
-// 주의: Feed·Publish·LickDetail이 쓰는 export만 구현 — 다른 뷰가 이 모듈을 임포트하게 되면 해당 export를 추가할 것
+// 주의: Feed·Publish·LickDetail·Ranking이 쓰는 export만 구현 — 다른 뷰가 이 모듈을 임포트하게 되면 해당 export를 추가할 것
 vi.mock('./api/licks', () => ({
   PAGE_SIZE: 20,
   fetchFeedPage: () => Promise.resolve([]),
   fetchLick: () => Promise.resolve(null),
   deleteLick: () => Promise.resolve(),
   publishLick: vi.fn(),
+  fetchRankingPage: () => Promise.resolve([]),
 }));
 
-// 주의: Feed·LickDetail이 쓰는 export만 구현 — 다른 뷰가 이 모듈을 임포트하게 되면 해당 export를 추가할 것
+// 주의: Feed·LickDetail·Ranking이 쓰는 export만 구현 — 다른 뷰가 이 모듈을 임포트하게 되면 해당 export를 추가할 것
 vi.mock('./api/likes', () => ({
   canonicalIds: () => [],
   likeTargetId: (l: { id: string; canonical_id: string | null }): string => l.canonical_id ?? l.id,
@@ -26,6 +27,10 @@ vi.mock('./api/likes', () => ({
   fetchMyLikedSet: () => Promise.resolve(new Set<string>()),
   addLike: () => Promise.resolve(),
   removeLike: () => Promise.resolve(),
+  appendDeduped: <T extends { id: string }>(cur: readonly T[], next: readonly T[]): T[] => [
+    ...cur,
+    ...next.filter((x) => !cur.some((c) => c.id === x.id)),
+  ],
 }));
 
 import { Root } from './Root';
@@ -57,9 +62,9 @@ describe('Root 라우팅', () => {
     expect(await screen.findByText(/아직 게시된 릭이 없어요/)).toBeTruthy();
   });
 
-  it('/ranking 은 랭킹 스텁', () => {
+  it('/ranking 은 랭킹 (빈 목록이면 빈 상태 문구)', async () => {
     renderAt('/ranking');
-    expect(screen.getByText(/랭킹 — 준비 중/)).toBeTruthy();
+    expect(await screen.findByText(/아직 랭킹이 없어요/)).toBeTruthy();
   });
 
   it('알 수 없는 경로는 NotFound', () => {

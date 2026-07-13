@@ -1,8 +1,79 @@
-import type { JSX } from 'react';
+/**
+ * 랭킹 (설계 §8.1, §8.5). offset 무한 스크롤 — 순위 드리프트로 인한 중복은
+ * appendDeduped로 제거한다. 원본만 노출(ranking DB view가 canonical 필터).
+ * 순위 번호는 병합된 목록에서의 위치로 매긴다.
+ */
+import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import type { Player } from '../../adapters/player';
+import { decodeSong } from '../../core/codec';
+import { Score } from '../../ui/components/edit/Score';
+import { PAGE_SIZE, fetchRankingPage, type RankingRow } from '../api/licks';
+import { appendDeduped } from '../api/likes';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import { navigate } from '../routing';
 
 interface Props {
   readonly player: Player;
 }
 
-export const Ranking = (_props: Props): JSX.Element => <p className="c-state">랭킹 — 준비 중</p>;
+export const Ranking = (_props: Props): JSX.Element => {
+  const [rows, setRows] = useState<RankingRow[]>([]);
+  const [done, setDone] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const offset = useRef(0);
+  const started = useRef(false);
+
+  const loadMore = useCallback(async (): Promise<boolean> => {
+    const page = await fetchRankingPage(offset.current);
+    offset.current += PAGE_SIZE;
+    setRows((prev) => appendDeduped(prev, page));
+    const hasMore = page.length === PAGE_SIZE;
+    setDone(!hasMore);
+    return hasMore;
+  }, []);
+
+  const sentinelRef = useInfiniteScroll(loadMore);
+
+  useEffect(() => {
+    // StrictMode의 이중 이펙트에서도 첫 페이지 요청은 인스턴스당 정확히 1회 (Feed와 동일 패턴)
+    if (started.current) return;
+    started.current = true;
+    void loadMore().finally(() => setLoaded(true));
+  }, [loadMore]);
+
+  return (
+    <div className="c-list">
+      {rows.map((row, i) => {
+        const song = decodeSong(row.blob);
+        return (
+          <article key={row.id} className="c-card">
+            <button type="button" className="c-cardhit" onClick={() => navigate('/lick/' + row.id)}>
+              <span className="c-eyebrow">{i + 1}위</span>
+              <div className="c-title">{row.title}</div>
+              {song ? (
+                <Score song={song} mode="view" width={420} />
+              ) : (
+                <p className="c-state">악보를 읽을 수 없어요</p>
+              )}
+            </button>
+            <div className="c-meta">
+              <a
+                href={'/user/' + row.author_public_id}
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/user/' + row.author_public_id);
+                }}
+              >
+                {row.author_name}
+              </a>
+              <span>♥ {row.like_count}</span>
+              <span>{new Date(row.created_at).toLocaleDateString('ko-KR')}</span>
+            </div>
+          </article>
+        );
+      })}
+      {loaded && !done && <div ref={sentinelRef} className="c-sentinel" />}
+      <p className="c-state">{done ? (rows.length ? '끝이에요' : '아직 랭킹이 없어요') : '불러오는 중…'}</p>
+    </div>
+  );
+};

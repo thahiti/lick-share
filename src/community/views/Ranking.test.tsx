@@ -1,0 +1,86 @@
+/** 랭킹 — offset 무한 스크롤 첫 페이지, 좋아요 내림차순 순위 (설계 §8.1, §8.5). */
+import { StrictMode } from 'react';
+import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Player } from '../../adapters/player';
+import type { RankingRow } from '../api/licks';
+
+const row = (over: Partial<RankingRow> & Pick<RankingRow, 'id' | 'title'>): RankingRow => ({
+  blob: 'invalid-blob',
+  created_at: '2026-01-02T00:00:00.000Z',
+  author_public_id: 'pub-1',
+  author_name: '작성자A',
+  avatar_url: null,
+  like_count: 0,
+  ...over,
+});
+
+const first = row({ id: 'r-1', title: '인기 릭', like_count: 9 });
+const second = row({
+  id: 'r-2',
+  title: '두번째 릭',
+  like_count: 3,
+  author_public_id: 'pub-2',
+  author_name: '작성자B',
+});
+
+const fetchRankingPage = vi.fn<(offset: number) => Promise<RankingRow[]>>();
+
+vi.mock('../api/licks', () => ({
+  PAGE_SIZE: 20,
+  fetchRankingPage: (offset: number) => fetchRankingPage(offset),
+}));
+
+// appendDeduped(../api/likes)는 실제 구현을 그대로 쓴다 — supabase는 import 시점에 지연 프록시라 안전.
+
+import { Ranking } from './Ranking';
+
+const fakePlayer = {
+  play: vi.fn(),
+  stop: vi.fn(),
+  isPlaying: () => false,
+  onTick: () => () => {},
+  onEnded: () => () => {},
+  preview: vi.fn(),
+  toggleAcc: vi.fn(),
+  toggleMetro: vi.fn(),
+} as unknown as Player;
+
+describe('Ranking 랭킹', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fetchRankingPage.mockResolvedValue([first, second]);
+  });
+
+  it('마운트 시 offset 0으로 첫 페이지를 불러와 좋아요 내림차순 순위를 보여준다', async () => {
+    render(<Ranking player={fakePlayer} />);
+
+    expect(await screen.findByText('인기 릭')).toBeTruthy();
+    expect(screen.getByText('두번째 릭')).toBeTruthy();
+
+    expect(screen.getByText('1위')).toBeTruthy();
+    expect(screen.getByText('2위')).toBeTruthy();
+    expect(screen.getByText('♥ 9')).toBeTruthy();
+    expect(screen.getByText('♥ 3')).toBeTruthy();
+
+    expect(fetchRankingPage).toHaveBeenCalledWith(0);
+  });
+
+  it('StrictMode 이중 이펙트에서도 첫 페이지 요청은 정확히 1회', async () => {
+    render(
+      <StrictMode>
+        <Ranking player={fakePlayer} />
+      </StrictMode>,
+    );
+
+    expect(await screen.findByText('인기 릭')).toBeTruthy();
+    expect(fetchRankingPage).toHaveBeenCalledTimes(1);
+  });
+
+  it('빈 목록이면 안내 문구를 보여준다', async () => {
+    fetchRankingPage.mockResolvedValue([]);
+    render(<Ranking player={fakePlayer} />);
+
+    expect(await screen.findByText('아직 랭킹이 없어요')).toBeTruthy();
+  });
+});
