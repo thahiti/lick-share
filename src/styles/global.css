@@ -434,6 +434,11 @@ body {
   align-items: stretch;
 }
 
+/* 좌우 버튼 고정폭 — 라벨 길이(8th ~ Quarter.)에 따라 폭이 변하지 않게 */
+.stepper.horiz button {
+  flex: 0 0 72px;
+}
+
 .stepper button {
   border: none;
   background: #fff;
