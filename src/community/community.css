@@ -438,27 +438,59 @@
 }
 
 .c-tab {
+  position: relative;
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 3px;
   border: none;
   background: none;
   font: inherit;
   font-size: 10px;
   color: var(--mut2);
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
+/* 터치 눌림 피드백 — 반응이 즉시 보이도록 */
+.c-tab:active .c-tab-ic,
+.c-tab:active .c-tab-ring {
+  transform: scale(0.9);
+}
+
+/* 활성 탭: 상단 인디케이터 바 + 진한 라벨 */
 .c-tab.active {
   color: var(--brand-tint-text);
   font-weight: 700;
 }
 
+.c-tab.active::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 25%;
+  right: 25%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--brand-primary);
+}
+
 .c-tab-ic {
   display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 12px;
+  border-radius: 12px;
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+/* 활성 탭 아이콘: tint 필(pill) 배경 */
+.c-tab.active .c-tab-ic {
+  background: var(--brand-tint);
 }
 
 .c-tab-ring {
@@ -470,6 +502,7 @@
   margin-top: -14px;
   border-radius: 50%;
   background: var(--brand-primary);
+  transition: transform 0.1s ease;
 }
 
 /* Create primary 버튼 (AppBar) */
@@ -620,6 +653,9 @@
   .c-sidenav a.active {
     color: var(--brand-tint-text);
     background: var(--brand-tint);
+    font-weight: 700;
+    /* 좌측 인디케이터 — 레이아웃 이동 없이 inset shadow로 */
+    box-shadow: inset 3px 0 0 var(--brand-primary);
   }
 
   .c-sidetags {
@@ -1051,7 +1087,9 @@
     animation: none;
   }
   .c-tb-btn,
-  .c-dup {
+  .c-dup,
+  .c-tab-ic,
+  .c-tab-ring {
     transition: none;
   }
 }
