@@ -30,6 +30,14 @@ describe('Sidebar', () => {
     expect(active.className).toContain('active');
   });
 
+  it('Create는 Sidebar에 없다 (AppBar·TabBar 전용) — 나머지 순서 Latest→Ranking→My licks', () => {
+    render(<Sidebar route={{ name: 'feed' }} user={fakeUser} />);
+    expect(screen.queryByRole('link', { name: /create/i })).toBeNull();
+    expect(
+      screen.getAllByRole('link', { name: /latest|ranking|my licks/i }).map((a) => a.textContent),
+    ).toEqual(['Latest', 'Ranking', 'My licks']);
+  });
+
   it('My licks는 로그인 사용자에게만 노출된다', () => {
     const { rerender } = render(<Sidebar route={{ name: 'feed' }} user={null} />);
     expect(screen.queryByRole('link', { name: /my licks/i })).toBeNull();

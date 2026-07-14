@@ -3,8 +3,9 @@
  * 라우트 기반 내비 + 인기 태그 섹션(방어적 렌더). Publish 항목은 없다.
  */
 import { useEffect, useState, type JSX } from 'react';
-import { Icon, type IconName } from '../../ui/components/common/Icon';
+import { Icon } from '../../ui/components/common/Icon';
 import { fetchFeedPage } from '../api/licks';
+import { visibleItems } from '../nav-items';
 import { topTags } from '../popular-tags';
 import { navigate, type Route } from '../routing';
 
@@ -12,12 +13,6 @@ interface Props {
   readonly route: Route;
   readonly user: import('@supabase/supabase-js').User | null;
 }
-
-const NAV: readonly { to: string; label: string; icon: IconName; match: Route['name'] }[] = [
-  { to: '/', label: 'Latest', icon: 'fire', match: 'feed' },
-  { to: '/ranking', label: 'Ranking', icon: 'trophy', match: 'ranking' },
-  { to: '/me', label: 'My licks', icon: 'folder', match: 'me' },
-];
 
 export const Sidebar = ({ route, user }: Props): JSX.Element => {
   const [tags, setTags] = useState<string[]>([]);
@@ -37,8 +32,8 @@ export const Sidebar = ({ route, user }: Props): JSX.Element => {
     };
   }, []);
 
-  // My licks는 로그인 사용자에게만 노출
-  const items = NAV.filter((n) => n.match !== 'me' || user);
+  // 단일 NAV 모델에서 파생 — Create(/edit)는 AppBar·TabBar 전용이므로 제외
+  const items = visibleItems(user !== null).filter((n) => n.match !== 'edit');
 
   return (
     <nav className="c-side" aria-label="Primary">
