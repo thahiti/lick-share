@@ -2,6 +2,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { User } from '@supabase/supabase-js';
+import type { Player } from '../../adapters/player';
 import { encodeSong } from '../../core/codec';
 import { demoSong } from '../../core/demo-song';
 import type { PublishResult } from '../api/licks';
@@ -27,9 +28,22 @@ const validHash = encodeSong(demoSong);
 // 유효하게 디코딩되지만 notes가 빈 v1. 해시
 const emptyHash = encodeSong({ ...demoSong, title: 'Empty lick', notes: [] });
 
-const renderAt = (hash: string, user: User | null = fakeUser) => {
+const fakePlayer = (): Player =>
+  ({
+    play: vi.fn(),
+    stop: vi.fn(),
+    isPlaying: vi.fn(() => false),
+    onTick: vi.fn(() => () => {}),
+    onEnded: vi.fn(() => () => {}),
+    setLoop: vi.fn(),
+    preview: vi.fn(),
+    toggleAcc: vi.fn(),
+    toggleMetro: vi.fn(),
+  }) as unknown as Player;
+
+const renderAt = (hash: string, user: User | null = fakeUser, player: Player = fakePlayer()) => {
   window.history.pushState(null, '', '/publish' + hash);
-  return render(<Publish user={user} />);
+  return { ...render(<Publish user={user} player={player} />), player };
 };
 
 afterEach(() => {
@@ -41,10 +55,13 @@ describe('Publish 게시 화면 (해시 기반)', () => {
     vi.clearAllMocks();
   });
 
-  it('로그인하지 않았으면 안내 문구만, 입력창 없음', () => {
+  it('비로그인: 미리보기·Copy link는 보이고 Publish 자리에 로그인 안내', () => {
     renderAt('#' + validHash, null);
+    expect(document.querySelector('svg')).toBeTruthy();
+    expect(screen.getByText('Copy link')).toBeTruthy();
     expect(screen.getByText('Sign in to publish')).toBeTruthy();
-    expect(screen.queryByRole('textbox')).toBeNull();
+    expect(screen.queryByText('Publish')).toBeNull();
+    expect(publishLick).not.toHaveBeenCalled();
   });
 
   it('해시가 없으면 빈 상태 안내 + 에디터 링크 클릭 시 이동', () => {
@@ -129,5 +146,32 @@ describe('Publish 게시 화면 (해시 기반)', () => {
     fireEvent.click(screen.getByText('Publish'));
     expect(await screen.findByText('You already published this lick')).toBeTruthy();
     expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('재생 토글: Play 클릭 → player.play (멜로디+반주+메트로놈 옵션)', () => {
+    const { player } = renderAt('#' + validHash);
+    fireEvent.click(screen.getByRole('button', { name: 'Play' }));
+    expect(player.play).toHaveBeenCalledTimes(1);
+    expect((player.play as ReturnType<typeof vi.fn>).mock.calls[0]?.[1]).toEqual({
+      melody: true,
+      accomp: true,
+      metro: true,
+    });
+  });
+
+  it('Copy link → /?mode=view#hash 클립보드 복사 + Link copied 토스트', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+    renderAt('#' + validHash);
+    fireEvent.click(screen.getByText('Copy link'));
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('?mode=view#' + validHash));
+    expect(await screen.findByText('Link copied')).toBeTruthy();
+    vi.unstubAllGlobals();
+  });
+
+  it('Back to editor → /edit#hash로 이동', () => {
+    renderAt('#' + validHash);
+    fireEvent.click(screen.getByText(/Back to editor/));
+    expect(navigate).toHaveBeenCalledWith('/edit#' + validHash);
   });
 });

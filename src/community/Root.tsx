@@ -67,7 +67,7 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
       case 'ranking':
         return <Ranking player={player} />;
       case 'publish':
-        return <Publish user={user} />;
+        return <Publish user={user} player={player} />;
       case 'lick':
         return <LickDetail id={route.id} user={user} player={player} />;
       case 'user':

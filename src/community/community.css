@@ -175,6 +175,19 @@
   resize: vertical;
 }
 
+.c-backlink {
+  align-self: flex-start;
+  font-size: 12px;
+  color: var(--mut2);
+  text-decoration: none;
+}
+
+.c-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .c-input {
   border: 1px solid var(--line2);
   border-radius: var(--radius-ctl);
