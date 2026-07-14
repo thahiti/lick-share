@@ -652,6 +652,19 @@ body {
   color: var(--mut2);
 }
 
+/* ── 태블릿 티어 (640–1023px, fluid-pad-tablet-tier 스펙 §4.3–4.4) ──
+   컨테이너를 열람 모드와 같은 680px로 넓히고 스테퍼를 한 줄로 편다.
+   상한 1023px은 Workspace 분기(App.tsx의 min-width:1024px)와 맞물린다. */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .app {
+    --app-max-width: 680px;
+  }
+
+  .hsteppers {
+    flex-direction: row;
+  }
+}
+
 /* ── 데스크톱 열람 (DESIGN §7) — 편집은 워크스페이스(ws.css)가 담당 ── */
 @media (min-width: 1024px) {
   .app--view {
