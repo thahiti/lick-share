@@ -101,7 +101,7 @@ top=42      (단일 줄 기준 보표 첫 선 y)
 
 ## 7. 레이아웃
 
-- 앱 최대폭 420px 중앙 정렬, 흰 배경, 바깥 #f0f0f0.
-- 세로 흐름: 헤더(고정 높이) → 악보(내용 높이) → 패드 존(#fafafa) → 스테퍼 존(#f5f5f5) → 6버튼줄(flex 하단 고정, margin-top:auto).
+- 앱 최대폭: 기본(폰 <640px) 420px, 태블릿(640–1023px) 680px(열람 컬럼과 동일) — 중앙 정렬, 흰 배경, 바깥 #f0f0f0.
+- 세로 흐름: 헤더(고정 높이) → 악보(내용 높이) → 패드 존(#fafafa, **남는 세로 공간 흡수** — .pad-scroll flex-basis 0 유동, 하한 156px, 행 높이 17px 불변) → 스테퍼 존(#f5f5f5, 태블릿에서는 Pitch·Position·Length 1줄 가로) → 6버튼줄(하단 도킹 + env(safe-area-inset-bottom)).
 - 모바일 우선: user-scalable=no, tap-highlight 제거, 스크롤 영역 overscroll-behavior:contain.
 - 데스크톱(뷰포트 ≥1024px): 편집은 **라이트 워크스페이스**(`.ws`, `max-width:1280px`, editor-workspace-design) — 상단 바(← 뒤로·제목·Auto-saved | Share·Publish) / `[1fr | 260px]` 그리드(편집 캔버스 | PropertyPanel). 편집 캔버스는 세로로 트랜스포트 행(재생·템포·메트로놈·undo/redo/삭제·줌) → 오선보(StaffLane) + 피아노롤(PianoRoll) → 단축키 힌트 → 가로 건반(PianoKeys). 악보와 롤은 하나의 `.ws-scroll`에 쌓여 **공유 pxPerStep 좌표**로 마디 경계가 픽셀 단위 일치하고, 좌측 거터는 sticky. 색은 `:root` 브랜드 토큰만 사용(Publish가 화면 유일 primary, `--playhead` 코랄, 노트 `--note-block`/선택 `--note-block-selected`). 열람은 `max-width:680px` 라이트 중앙 컬럼. 모바일(<1024px)은 본 문서 원칙 그대로.

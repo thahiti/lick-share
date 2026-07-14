@@ -75,11 +75,15 @@
   flex: 1 1 auto;
 }
 .pad-scroll {                            /* 고정 156px → 유동 (하한 156px) */
-  height: auto;
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 156px;
 }
 ```
+
+`.pad-scroll`의 flex-basis는 반드시 **0**이어야 한다. 패드에는 전체 음역(~29행,
+~500px)이 항상 DOM에 렌더되어 있으므로 basis가 auto면 콘텐츠 높이만큼 커져
+페이지가 뷰포트를 넘친다. basis 0 + min-height 156px이어야 "남는 공간만큼만
+성장, 부족하면 내부 스크롤"이 된다.
 
 효과: 폰(844px 세로)에서 가시 행 ~6행 → ~2배 내외, 태블릿 세로(1024px)에서 그 이상.
 행은 이미 DOM에 있고 스크롤로 가려져 있을 뿐이므로 드러나기만 한다. ChordPicker가
