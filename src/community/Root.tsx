@@ -63,7 +63,7 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
   const view = ((): JSX.Element => {
     switch (route.name) {
       case 'feed':
-        return <Feed user={user} player={player} />;
+        return <Feed />;
       case 'ranking':
         return <Ranking player={player} />;
       case 'publish':

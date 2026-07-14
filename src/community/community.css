@@ -510,31 +510,6 @@
   cursor: pointer;
 }
 
-/* 정렬 pill (Feed) */
-.c-sort {
-  display: flex;
-  gap: 8px;
-  padding: 12px 0 0;
-}
-
-.c-sort button {
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font: inherit;
-  font-size: 13px;
-  color: var(--mut2);
-  background: var(--bg-card);
-  cursor: pointer;
-}
-
-.c-sort button.active {
-  color: var(--brand-tint-text);
-  border-color: var(--brand-outline);
-  background: var(--brand-tint);
-  font-weight: 600;
-}
-
 /* 순위 뱃지 (Ranking 카드) */
 .c-rankbadge {
   display: inline-flex;
