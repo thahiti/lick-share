@@ -373,6 +373,74 @@
   display: none;
 }
 
+/* ── 브랜드 로고·아바타 — 모바일(MobileAppBar)·데스크톱(AppBar) 공용 ── */
+.c-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--brand-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.c-avatarwrap {
+  position: relative;
+}
+
+.c-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--brand-tint);
+  color: var(--brand-tint-text);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.c-avatarmenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-ctl);
+  background: var(--bg-card);
+  box-shadow: var(--shadow-popover);
+  z-index: 20;
+}
+
+.c-avatarmenu button {
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 8px 10px;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.c-avatarmenu button:hover {
+  background: var(--bg-page);
+}
+
+/* ── 모바일 상단 앱 바 (<1024px) — ≥1024px에서는 숨김 ── */
+.c-mappbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
 /* Create primary 버튼 (AppBar) */
 .c-create {
   display: inline-flex;
@@ -454,17 +522,6 @@
     border-bottom: 1px solid var(--line);
   }
 
-  .c-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--brand-primary);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
   .c-searchwrap {
     display: flex;
     align-items: center;
@@ -492,51 +549,8 @@
     cursor: not-allowed;
   }
 
-  .c-avatarwrap {
-    position: relative;
-  }
-
-  .c-avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    border: 1px solid var(--line);
-    background: var(--brand-tint);
-    color: var(--brand-tint-text);
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
-  }
-
-  .c-avatarmenu {
-    position: absolute;
-    top: calc(100% + 6px);
-    right: 0;
-    display: flex;
-    flex-direction: column;
-    min-width: 140px;
-    padding: 6px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-ctl);
-    background: var(--bg-card);
-    box-shadow: var(--shadow-popover);
-    z-index: 20;
-  }
-
-  .c-avatarmenu button {
-    text-align: left;
-    border: none;
-    background: none;
-    padding: 8px 10px;
-    border-radius: 4px;
-    font: inherit;
-    font-size: 13px;
-    color: var(--ink);
-    cursor: pointer;
-  }
-
-  .c-avatarmenu button:hover {
-    background: var(--bg-page);
+  .c-mappbar {
+    display: none;
   }
 
   /* 3컬럼 셸 */
