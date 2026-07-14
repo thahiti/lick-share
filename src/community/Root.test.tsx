@@ -34,6 +34,12 @@ vi.mock('./api/likes', () => ({
   ],
 }));
 
+// SearchBox·SearchResults가 쓰는 검색 API — 네트워크 차단
+vi.mock('./api/search', () => ({
+  searchLicks: () => Promise.resolve([]),
+  searchUsers: () => Promise.resolve([]),
+}));
+
 import { Root } from './Root';
 
 const fakePlayer = {
@@ -71,6 +77,11 @@ describe('Root 라우팅', () => {
   it('/tag/:name 은 해당 태그 피드 (#tag 헤더)', async () => {
     renderAt('/tag/bebop');
     expect(await screen.findByRole('heading', { name: '#bebop' })).toBeTruthy();
+  });
+
+  it('/search?q= 는 검색 결과 페이지', async () => {
+    renderAt('/search?q=zzz');
+    expect(await screen.findByText(/No results for/)).toBeTruthy();
   });
 
   it('알 수 없는 경로는 NotFound', () => {

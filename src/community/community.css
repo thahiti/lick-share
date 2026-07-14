@@ -483,9 +483,120 @@ a.c-tag:hover {
 .c-mappbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 4px;
   padding: 10px 0;
   border-bottom: 1px solid var(--line);
+}
+
+.c-mappbar .c-brand {
+  margin-right: auto;
+}
+
+.c-msearch-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.c-msearch-btn:active {
+  background: var(--bg-page);
+}
+
+/* 전체 화면 검색 오버레이 (tag-search 설계 §3) — 제안 목록이 화면을 채운다 */
+.c-msearch {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: var(--bg-page);
+  padding: 10px 14px;
+  overflow-y: auto;
+}
+
+.c-msearch-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.c-msearch .c-searchwrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--bg-card);
+}
+
+.c-msearch .c-search {
+  flex: 1;
+  border: none;
+  background: none;
+  padding: 10px 0;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.c-msearch .c-search:focus {
+  outline: none;
+}
+
+/* 오버레이 안에서는 팝오버가 아니라 입력창 아래로 흐르는 목록 */
+.c-msearch .c-sugbox {
+  position: fixed;
+  inset: 58px 0 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  max-height: none;
+  padding: 6px 14px;
+}
+
+.c-msearch-cancel {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--brand-tint-text);
+  cursor: pointer;
+  padding: 8px 2px;
+}
+
+/* 검색 결과 페이지 섹션 헤더 */
+.c-results-h {
+  margin: 4px 2px 0;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+
+.c-results-users {
+  list-style: none;
+  margin: 0;
+  padding: 0 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.c-results-users a {
+  font-weight: 600;
+  color: var(--brand-tint-text);
+  text-decoration: none;
+}
+
+.c-results-users a:hover {
+  text-decoration: underline;
 }
 
 /* ── 모바일 하단 탭바 (<1024px) — ≥1024px에서는 숨김 ── */

@@ -15,9 +15,11 @@ const SUGGEST_LIMIT = 5;
 
 interface Props {
   readonly autoFocus?: boolean;
+  /** 이동 직후 호출 — 모바일 전체 화면 오버레이가 자신을 닫는 데 쓴다 */
+  readonly onNavigated?: () => void;
 }
 
-export const SearchBox = ({ autoFocus = false }: Props = {}): JSX.Element => {
+export const SearchBox = ({ autoFocus = false, onNavigated }: Props = {}): JSX.Element => {
   const [q, setQ] = useState('');
   // null = 드롭다운 닫힘 (빈 배열과 구분)
   const [items, setItems] = useState<readonly SearchItem[] | null>(null);
@@ -74,6 +76,7 @@ export const SearchBox = ({ autoFocus = false }: Props = {}): JSX.Element => {
   const go = (to: string): void => {
     close();
     navigate(to);
+    onNavigated?.();
   };
 
   const onKeyDown = (e: React.KeyboardEvent): void => {
@@ -84,7 +87,12 @@ export const SearchBox = ({ autoFocus = false }: Props = {}): JSX.Element => {
       e.preventDefault();
       setSel((s) => (s <= 0 ? items.length - 1 : s - 1));
     } else if (e.key === 'Escape') {
-      close();
+      // 드롭다운이 열려 있으면 닫기만 — Chrome의 search input 네이티브 클리어를 막는다.
+      // 닫혀 있으면 preventDefault 없이 네이티브 동작(텍스트 클리어)에 맡긴다.
+      if (items) {
+        e.preventDefault();
+        close();
+      }
     } else if (e.key === 'Enter') {
       const text = q.trim();
       const picked = sel >= 0 ? items?.[sel] : undefined;

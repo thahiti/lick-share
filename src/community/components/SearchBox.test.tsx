@@ -131,13 +131,27 @@ describe('SearchBox', () => {
     expect(screen.queryByText('Blue Bossa')).toBeNull();
   });
 
-  it('Escape → 드롭다운을 닫는다', async () => {
+  it('Escape → 드롭다운만 닫는다 (열려 있으면 네이티브 텍스트 클리어를 막는다)', async () => {
     searchLicks.mockResolvedValue([lickHit('l1', 'Blue Bossa')]);
     render(<SearchBox />);
     type('blue');
     await settle();
-    fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Escape' });
+    // 드롭다운 열림 → preventDefault로 Chrome의 search input 클리어를 차단
+    const notPrevented = fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Escape' });
+    expect(notPrevented).toBe(false);
     expect(screen.queryByText('Blue Bossa')).toBeNull();
+    // 드롭다운이 이미 닫혀 있으면 네이티브 동작(텍스트 클리어)에 맡긴다
+    expect(fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Escape' })).toBe(true);
+  });
+
+  it('이동이 일어나면 onNavigated를 호출한다 (모바일 오버레이 닫기용)', async () => {
+    const onNavigated = vi.fn();
+    render(<SearchBox onNavigated={onNavigated} />);
+    type('blue');
+    await settle();
+    fireEvent.keyDown(screen.getByRole('searchbox'), { key: 'Enter' });
+    expect(navigate).toHaveBeenCalledWith('/search?q=blue');
+    expect(onNavigated).toHaveBeenCalledTimes(1);
   });
 
   it('늦게 도착한 이전 질의 응답은 무시한다 (역전 가드)', async () => {

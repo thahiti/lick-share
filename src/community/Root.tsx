@@ -16,6 +16,7 @@ import { MyLicks } from './views/MyLicks';
 import { NotFound } from './views/NotFound';
 import { Publish } from './views/Publish';
 import { Ranking } from './views/Ranking';
+import { SearchResults } from './views/SearchResults';
 import { UserPage } from './views/UserPage';
 import './community.css';
 
@@ -66,6 +67,8 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
         return <Feed />;
       case 'tag':
         return <Feed tag={route.tag} />;
+      case 'search':
+        return <SearchResults query={route.query} />;
       case 'ranking':
         return <Ranking player={player} />;
       case 'publish':
