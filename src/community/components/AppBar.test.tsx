@@ -1,4 +1,4 @@
-/** AppBar — 로고·검색(비활성)·Create·아바타 드롭다운 (community-layout §5). */
+/** AppBar — 로고·검색(SearchBox)·Create·아바타 드롭다운 (community-layout §5). */
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { User } from '@supabase/supabase-js';
@@ -17,9 +17,11 @@ describe('AppBar', () => {
     expect(navigate).toHaveBeenCalledWith('/edit');
   });
 
-  it('검색창은 비활성(disabled)이다', () => {
+  it('검색창은 활성 상태이고 placeholder는 실제 검색 대상을 안내한다', () => {
     render(<AppBar user={null} onSignIn={vi.fn()} onSignOut={vi.fn()} />);
-    expect(screen.getByRole('searchbox')).toHaveProperty('disabled', true);
+    const box = screen.getByRole('searchbox');
+    expect(box).toHaveProperty('disabled', false);
+    expect(box.getAttribute('placeholder')).toBe('Search licks, tags, users');
   });
 
   it('로그인 시 아바타는 이니셜을 표시하고, 드롭다운에 My licks/Sign out이 있다', () => {

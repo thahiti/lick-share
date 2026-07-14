@@ -1,6 +1,6 @@
 /**
  * 데스크톱 앱 바 (desktop-community-layout-design §5) — ≥1024px에서만 표시.
- * 로고 · 검색창(비활성 placeholder) · Create primary · 아바타 드롭다운.
+ * 로고 · 검색창(SearchBox) · Create primary · 아바타 드롭다운.
  */
 import type { JSX } from 'react';
 import type { User } from '@supabase/supabase-js';
@@ -8,6 +8,7 @@ import { Icon } from '../../ui/components/common/Icon';
 import { NAV_ITEMS } from '../nav-items';
 import { navigate } from '../routing';
 import { AvatarMenu } from './AvatarMenu';
+import { SearchBox } from './SearchBox';
 
 interface Props {
   readonly user: User | null;
@@ -29,17 +30,7 @@ export const AppBar = ({ user, onSignIn, onSignOut }: Props): JSX.Element => (
       <span>Lick Share</span>
     </a>
 
-    <div className="c-searchwrap">
-      <Icon name="search" color="var(--mut2)" size={16} />
-      <input
-        className="c-search"
-        type="search"
-        disabled
-        placeholder="Search licks, songs, users"
-        title="Search coming soon"
-        aria-label="Search (coming soon)"
-      />
-    </div>
+    <SearchBox />
 
     {NAV_ITEMS.filter((n) => n.match === 'edit').map((n) => (
       <button key={n.to} type="button" className="c-create" onClick={() => navigate(n.to)}>

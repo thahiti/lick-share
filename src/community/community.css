@@ -229,6 +229,50 @@ a.c-tag:hover {
   filter: brightness(0.96);
 }
 
+/* 검색 제안 드롭다운 (tag-search 설계 §3) — 데스크톱은 입력창 앵커 팝오버 */
+.c-sugbox {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 30;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.08);
+  padding: 6px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.c-sug-label {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mut2);
+  padding: 6px 10px 4px;
+}
+
+.c-sug {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--ink);
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.c-sug:hover,
+.c-sug.sel {
+  background: var(--brand-tint);
+  color: var(--brand-tint-text);
+}
+
 /* 태그 피드 헤더 — #tag 제목 + 총 개수 */
 .c-tagfeed {
   display: flex;
@@ -581,6 +625,7 @@ a.c-tag:hover {
     border: 1px solid var(--line);
     border-radius: 20px;
     background: var(--bg-card);
+    position: relative;
   }
 
   .c-search {
@@ -593,8 +638,8 @@ a.c-tag:hover {
     color: var(--ink);
   }
 
-  .c-search:disabled {
-    cursor: not-allowed;
+  .c-search:focus {
+    outline: none;
   }
 
   .c-mappbar,
