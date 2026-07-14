@@ -899,6 +899,11 @@
 .c-tb-overflow {
   position: relative;
 }
+
+/* 카드 메타 행의 오버플로(⋯)는 우측 끝으로 */
+.c-meta .c-tb-overflow {
+  margin-left: auto;
+}
 .c-menu {
   position: absolute;
   top: calc(100% + 6px);

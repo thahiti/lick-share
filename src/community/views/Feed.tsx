@@ -3,6 +3,7 @@ import type { User } from '@supabase/supabase-js';
 import type { Player } from '../../adapters/player';
 import { PAGE_SIZE, deleteLick, fetchFeedPage, type LickRow } from '../api/licks';
 import { canonicalIds, fetchLikeCounts, likeTargetId } from '../api/likes';
+import { DeleteLickDialog } from '../components/DeleteLickDialog';
 import { LickCard } from '../components/LickCard';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 import { Ranking } from './Ranking';
@@ -28,6 +29,10 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
   const [error, setError] = useState(false);
   const cursor = useRef<string | null>(null);
   const started = useRef(false);
+  // 삭제 확인 다이얼로그 — 상세 페이지(LickDetail)와 동일한 확인 흐름
+  const [pendingDelete, setPendingDelete] = useState<LickRow | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
+  const [deleteErr, setDeleteErr] = useState<string | null>(null);
 
   const loadMore = useCallback(async (): Promise<boolean> => {
     try {
@@ -57,15 +62,19 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
     void loadMore().finally(() => setLoaded(true));
   }, [loadMore]);
 
-  const onDelete = (lick: LickRow) => async (): Promise<void> => {
-    if (
-      !window.confirm(
-        "Delete this lick? If it's the original, its likes pass to the next similar lick.",
-      )
-    )
-      return;
-    await deleteLick(lick.id);
-    setLicks((prev) => prev.filter((x) => x.id !== lick.id));
+  const onConfirmDelete = async (): Promise<void> => {
+    if (!pendingDelete) return;
+    setDeleteBusy(true);
+    setDeleteErr(null);
+    try {
+      await deleteLick(pendingDelete.id);
+      setLicks((prev) => prev.filter((x) => x.id !== pendingDelete.id));
+      setPendingDelete(null);
+    } catch {
+      setDeleteErr('Delete failed. Please try again.');
+    } finally {
+      setDeleteBusy(false);
+    }
   };
 
   return (
@@ -75,9 +84,16 @@ const FeedList = ({ authorId, deletable }: ListProps): JSX.Element => {
           key={lick.id}
           lick={lick}
           likeCount={counts.get(likeTargetId(lick)) ?? 0}
-          onDelete={deletable ? onDelete(lick) : undefined}
+          onDelete={deletable ? () => setPendingDelete(lick) : undefined}
         />
       ))}
+      <DeleteLickDialog
+        open={pendingDelete !== null}
+        busy={deleteBusy}
+        error={deleteErr}
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={() => void onConfirmDelete()}
+      />
       {loaded && !done && <div ref={sentinelRef} className="c-sentinel" />}
       {error ? (
         <p className="c-state">

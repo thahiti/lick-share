@@ -1,9 +1,13 @@
-/** 릭 카드 (설계 §8.2). 카드 전체 탭 = 상세 이동, 음표 개별 탭 동작은 없음. */
+/**
+ * 릭 카드 (설계 §8.2). 카드 전체 탭 = 상세 이동, 음표 개별 탭 동작은 없음.
+ * 삭제는 상세 페이지와 동일하게 오버플로(⋯) 메뉴로 격하 — 인라인 danger 버튼 금지.
+ */
 import type { JSX } from 'react';
 import { decodeSong } from '../../core/codec';
 import { Score } from '../../ui/components/edit/Score';
 import type { LickRow } from '../api/licks';
 import { navigate } from '../routing';
+import { OverflowMenu } from './OverflowMenu';
 import { TagChips } from './TagChips';
 
 interface Props {
@@ -43,11 +47,7 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
         )}
         <span>♥ {likeCount}</span>
         {lick.canonical_id && <span className="c-badge">similar</span>}
-        {onDelete && (
-          <button type="button" className="c-danger" onClick={onDelete}>
-            Delete
-          </button>
-        )}
+        {onDelete && <OverflowMenu isOwner onDelete={onDelete} />}
       </div>
     </article>
   );

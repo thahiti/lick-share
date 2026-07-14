@@ -128,6 +128,46 @@ describe('Feed 최신 피드', () => {
     expect(fetchFeedPage).toHaveBeenLastCalledWith(null, 'a2');
   });
 
+  it('deletable: 빨간 Delete 버튼 대신 오버플로(⋯) 메뉴로 삭제 진입한다', async () => {
+    fetchFeedPage.mockResolvedValue([original]);
+    render(<Feed authorId="author-1" deletable />);
+    await screen.findByText('Original lick');
+
+    // 인라인 Delete 버튼은 없다 — 상세 페이지와 동일한 ⋯ 패턴
+    expect(screen.queryByRole('button', { name: 'Delete' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    expect(screen.getByRole('menuitem', { name: 'Delete lick' })).toBeTruthy();
+  });
+
+  it('deletable: Delete lick → 확인 다이얼로그 → Delete 확정 시 삭제·카드 제거', async () => {
+    fetchFeedPage.mockResolvedValue([original]);
+    render(<Feed authorId="author-1" deletable />);
+    await screen.findByText('Original lick');
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Delete lick' }));
+    expect(screen.getByRole('dialog')).toBeTruthy();
+    expect(deleteLick).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+    await vi.waitFor(() => expect(deleteLick).toHaveBeenCalledWith('orig-1'));
+    await vi.waitFor(() => expect(screen.queryByText('Original lick')).toBeNull());
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
+  it('deletable: 다이얼로그 Cancel은 삭제하지 않고 닫는다', async () => {
+    fetchFeedPage.mockResolvedValue([original]);
+    render(<Feed authorId="author-1" deletable />);
+    await screen.findByText('Original lick');
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Delete lick' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(deleteLick).not.toHaveBeenCalled();
+    expect(screen.getByText('Original lick')).toBeTruthy();
+  });
+
   it('첫 페이지 로드 실패 시 에러 안내와 재시도 버튼을 보여주고, 재시도 성공 시 카드가 렌더된다', async () => {
     fetchFeedPage.mockRejectedValueOnce(new Error('network down'));
 
