@@ -1,5 +1,6 @@
 /**
- * 편집 헤더 (SPEC §3.1). 반주/메트로놈/재생/템포/공유/보기 + 메타라인.
+ * 편집 헤더 (SPEC §3.1, unified-nav-share 설계). 뒤로/반주/메트로놈/재생/템포/공유 + 메타라인.
+ * Share는 단일 버튼 — 재생·복사·게시는 /publish(Share 화면)가 담당한다.
  */
 import { useState, type JSX } from 'react';
 import type { AccPattern, Song } from '../../../core/types';
@@ -15,9 +16,10 @@ export interface HeaderProps {
   readonly onTogglePlay: () => void;
   /** 클램프는 core setTempo가 담당 — 원시 값 전달 */
   readonly onTempoApply: (v: number) => void;
-  readonly onPublish: () => void;
-  readonly onCopyLink: () => void;
-  readonly onView: () => void;
+  /** Share 화면(/publish) 진입 */
+  readonly onShare: () => void;
+  /** 편집 종료 — 커뮤니티 복귀 */
+  readonly onExit: () => void;
 }
 
 const ACC_OPTIONS: readonly (readonly [AccPattern | 'off', string])[] = [
@@ -36,13 +38,11 @@ export const Header = ({
   onToggleMetro,
   onTogglePlay,
   onTempoApply,
-  onPublish,
-  onCopyLink,
-  onView,
+  onShare,
+  onExit,
 }: HeaderProps): JSX.Element => {
   const [accPop, setAccPop] = useState(false);
   const [tempoPop, setTempoPop] = useState(false);
-  const [sharePop, setSharePop] = useState(false);
   const [tempoInput, setTempoInput] = useState(String(song.tempo));
 
   const applyTempo = (v: number): void => {
@@ -54,8 +54,19 @@ export const Header = ({
     <header className="header">
       <div className="header-row">
         <div className="header-left">
-          <div className="eyebrow">LICK SHARE — EDIT</div>
-          <h1 className="title">{song.title}</h1>
+          <button
+            type="button"
+            data-btn="back"
+            className="icon-btn"
+            aria-label="Back to community"
+            onClick={onExit}
+          >
+            <Icon name="prev" size={15} />
+          </button>
+          <div>
+            <div className="eyebrow">LICK SHARE — EDIT</div>
+            <h1 className="title">{song.title}</h1>
+          </div>
         </div>
         <div className="header-btns">
           <button
@@ -96,11 +107,8 @@ export const Header = ({
           >
             {`♩=${song.tempo}`}
           </button>
-          <button type="button" data-btn="share" className="icon-btn" aria-label="Share" onClick={() => setSharePop((v) => !v)}>
+          <button type="button" data-btn="share" className="icon-btn" aria-label="Share" onClick={onShare}>
             <Icon name="share" size={15} />
-          </button>
-          <button type="button" data-btn="view" className="icon-btn" aria-label="View mode" onClick={onView}>
-            View
           </button>
         </div>
       </div>
@@ -148,31 +156,6 @@ export const Header = ({
           </button>
           <button type="button" className="cls" onClick={() => setTempoPop(false)}>
             Close
-          </button>
-        </div>
-      )}
-
-      {sharePop && (
-        <div className="popover share-pop">
-          <button
-            type="button"
-            data-share="publish"
-            onClick={() => {
-              onPublish();
-              setSharePop(false);
-            }}
-          >
-            Publish
-          </button>
-          <button
-            type="button"
-            data-share="copy"
-            onClick={() => {
-              onCopyLink();
-              setSharePop(false);
-            }}
-          >
-            Copy link
           </button>
         </div>
       )}

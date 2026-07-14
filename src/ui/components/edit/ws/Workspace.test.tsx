@@ -27,9 +27,8 @@ const handlers = () => ({
   onToggleMetro: vi.fn(),
   onUndo: vi.fn(),
   onRedo: vi.fn(),
-  onBack: vi.fn(),
-  onCopyLink: vi.fn(),
-  onPublish: vi.fn(),
+  onExit: vi.fn(),
+  onShare: vi.fn(),
 });
 
 const setup = (over: Partial<Parameters<typeof Workspace>[0]> = {}) => {

@@ -11,9 +11,8 @@ const cbs = {
   onToggleMetro: vi.fn(),
   onTogglePlay: vi.fn(),
   onTempoApply: vi.fn(),
-  onPublish: vi.fn(),
-  onCopyLink: vi.fn(),
-  onView: vi.fn(),
+  onShare: vi.fn(),
+  onExit: vi.fn(),
 };
 
 const renderHeader = (over: Partial<Parameters<typeof Header>[0]> = {}) =>
@@ -78,21 +77,17 @@ describe('Header (SPEC §3.1)', () => {
     expect(cbs.onTempoApply).toHaveBeenCalledWith(300); // 클램프는 core
   });
 
-  test('공유 팝오버: Publish / Copy link 각각 콜백 + 선택 시 닫힘', () => {
+  test('Share 버튼 → onShare 즉시 호출 (팝오버 없음)', () => {
     const { container } = renderHeader();
     fireEvent.click($(container, '[data-btn="share"]'));
-    fireEvent.click($(container, '[data-share="publish"]'));
-    expect(cbs.onPublish).toHaveBeenCalled();
-    expect(container.querySelector('[data-share]')).toBeNull(); // 선택 즉시 닫힘
-
-    fireEvent.click($(container, '[data-btn="share"]'));
-    fireEvent.click($(container, '[data-share="copy"]'));
-    expect(cbs.onCopyLink).toHaveBeenCalled();
+    expect(cbs.onShare).toHaveBeenCalled();
+    expect(container.querySelector('[data-share]')).toBeNull();
   });
 
-  test('보기 버튼', () => {
+  test('Back 버튼 → onExit, View 버튼은 없다', () => {
     const { container } = renderHeader();
-    fireEvent.click($(container, '[data-btn="view"]'));
-    expect(cbs.onView).toHaveBeenCalled();
+    fireEvent.click($(container, '[data-btn="back"]'));
+    expect(cbs.onExit).toHaveBeenCalled();
+    expect(container.querySelector('[data-btn="view"]')).toBeNull();
   });
 });

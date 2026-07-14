@@ -1,7 +1,7 @@
 /**
  * 앱 루트 — 편집 화면 조립 (설계 문서 §2·§3, SPEC §3).
  * 해시 로드/자동 저장(500ms 디바운스), 재생 연동(curM 추적·줄 전환·플레이헤드),
- * 프리뷰 사운드, 코드 피커 개폐. 열람(view) 라우팅은 P9.
+ * 프리뷰 사운드, 코드 피커 개폐. view 모드는 ?mode=view 레거시 열람 전용.
  */
 import { useEffect, useRef, useState, type JSX } from 'react';
 import { useStore, type StoreApi } from 'zustand';
@@ -34,8 +34,10 @@ export interface AppProps {
   readonly hashStore: HashStore;
   /** 미지정 시 ?mode=view 쿼리로 결정 */
   readonly initialMode?: AppMode;
-  /** 게시 진입 — community Root가 주입 (ui→community 의존 회피) */
-  readonly onPublish?: (hash: string) => void;
+  /** Share 화면 진입 — community Root가 주입 (ui→community 의존 회피) */
+  readonly onShare?: (hash: string) => void;
+  /** 편집 종료(커뮤니티 복귀) — community Root가 주입 */
+  readonly onExit?: () => void;
 }
 
 const modeFromLocation = (): AppMode =>
@@ -46,7 +48,8 @@ export const App = ({
   player,
   hashStore,
   initialMode,
-  onPublish,
+  onShare,
+  onExit,
 }: AppProps): JSX.Element => {
   const s = useStore(store);
   const [mode, setMode] = useState<AppMode>(initialMode ?? modeFromLocation());
@@ -161,7 +164,7 @@ export const App = ({
 
   const chordKey = (b: number): number => measStart(s.song, s.curM) / 4 + b;
 
-  /** 공유: 열람 링크 클립보드 복사 + 현재 해시 갱신 (SPEC §3.1, §7) */
+  /** 레거시 열람(?mode=view) 전용: 열람 링크 클립보드 복사 + 현재 해시 갱신 (SPEC §7, 하위 호환) */
   const copyShare = (): void => {
     const hash = encodeSong(store.getState().song);
     hashStore.write(hash);
@@ -174,9 +177,15 @@ export const App = ({
     }
   };
 
-  /** 게시: 현재 곡 해시를 Root가 주입한 네비게이션 콜백으로 전달 */
-  const publishShare = (): void => {
-    onPublish?.(encodeSong(store.getState().song));
+  /** 공유: 현재 곡 해시로 Share 화면 진입 (Root가 콜백 주입) */
+  const share = (): void => {
+    onShare?.(encodeSong(store.getState().song));
+  };
+
+  /** 편집 종료: 재생 정지 후 커뮤니티 복귀 */
+  const exit = (): void => {
+    player.stop();
+    onExit?.();
   };
 
   /* 열람 재생: 멜로디 + 반주 + 메트로놈 종류를 모두 내보내고, 실제 소리는 곡 데이터가 결정 */
@@ -291,12 +300,8 @@ export const App = ({
           onToggleMetro={metroToggle}
           onUndo={() => store.getState().undoAction()}
           onRedo={() => store.getState().redoAction()}
-          onCopyLink={copyShare}
-          onPublish={publishShare}
-          onBack={() => {
-            player.stop();
-            setMode('view');
-          }}
+          onShare={share}
+          onExit={exit}
         />
         <Toast msg={s.toast} onDone={() => store.getState().clearToast()} />
       </>
@@ -315,12 +320,8 @@ export const App = ({
           onToggleMetro={metroToggle}
           onTogglePlay={togglePlay}
           onTempoApply={(v) => store.getState().setTempo(v)}
-          onPublish={publishShare}
-          onCopyLink={copyShare}
-          onView={() => {
-            player.stop();
-            setMode('view');
-          }}
+          onShare={share}
+          onExit={exit}
         />
         <Score
           song={s.song}

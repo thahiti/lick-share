@@ -63,9 +63,10 @@ export interface WorkspaceProps {
   readonly onToggleMetro: () => void;
   readonly onUndo: () => void;
   readonly onRedo: () => void;
-  readonly onBack: () => void;
-  readonly onCopyLink: () => void;
-  readonly onPublish: () => void;
+  /** 편집 종료 — 커뮤니티 복귀 */
+  readonly onExit: () => void;
+  /** Share 화면(/publish) 진입 */
+  readonly onShare: () => void;
 }
 
 export const Workspace = (props: WorkspaceProps): JSX.Element => {
@@ -99,9 +100,8 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
     onToggleMetro,
     onUndo,
     onRedo,
-    onBack,
-    onCopyLink,
-    onPublish,
+    onExit,
+    onShare,
   } = props;
 
   const [pxPerStep, setPxPerStep] = useState(ZOOM_DEFAULT);
@@ -117,7 +117,7 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
 
   return (
     <div className="ws">
-      <WsTopBar song={song} onBack={onBack} onCopyLink={onCopyLink} onPublish={onPublish} />
+      <WsTopBar song={song} onExit={onExit} onShare={onShare} />
       <div className="ws-main">
         <div className="ws-canvas">
           <div className="ws-transport">

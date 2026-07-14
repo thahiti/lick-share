@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type JSX } from 'react';
+import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import type { User } from '@supabase/supabase-js';
 import type { Player } from '../adapters/player';
 import type { HashStore } from '../ports/hash-store';
@@ -28,6 +28,14 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
   const route = useRoute();
   const [user, setUser] = useState<User | null>(null);
 
+  // 편집 ←Back의 목적지: 마지막으로 머문 커뮤니티 화면 (편집·레거시열람·게시 화면은 제외)
+  const lastCommunityPath = useRef('/');
+  useEffect(() => {
+    if (route.name !== 'edit' && route.name !== 'legacyView' && route.name !== 'publish') {
+      lastCommunityPath.current = window.location.pathname;
+    }
+  }, [route]);
+
   useEffect(() => {
     void getSessionUser().then(setUser);
     return onAuthChange(setUser);
@@ -45,7 +53,8 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
         player={player}
         hashStore={hashStore}
         initialMode="edit"
-        onPublish={(hash) => navigate('/publish#' + hash)}
+        onShare={(hash) => navigate('/publish#' + hash)}
+        onExit={() => navigate(lastCommunityPath.current)}
       />
     );
   if (route.name === 'legacyView')

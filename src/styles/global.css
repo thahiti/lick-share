@@ -291,6 +291,13 @@ body {
   gap: 6px;
 }
 
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
 .eyebrow {
   font-size: 8.5px;
   letter-spacing: 0.12em;

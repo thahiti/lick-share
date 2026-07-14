@@ -6,7 +6,7 @@ import { WsTopBar } from './WsTopBar';
 afterEach(cleanup);
 
 const setup = () => {
-  const h = { onBack: vi.fn(), onCopyLink: vi.fn(), onPublish: vi.fn() };
+  const h = { onExit: vi.fn(), onShare: vi.fn() };
   const utils = render(<WsTopBar song={demoSong} {...h} />);
   return { ...utils, ...h };
 };
@@ -18,23 +18,18 @@ describe('WsTopBar', () => {
     expect(container.textContent).toContain('Auto-saved');
   });
 
-  test('← 뒤로 → onBack', () => {
-    const { container, onBack } = setup();
+  test('← 뒤로 → onExit (커뮤니티 복귀)', () => {
+    const { container, onExit } = setup();
     fireEvent.click(container.querySelector('[data-btn="back"]') as Element);
-    expect(onBack).toHaveBeenCalledOnce();
+    expect(onExit).toHaveBeenCalledOnce();
   });
 
-  test('Share → onCopyLink', () => {
-    const { container, onCopyLink } = setup();
-    fireEvent.click(container.querySelector('[data-btn="share"]') as Element);
-    expect(onCopyLink).toHaveBeenCalledOnce();
-  });
-
-  test('Publish → onPublish (화면 유일 primary)', () => {
-    const { container, onPublish } = setup();
-    const pub = container.querySelector('[data-btn="publish"]') as HTMLElement;
-    fireEvent.click(pub);
-    expect(onPublish).toHaveBeenCalledOnce();
-    expect(pub.className).toContain('ws-btn-primary');
+  test('Share primary 단일 버튼 → onShare, Publish 버튼은 없다', () => {
+    const { container, onShare } = setup();
+    const share = container.querySelector('[data-btn="share"]') as HTMLElement;
+    fireEvent.click(share);
+    expect(onShare).toHaveBeenCalledOnce();
+    expect(share.className).toContain('ws-btn-primary');
+    expect(container.querySelector('[data-btn="publish"]')).toBeNull();
   });
 });
