@@ -21,4 +21,21 @@ describe('parseRoute', () => {
     expect(parseRoute('/lick/', '')).toEqual({ name: 'notfound' });
     expect(parseRoute('/xyz', '')).toEqual({ name: 'notfound' });
   });
+
+  it('/tag/:name은 태그 피드 (URL 인코딩 복원)', () => {
+    expect(parseRoute('/tag/bebop', '')).toEqual({ name: 'tag', tag: 'bebop' });
+    expect(parseRoute('/tag/ii-v-i', '')).toEqual({ name: 'tag', tag: 'ii-v-i' });
+    expect(parseRoute('/tag/%EB%B0%9C%EB%9D%BC%EB%93%9C', '')).toEqual({
+      name: 'tag',
+      tag: '발라드',
+    });
+    expect(parseRoute('/tag/', '')).toEqual({ name: 'notfound' });
+  });
+
+  it('/search는 q 쿼리로 검색 (없거나 비면 빈 질의)', () => {
+    expect(parseRoute('/search', '?q=blues')).toEqual({ name: 'search', query: 'blues' });
+    expect(parseRoute('/search', '?q=%23bebop')).toEqual({ name: 'search', query: '#bebop' });
+    expect(parseRoute('/search', '')).toEqual({ name: 'search', query: '' });
+    expect(parseRoute('/search', '?q=')).toEqual({ name: 'search', query: '' });
+  });
 });

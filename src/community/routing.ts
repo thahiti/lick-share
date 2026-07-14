@@ -9,6 +9,8 @@ export type Route =
   | { name: 'lick'; id: string }
   | { name: 'user'; publicId: string }
   | { name: 'me' }
+  | { name: 'tag'; tag: string }
+  | { name: 'search'; query: string }
   | { name: 'notfound' };
 
 export function parseRoute(pathname: string, search: string): Route {
@@ -18,6 +20,10 @@ export function parseRoute(pathname: string, search: string): Route {
   if (pathname === '/ranking') return { name: 'ranking' };
   if (pathname === '/publish') return { name: 'publish' };
   if (pathname === '/me') return { name: 'me' };
+  if (pathname === '/search')
+    return { name: 'search', query: new URLSearchParams(search).get('q') ?? '' };
+  const tag = /^\/tag\/([^/]+)$/.exec(pathname);
+  if (tag?.[1]) return { name: 'tag', tag: decodeURIComponent(tag[1]) };
   const lick = /^\/lick\/([A-Za-z0-9_-]+)$/.exec(pathname);
   if (lick?.[1]) return { name: 'lick', id: lick[1] };
   const user = /^\/user\/([A-Za-z0-9_-]+)$/.exec(pathname);
