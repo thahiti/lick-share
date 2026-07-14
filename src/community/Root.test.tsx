@@ -72,6 +72,13 @@ describe('Root 라우팅', () => {
     expect(screen.getByText(/Page not found/)).toBeTruthy();
   });
 
+  it('모바일 셸: TabBar·MobileAppBar가 있고 구 CommunityHeader가 없다', () => {
+    renderAt('/');
+    expect(document.querySelector('.c-tabbar')).toBeTruthy();
+    expect(document.querySelector('.c-mappbar')).toBeTruthy();
+    expect(document.querySelector('.c-header')).toBeNull();
+  });
+
   it('상단 네비에 Publish 링크가 없다 (게시는 에디터 Share에서만)', () => {
     renderAt('/');
     expect(screen.queryByText('Publish')).toBeNull();

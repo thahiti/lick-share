@@ -5,42 +5,8 @@
   margin: 0 auto;
   font-family: var(--font-sans);
   color: var(--ink);
-}
-
-.c-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 2px solid var(--ink);
-}
-
-.c-nav {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.c-nav a {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.c-nav a.active {
-  color: var(--brand-primary);
-}
-
-.c-linkbtn {
-  border: none;
-  background: none;
-  padding: 0;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--ink);
-  cursor: pointer;
+  /* 하단 탭바 높이만큼 본문 여백 (모바일) — 데스크톱은 미디어쿼리에서 해제 */
+  padding-bottom: 72px;
 }
 
 .c-list {
@@ -559,11 +525,7 @@
 @media (min-width: 1024px) {
   .community {
     max-width: 1240px;
-  }
-
-  /* 모바일 헤더 숨기고 AppBar 표시 */
-  .c-header {
-    display: none;
+    padding-bottom: 0;
   }
 
   .c-appbar {
