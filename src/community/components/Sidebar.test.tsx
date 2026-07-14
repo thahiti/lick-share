@@ -1,5 +1,5 @@
 /** Sidebar — 내비 활성 표시 + 인기 태그 방어적 렌더 (community-layout §5). */
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { User } from '@supabase/supabase-js';
 import type { LickRow } from '../api/licks';
@@ -53,6 +53,15 @@ describe('Sidebar', () => {
     render(<Sidebar route={{ name: 'feed' }} user={null} />);
     expect(await screen.findByText('#jazz')).toBeTruthy();
     expect(screen.getByText('#bebop')).toBeTruthy();
+  });
+
+  it('인기 태그를 클릭하면 /tag/:name 으로 이동한다', async () => {
+    fetchFeedPage.mockResolvedValue([{ tags: ['jazz'] }] as unknown as LickRow[]);
+    render(<Sidebar route={{ name: 'feed' }} user={null} />);
+    const link = await screen.findByRole('link', { name: '#jazz' });
+    expect(link.getAttribute('href')).toBe('/tag/jazz');
+    fireEvent.click(link);
+    expect(navigate).toHaveBeenCalledWith('/tag/jazz');
   });
 
   it('tags가 없는 피드 행(컬럼 미적용)이면 섹션을 렌더하지 않는다', async () => {

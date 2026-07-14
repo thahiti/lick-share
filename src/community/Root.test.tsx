@@ -13,6 +13,7 @@ vi.mock('./api/auth', () => ({
 vi.mock('./api/licks', () => ({
   PAGE_SIZE: 20,
   fetchFeedPage: () => Promise.resolve([]),
+  countLicks: () => Promise.resolve(0),
   fetchLick: () => Promise.resolve(null),
   deleteLick: () => Promise.resolve(),
   publishLick: vi.fn(),
@@ -65,6 +66,11 @@ describe('Root 라우팅', () => {
   it('/ranking 은 랭킹 (빈 목록이면 빈 상태 문구)', async () => {
     renderAt('/ranking');
     expect(await screen.findByText(/No rankings yet/)).toBeTruthy();
+  });
+
+  it('/tag/:name 은 해당 태그 피드 (#tag 헤더)', async () => {
+    renderAt('/tag/bebop');
+    expect(await screen.findByRole('heading', { name: '#bebop' })).toBeTruthy();
   });
 
   it('알 수 없는 경로는 NotFound', () => {

@@ -64,6 +64,8 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
     switch (route.name) {
       case 'feed':
         return <Feed />;
+      case 'tag':
+        return <Feed tag={route.tag} />;
       case 'ranking':
         return <Ranking player={player} />;
       case 'publish':

@@ -63,11 +63,23 @@ export const Sidebar = ({ route, user }: Props): JSX.Element => {
         <div className="c-sidetags">
           <div className="c-sidetags-h">Tags</div>
           <ul>
-            {tags.map((t) => (
-              <li key={t} className="c-sidetag">
-                {'#' + t}
-              </li>
-            ))}
+            {tags.map((t) => {
+              const to = '/tag/' + encodeURIComponent(t);
+              return (
+                <li key={t}>
+                  <a
+                    className="c-sidetag"
+                    href={to}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigate(to);
+                    }}
+                  >
+                    {'#' + t}
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

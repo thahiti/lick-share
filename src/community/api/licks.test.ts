@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fetchFeedPage } from './licks';
+import { countLicks, fetchFeedPage } from './licks';
 
 // 체이닝 질의 빌더 mock — 메서드 호출을 기록하고 await 시 빈 결과를 돌려준다
 const calls: Array<[string, unknown[]]> = [];
@@ -12,7 +12,8 @@ vi.mock('../supabase', () => {
       return builder;
     };
   }
-  builder['then'] = (resolve: (v: unknown) => void) => resolve({ data: [], error: null });
+  builder['then'] = (resolve: (v: unknown) => void) =>
+    resolve({ data: [], count: 7, error: null });
   return {
     supabase: {
       from: (table: string) => {
@@ -49,5 +50,14 @@ describe('fetchFeedPage 필터', () => {
   it('tag 필터는 tags contains로 전달 (tags @> {tag})', async () => {
     await fetchFeedPage(null, { tag: 'bebop' });
     expect(calls).toContainEqual(['contains', ['tags', ['bebop']]]);
+  });
+});
+
+describe('countLicks', () => {
+  it('head+exact 카운트 질의에 tag 필터를 적용하고 count를 반환한다', async () => {
+    const n = await countLicks({ tag: 'bebop' });
+    expect(calls).toContainEqual(['select', ['id', { count: 'exact', head: true }]]);
+    expect(calls).toContainEqual(['contains', ['tags', ['bebop']]]);
+    expect(n).toBe(7);
   });
 });

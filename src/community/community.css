@@ -210,7 +210,7 @@
   gap: 6px;
 }
 
-/* 태그 칩 — 클릭 비활성 순수 표시 (향후 검색 도입 시 링크화 여지만 남김) */
+/* 태그 칩 — /tag/:name 링크 (tag-search 설계 §3) */
 .c-tag {
   display: inline-flex;
   align-items: center;
@@ -222,6 +222,30 @@
   border-radius: 20px;
   padding: 3px 10px;
   background: var(--brand-tint);
+  text-decoration: none;
+}
+
+a.c-tag:hover {
+  filter: brightness(0.96);
+}
+
+/* 태그 피드 헤더 — #tag 제목 + 총 개수 */
+.c-tagfeed {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 4px 2px 0;
+}
+
+.c-tagfeed h2 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--brand-tint-text);
+}
+
+.c-tagcount {
+  font-size: 13px;
+  color: var(--mut2);
 }
 
 .c-tag-x {
@@ -654,6 +678,11 @@
     background: var(--brand-tint);
     border-radius: 20px;
     padding: 3px 10px;
+    text-decoration: none;
+  }
+
+  .c-sidetag:hover {
+    filter: brightness(0.96);
   }
 
   .c-main {

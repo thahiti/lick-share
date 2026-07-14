@@ -41,6 +41,16 @@ export async function fetchFeedPage(
   return (data ?? []) as unknown as LickRow[];
 }
 
+/** 필터에 맞는 릭 총 개수 — 행 없이 카운트만 (태그 피드 헤더용) */
+export async function countLicks(filter: FeedFilter = {}): Promise<number> {
+  let q = supabase.from('licks').select('id', { count: 'exact', head: true });
+  if (filter.authorId) q = q.eq('author_id', filter.authorId);
+  if (filter.tag) q = q.contains('tags', [filter.tag]);
+  const { count, error } = await q;
+  if (error) throw error;
+  return count ?? 0;
+}
+
 export async function fetchLick(id: string): Promise<LickRow | null> {
   const { data } = await supabase.from('licks').select(LICK_COLS).eq('id', id).maybeSingle();
   return data as unknown as LickRow | null;

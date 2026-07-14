@@ -133,14 +133,14 @@ describe('LickDetail 릭 상세', () => {
     expect(fetchLick).toHaveBeenCalledWith('orig-1');
   });
 
-  it('태그가 있으면 칩(#tag)을 렌더한다 (클릭 비활성 순수 표시)', async () => {
+  it('태그가 있으면 칩(#tag)을 /tag/:name 링크로 렌더한다', async () => {
     fetchLick.mockResolvedValue(lick({ id: 'orig-1', tags: ['jazz', '재즈'] }));
     render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
 
     expect(await screen.findByText('#jazz')).toBeTruthy();
     expect(screen.getByText('#재즈')).toBeTruthy();
-    // 칩은 링크·버튼이 아니다
-    expect(screen.getByText('#jazz').closest('a, button')).toBeNull();
+    // 칩은 태그 피드로 가는 링크다 (tag-search 설계 §3)
+    expect(screen.getByText('#jazz').closest('a')?.getAttribute('href')).toBe('/tag/jazz');
   });
 
   it('태그가 없으면 칩을 렌더하지 않는다', async () => {

@@ -26,12 +26,14 @@ const similar = lick({
 
 type FeedFilter = { authorId?: string; tag?: string };
 const fetchFeedPage = vi.fn<(cursor: string | null, filter?: FeedFilter) => Promise<LickRow[]>>();
+const countLicks = vi.fn<(filter?: FeedFilter) => Promise<number>>();
 const deleteLick = vi.fn(async (_id: string) => {});
 const fetchLikeCounts = vi.fn(async (_ids: readonly string[]) => new Map<string, number>());
 
 vi.mock('../api/licks', () => ({
   PAGE_SIZE: 20,
   fetchFeedPage: (cursor: string | null, filter?: FeedFilter) => fetchFeedPage(cursor, filter),
+  countLicks: (filter?: FeedFilter) => countLicks(filter),
   deleteLick: (id: string) => deleteLick(id),
 }));
 
@@ -117,6 +119,36 @@ describe('Feed 최신 피드', () => {
 
     // 새 작성자의 첫 페이지는 커서 null부터 다시 시작
     expect(fetchFeedPage).toHaveBeenLastCalledWith(null, { authorId: 'a2' });
+  });
+
+  it('tag prop이 있으면 fetch 필터로 전달하고 #tag 헤더와 릭 개수를 렌더한다', async () => {
+    fetchFeedPage.mockResolvedValue([original]);
+    countLicks.mockResolvedValue(3);
+
+    render(<Feed tag="bebop" />);
+
+    expect(await screen.findByRole('heading', { name: '#bebop' })).toBeTruthy();
+    expect(await screen.findByText('3 licks')).toBeTruthy();
+    expect(fetchFeedPage).toHaveBeenCalledWith(null, { authorId: undefined, tag: 'bebop' });
+    expect(countLicks).toHaveBeenCalledWith({ tag: 'bebop' });
+  });
+
+  it('tag 개수 조회가 실패해도 헤더는 뜨고 개수만 생략한다', async () => {
+    fetchFeedPage.mockResolvedValue([original]);
+    countLicks.mockRejectedValue(new Error('down'));
+
+    render(<Feed tag="bebop" />);
+
+    expect(await screen.findByRole('heading', { name: '#bebop' })).toBeTruthy();
+    await screen.findByText('Original lick');
+    expect(screen.queryByText(/licks$/)).toBeNull();
+  });
+
+  it('tag prop이 없으면 태그 헤더도 개수 조회도 없다', async () => {
+    render(<Feed />);
+    await screen.findByText('Original lick');
+    expect(countLicks).not.toHaveBeenCalled();
+    expect(document.querySelector('.c-tagfeed')).toBeNull();
   });
 
   it('deletable: 빨간 Delete 버튼 대신 오버플로(⋯) 메뉴로 삭제 진입한다', async () => {
