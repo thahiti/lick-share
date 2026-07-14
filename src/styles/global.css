@@ -33,6 +33,12 @@ body {
   min-width: 0;
 }
 
+/* 유동 패드 (fluid-pad-tablet-tier 스펙 §4.1) — 남는 세로 공간을 패드가 흡수.
+   DESIGN §7의 "6버튼줄 flex 하단 고정" 의도 복원. */
+.pane-edit {
+  flex: 1 1 auto;
+}
+
 /* ── 코드 행 (DESIGN §4) ── */
 .chord-row {
   display: flex;
@@ -153,6 +159,9 @@ body {
   padding: 8px;
   margin: 0 8px;
   background: var(--bg-pad-zone);
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
 }
 
 .pad .beat-head {
@@ -169,8 +178,12 @@ body {
   padding: 2px 0;
 }
 
+/* flex-basis 0: 기본 높이는 min-height(156px)로 두고, 뷰포트에 남는 공간이
+   있을 때만 성장한다. basis auto면 전체 음역(~29행) 콘텐츠 높이로 커져
+   페이지가 넘치므로 금지. */
 .pad-scroll {
-  height: 156px;
+  flex: 1 1 0;
+  min-height: 156px;
   overflow-y: auto;
 }
 
@@ -491,6 +504,7 @@ body {
   display: flex;
   background: #fff;
   border-top: 2px solid var(--ink);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .button-bar .bb {
