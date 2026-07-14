@@ -24,13 +24,14 @@ const similar = lick({
   profiles: { public_id: 'pub-2', display_name: 'Author B' },
 });
 
-const fetchFeedPage = vi.fn<(cursor: string | null, authorId?: string) => Promise<LickRow[]>>();
+type FeedFilter = { authorId?: string; tag?: string };
+const fetchFeedPage = vi.fn<(cursor: string | null, filter?: FeedFilter) => Promise<LickRow[]>>();
 const deleteLick = vi.fn(async (_id: string) => {});
 const fetchLikeCounts = vi.fn(async (_ids: readonly string[]) => new Map<string, number>());
 
 vi.mock('../api/licks', () => ({
   PAGE_SIZE: 20,
-  fetchFeedPage: (cursor: string | null, authorId?: string) => fetchFeedPage(cursor, authorId),
+  fetchFeedPage: (cursor: string | null, filter?: FeedFilter) => fetchFeedPage(cursor, filter),
   deleteLick: (id: string) => deleteLick(id),
 }));
 
@@ -63,7 +64,7 @@ describe('Feed 최신 피드', () => {
     // 유사릭(canonical_id 존재)만 배지 표시
     expect(screen.getByText('similar')).toBeTruthy();
 
-    expect(fetchFeedPage).toHaveBeenCalledWith(null, undefined);
+    expect(fetchFeedPage).toHaveBeenCalledWith(null, { authorId: undefined });
     expect(fetchLikeCounts).toHaveBeenCalledWith(['orig-1']);
   });
 
@@ -101,8 +102,8 @@ describe('Feed 최신 피드', () => {
   it('authorId가 바뀌면 상태를 초기화하고 새 작성자의 첫 페이지만 보여준다', async () => {
     const a1Lick = lick({ id: 'a1-1', title: "A1's lick", author_id: 'a1' });
     const a2Lick = lick({ id: 'a2-1', title: "A2's lick", author_id: 'a2' });
-    fetchFeedPage.mockImplementation(async (_cursor, authorId) =>
-      authorId === 'a2' ? [a2Lick] : [a1Lick],
+    fetchFeedPage.mockImplementation(async (_cursor, filter) =>
+      filter?.authorId === 'a2' ? [a2Lick] : [a1Lick],
     );
 
     const { rerender } = render(<Feed authorId="a1" />);
@@ -115,7 +116,7 @@ describe('Feed 최신 피드', () => {
     expect(screen.queryByText("A1's lick")).toBeNull();
 
     // 새 작성자의 첫 페이지는 커서 null부터 다시 시작
-    expect(fetchFeedPage).toHaveBeenLastCalledWith(null, 'a2');
+    expect(fetchFeedPage).toHaveBeenLastCalledWith(null, { authorId: 'a2' });
   });
 
   it('deletable: 빨간 Delete 버튼 대신 오버플로(⋯) 메뉴로 삭제 진입한다', async () => {

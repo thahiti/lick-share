@@ -18,15 +18,24 @@ export interface LickRow {
 const LICK_COLS =
   'id, title, blob, author_id, canonical_id, tags, created_at, profiles!licks_author_id_fkey(public_id, display_name)';
 
-/** keyset 커서 무한 스크롤 (설계 §8.5). authorId를 주면 유저 페이지/내 릭. */
-export async function fetchFeedPage(cursor: string | null, authorId?: string): Promise<LickRow[]> {
+export interface FeedFilter {
+  authorId?: string | undefined;
+  tag?: string | undefined;
+}
+
+/** keyset 커서 무한 스크롤 (설계 §8.5). authorId는 유저 페이지/내 릭, tag는 태그 피드. */
+export async function fetchFeedPage(
+  cursor: string | null,
+  filter: FeedFilter = {},
+): Promise<LickRow[]> {
   let q = supabase
     .from('licks')
     .select(LICK_COLS)
     .order('created_at', { ascending: false })
     .limit(PAGE_SIZE);
   if (cursor) q = q.lt('created_at', cursor);
-  if (authorId) q = q.eq('author_id', authorId);
+  if (filter.authorId) q = q.eq('author_id', filter.authorId);
+  if (filter.tag) q = q.contains('tags', [filter.tag]);
   const { data, error } = await q;
   if (error) throw error;
   return (data ?? []) as unknown as LickRow[];
