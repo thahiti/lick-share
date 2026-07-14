@@ -460,29 +460,19 @@
   transform: scale(0.9);
 }
 
-/* 활성 탭: 상단 인디케이터 바 + 진한 라벨 */
+/* 활성 탭: 아이콘 tint 필 + 진한 라벨 (Material 3 패턴) */
 .c-tab.active {
   color: var(--brand-tint-text);
   font-weight: 700;
-}
-
-.c-tab.active::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 25%;
-  right: 25%;
-  height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: var(--brand-primary);
 }
 
 .c-tab-ic {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 12px;
-  border-radius: 12px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 15px;
   transition:
     background 0.15s ease,
     transform 0.1s ease;
@@ -497,9 +487,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-top: -14px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: var(--brand-primary);
   transition: transform 0.1s ease;
