@@ -35,7 +35,8 @@ export const ChordRow = ({ song, curM, openBeat, onSlotTap, onCycleAcc }: ChordR
           className={`cacc${effective === 'off' ? ' off' : ''}`}
           onClick={onCycleAcc}
         >
-          Acc<b>{ov ? ACC_LAB[ov] : 'Default'}</b>
+          {/* 'Def' 축약: Acc 존은 패드 거터 폭(30px) 안 — 'Default'는 넘침 */}
+          Acc<b>{ov ? ACC_LAB[ov] : 'Def'}</b>
         </button>
       </div>
       {Array.from({ length: beats }, (_, b) => {

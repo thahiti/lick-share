@@ -39,12 +39,20 @@ body {
   flex: 1 1 auto;
 }
 
-/* ── 코드 행 (DESIGN §4) ── */
+/* ── 코드 행 (DESIGN §4) ──
+   가로 지오메트리는 패드를 미러링해 박 슬롯이 패드 박자 컬럼과 픽셀 정렬된다:
+   우측 인셋 17px(= 패드 margin 8 + border 1 + padding 8), 갭 7px(= .prow 갭),
+   Acc 존 = 8px + 30px + 7px 갭 = 45px(= 패드 17px + 라벨 21px + 갭 7px). */
 .chord-row {
   display: flex;
-  gap: 4px;
+  gap: 7px;
   align-items: stretch;
-  padding: 4px 8px;
+  padding: 4px 17px 4px 8px;
+}
+
+.chord-row .csp {
+  flex: 0 0 30px;
+  display: flex;
 }
 
 .chord-row .cslot {
@@ -71,7 +79,7 @@ body {
 }
 
 .chord-row .cacc {
-  height: 100%;
+  width: 100%;
   border: 1px solid var(--line2);
   border-radius: var(--radius);
   background: #fff;
@@ -81,7 +89,8 @@ body {
   font-size: 8px;
   color: var(--mut2);
   cursor: pointer;
-  padding: 2px 6px;
+  padding: 2px 0;
+  overflow: hidden;
 }
 
 .chord-row .cacc b {

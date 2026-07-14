@@ -46,7 +46,8 @@ describe('ChordRow (SPEC §3.3)', () => {
     const base = render(
       <ChordRow song={demoSong} curM={asBar(0)} openBeat={null} onSlotTap={vi.fn()} onCycleAcc={onCycle} />,
     );
-    expect(base.container.querySelector('.cacc')?.textContent).toBe('AccDefault');
+    /* 'Def' 축약 — Acc 존이 패드 라벨 거터 폭(30px)에 맞춰지므로 (정렬 규칙) */
+    expect(base.container.querySelector('.cacc')?.textContent).toBe('AccDef');
 
     const withOv: Song = { ...demoSong, mAcc: { 0: 'arp' } };
     const ov = render(
