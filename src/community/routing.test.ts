@@ -22,6 +22,11 @@ describe('parseRoute', () => {
     expect(parseRoute('/xyz', '')).toEqual({ name: 'notfound' });
   });
 
+  it('/s/:id는 단축 공유 리다이렉트', () => {
+    expect(parseRoute('/s/abc-123', '')).toEqual({ name: 'share', id: 'abc-123' });
+    expect(parseRoute('/s/', '')).toEqual({ name: 'notfound' });
+  });
+
   it('/tag/:name은 태그 피드 (URL 인코딩 복원)', () => {
     expect(parseRoute('/tag/bebop', '')).toEqual({ name: 'tag', tag: 'bebop' });
     expect(parseRoute('/tag/ii-v-i', '')).toEqual({ name: 'tag', tag: 'ii-v-i' });

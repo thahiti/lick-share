@@ -7,6 +7,7 @@ export type Route =
   | { name: 'ranking' }
   | { name: 'publish' }
   | { name: 'lick'; id: string }
+  | { name: 'share'; id: string }
   | { name: 'user'; publicId: string }
   | { name: 'me' }
   | { name: 'tag'; tag: string }
@@ -26,6 +27,8 @@ export function parseRoute(pathname: string, search: string): Route {
   if (tag?.[1]) return { name: 'tag', tag: decodeURIComponent(tag[1]) };
   const lick = /^\/lick\/([A-Za-z0-9_-]+)$/.exec(pathname);
   if (lick?.[1]) return { name: 'lick', id: lick[1] };
+  const share = /^\/s\/([A-Za-z0-9_-]+)$/.exec(pathname);
+  if (share?.[1]) return { name: 'share', id: share[1] };
   const user = /^\/user\/([A-Za-z0-9_-]+)$/.exec(pathname);
   if (user?.[1]) return { name: 'user', publicId: user[1] };
   return { name: 'notfound' };

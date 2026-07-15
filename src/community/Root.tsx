@@ -17,6 +17,7 @@ import { NotFound } from './views/NotFound';
 import { Publish } from './views/Publish';
 import { Ranking } from './views/Ranking';
 import { SearchResults } from './views/SearchResults';
+import { ShareRedirect } from './views/ShareRedirect';
 import { UserPage } from './views/UserPage';
 import './community.css';
 
@@ -29,10 +30,15 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
   const route = useRoute();
   const [user, setUser] = useState<User | null>(null);
 
-  // 편집 ←Back의 목적지: 마지막으로 머문 커뮤니티 화면 (편집·레거시열람·게시 화면은 제외)
+  // 편집 ←Back의 목적지: 마지막으로 머문 커뮤니티 화면 (편집·레거시열람·게시·공유 리다이렉트는 제외)
   const lastCommunityPath = useRef('/');
   useEffect(() => {
-    if (route.name !== 'edit' && route.name !== 'legacyView' && route.name !== 'publish') {
+    if (
+      route.name !== 'edit' &&
+      route.name !== 'legacyView' &&
+      route.name !== 'publish' &&
+      route.name !== 'share'
+    ) {
       lastCommunityPath.current = window.location.pathname;
     }
   }, [route]);
@@ -75,6 +81,8 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
         return <Publish user={user} player={player} />;
       case 'lick':
         return <LickDetail id={route.id} user={user} player={player} />;
+      case 'share':
+        return <ShareRedirect id={route.id} />;
       case 'user':
         return <UserPage publicId={route.publicId} player={player} />;
       case 'me':
