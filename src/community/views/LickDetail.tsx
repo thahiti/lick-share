@@ -226,7 +226,8 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
   };
 
   const onShare = (): void => {
-    const url = `${window.location.origin}/lick/${lick.id}`;
+    // 단축 공유 URL — 메신저에서 항상 링크로 인식되고, 열면 /s가 열람 URL로 풀어준다
+    const url = `${window.location.origin}/s/${lick.id}`;
     const nav = navigator as Navigator & { share?: (d: { title?: string; url: string }) => Promise<void> };
     if (typeof nav.share === 'function') {
       void nav.share({ title: lick.title, url }).catch(() => {});

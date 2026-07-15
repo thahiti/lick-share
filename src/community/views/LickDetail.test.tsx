@@ -81,6 +81,17 @@ describe('LickDetail 릭 상세', () => {
     fetchMyLikedSet.mockResolvedValue(new Set());
   });
 
+  it('Share: 단축 공유 URL(/s/<id>)을 클립보드에 복사', async () => {
+    fetchLick.mockResolvedValue(original);
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { clipboard: { writeText } });
+    const { container } = render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
+    await screen.findByText('Original lick');
+    fireEvent.click(container.querySelector('.c-share') as Element);
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('/s/orig-1'));
+    vi.unstubAllGlobals();
+  });
+
   it('시안 C 구조: 툴바·악보가 한 프레임 안(R1), 그 사이 구분선(R4), 재생 컨트롤은 프레임 밖에 없다(R5)', async () => {
     fetchLick.mockResolvedValue(original);
     const { container } = render(<LickDetail id="orig-1" user={null} player={fakePlayer()} />);
