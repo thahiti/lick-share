@@ -92,12 +92,11 @@ export const padTap = (ctx: EditCtx, pv: Midi | 'rest', st: number): EditOut => 
     return { ...keep(ctx), sel: hit.id, preview: hit };
   }
 
-  // 다른 피치의 노트가 점유한 지점이면 덮어쓰기(겹침 해소), 완전히 빈 지점이면 뒤 노트 앞까지로 클램프
-  const occupied = noteAt(song, abs) !== null;
+  // 그 지점을 점유한 노트는 덮어쓰되(겹침 해소), 다음 노트는 침범하지 않도록 클램프
   const n: Note = {
     id: nextId(song),
     s: asStep(abs),
-    d: occupied ? Math.min(INPUT_LEN, total(song) - abs) : freeLen(song, abs, INPUT_LEN),
+    d: freeLen(song, abs, INPUT_LEN),
     p: pv,
   };
   return {

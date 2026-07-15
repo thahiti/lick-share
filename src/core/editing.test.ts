@@ -53,6 +53,26 @@ describe('padTap: 음 행 (SPEC §3.5)', () => {
     expect(out.song.notes.find((n) => n.id === 1)?.d).toBe(4);
   });
 
+  test('점유 칸 리플레이스: 그 다음 노트는 침범하지 않음', () => {
+    // [0,2) 노트를 덮어쓰되, 바로 뒤 [2,6) 노트는 보존
+    const base = song({ meas: 1, notes: [note(1, 0, 2, 60), note(2, 2, 4, 62)] });
+    const out = padTap(ctx(base), asMidi(64), 0);
+    const added = out.song.notes.find((n) => n.id === out.sel);
+    expect(added).toMatchObject({ s: 0, d: 2 });
+    expect(out.song.notes.find((n) => n.id === 1)).toBeUndefined();
+    expect(out.song.notes.find((n) => n.id === 2)).toMatchObject({ s: 2, d: 4 });
+  });
+
+  test('점유 칸 중간 리플레이스: 앞은 잘리고 다음 노트는 보존', () => {
+    // [0,8) 중간(4) 탭 → 앞 노트 d=4로 트림, [8,12) 노트는 보존
+    const base = song({ meas: 1, notes: [note(1, 0, 8, 60), note(2, 8, 4, 62)] });
+    const out = padTap(ctx(base), asMidi(64), 4);
+    const added = out.song.notes.find((n) => n.id === out.sel);
+    expect(added).toMatchObject({ s: 4, d: 4 });
+    expect(out.song.notes.find((n) => n.id === 1)).toMatchObject({ s: 0, d: 4 });
+    expect(out.song.notes.find((n) => n.id === 2)).toMatchObject({ s: 8, d: 4 });
+  });
+
   test('빈 칸 입력: 뒤 노트를 덮지 않도록 다음 노트 시작까지로 클램프', () => {
     const base = song({ meas: 1, notes: [note(1, 2, 4, 60)] });
     const out = padTap(ctx(base), asMidi(64), 0);
