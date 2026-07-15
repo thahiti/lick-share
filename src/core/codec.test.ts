@@ -24,8 +24,26 @@ const prototypeDemo: Song = { ...demoSong, title: '봄날의 스케치' };
 const noDot = (h: string): string => `v1${h.slice(3)}`;
 
 describe('codec (SPEC §7)', () => {
-  test('encode(프로토타입 데모 곡) = 무점 v1 접두사 + 프로토타입과 동일한 페이로드', () => {
-    expect(encodeSong(prototypeDemo)).toBe(noDot(hashes.normal));
+  test('encode: v2 무점 바이너리 — 메신저 링크 한도(500자) 대비 컴팩트', () => {
+    const h = encodeSong(prototypeDemo);
+    expect(h.startsWith('v2')).toBe(true);
+    expect(h).not.toContain('.');
+    expect(h.length).toBeLessThan(350);
+  });
+
+  test('v2 왕복: 데모 곡 인코딩 → 디코딩 동일', () => {
+    expect(decodeSong(encodeSong(prototypeDemo))).toEqual(prototypeDemo);
+  });
+
+  test('v2 잘린 페이로드 → null (부분 파싱 금지)', () => {
+    const h = encodeSong(prototypeDemo);
+    expect(decodeSong(h.slice(0, h.length - 4))).toBeNull();
+    expect(decodeSong(h.slice(0, 8))).toBeNull();
+    expect(decodeSong('v2')).toBeNull();
+  });
+
+  test('v2 뒤에 여분 바이트 → null (전체 소비 강제)', () => {
+    expect(decodeSong(`${encodeSong(prototypeDemo)}AAAA`)).toBeNull();
   });
 
   test('해시(일반) 디코딩 → 원본 곡 복원', () => {
@@ -100,10 +118,13 @@ describe('codec (SPEC §7)', () => {
           { maxKeys: 6 },
         ),
       })
-      .map(({ seeds, ...rest }): Song => ({
-        ...rest,
-        notes: seeds.map((seed, i) => makeNote(i + 1, [seed.s, seed.d, seed.p])),
-      }));
+      .map(({ seeds, ...rest }): Song => {
+        // v2는 s 정렬 순서로 id를 재부여하므로 s 중복 제거 + 정렬로 정규형을 만든다
+        const uniq = [...new Map(seeds.map((sd) => [sd.s, sd])).values()].sort(
+          (a, b) => a.s - b.s,
+        );
+        return { ...rest, notes: uniq.map((seed, i) => makeNote(i + 1, [seed.s, seed.d, seed.p])) };
+      });
 
     fc.assert(
       fc.property(songArb, (song) => {
