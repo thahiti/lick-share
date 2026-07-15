@@ -681,6 +681,25 @@ body {
   }
 }
 
+/* ── 열람: 잘린/깨진 공유 링크 명시 거부 화면 ── */
+.view-error {
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.view-error h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+
+.view-error p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--mut2);
+}
+
 /* ── 데스크톱 열람 (DESIGN §7) — 편집은 워크스페이스(ws.css)가 담당 ── */
 @media (min-width: 1024px) {
   .app--view {

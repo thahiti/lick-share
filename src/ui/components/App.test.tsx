@@ -250,6 +250,31 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     vi.unstubAllGlobals();
   });
 
+  test('잘린 해시(view): 에러 화면 표시 — 데모 곡을 조용히 보여주지 않음', () => {
+    const { container } = setupView('v1'); // 링크 감지기가 절단한 해시
+    expect(container.textContent).toContain('Broken link');
+    expect(container.textContent).not.toContain('SHARED SCORE');
+    expect(container.querySelector('[data-note]')).toBeNull();
+  });
+
+  test('잘못된 해시(edit): 토스트로 알림', async () => {
+    const time = { t: 0 };
+    const { findByText } = render(
+      <App
+        store={createSongStore()}
+        player={createPlayer({ sink: createFakeAudioSink(() => time.t), clock: createFakeClock() })}
+        hashStore={createMemoryHashStore('v1')}
+      />,
+    );
+    expect(await findByText('Broken link — score not loaded')).toBeTruthy();
+  });
+
+  test('빈 해시(view): 에러 없이 기본 곡 열람 (기존 동작 유지)', () => {
+    const { container } = setupView('');
+    expect(container.textContent).toContain('SHARED SCORE');
+    expect(container.textContent).not.toContain('Broken link');
+  });
+
   test('편집 Share 버튼: 현재 곡 해시로 onShare 호출', () => {
     const onShare = vi.fn();
     const time = { t: 0 };

@@ -58,6 +58,11 @@ export const App = ({
   /** 코드 피커가 열린 박 (닫힘=null) */
   const [cpBeat, setCpBeat] = useState<number | null>(null);
   const loaded = useRef(false);
+  /* 해시가 있는데 디코드 실패(잘린/깨진 링크) — 조용한 데모 곡 폴백 대신 명시적으로 거부 */
+  const [hashError] = useState<boolean>(() => {
+    const raw = hashStore.read();
+    return raw !== '' && decodeSong(raw) === null;
+  });
   const shellRef = useRef<HTMLDivElement>(null);
   const [scoreW, setScoreW] = useState(384);
   /* 데스크톱(≥1024px) 편집은 라이트 워크스페이스 */
@@ -78,15 +83,18 @@ export const App = ({
   useEffect(() => {
     if (loaded.current) return;
     loaded.current = true;
-    const decoded = decodeSong(hashStore.read());
+    const raw = hashStore.read();
+    const decoded = decodeSong(raw);
     if (decoded) store.getState().loadSong(decoded);
+    else if (raw !== '') store.getState().showToast('Broken link — score not loaded');
   }, [store, hashStore]);
 
-  /* 자동 저장: 편집 후 500ms 디바운스 (SPEC §3.1) */
+  /* 자동 저장: 편집 후 500ms 디바운스 (SPEC §3.1). 열람 에러 화면에서는 깨진 해시를 덮지 않음 */
   useEffect(() => {
+    if (hashError && mode === 'view') return;
     const id = setTimeout(() => hashStore.write(encodeSong(s.song)), 500);
     return () => clearTimeout(id);
-  }, [s.song, hashStore]);
+  }, [s.song, hashStore, hashError, mode]);
 
   /* 프리뷰 사운드 — 입력·선택·음높이 변경에만 (스토어가 결정) */
   useEffect(() => {
@@ -233,6 +241,17 @@ export const App = ({
     noteG: () => store.getState().noteLetter('G'),
   };
   useKeyboardShortcuts(shortcuts, mode === 'edit');
+
+  if (mode === 'view' && hashError) {
+    return (
+      <div className="app app--view">
+        <div className="view-error" role="alert">
+          <h2>Broken link</h2>
+          <p>This score link is incomplete — it was likely cut off when shared. Ask for the full link and try again.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (mode === 'view') {
     return (
