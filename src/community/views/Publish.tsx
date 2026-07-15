@@ -24,10 +24,10 @@ interface Props {
 // 열람 재생: 각 종류를 모두 내보내고 실제 소리는 곡 데이터(accPat/metro)가 결정
 const VIEW_OPTS = { melody: true, accomp: true, metro: true };
 
-/** 진입 시점의 URL 해시에서 곡 blob(v1.…)을 한 번 캡처 — 없으면 빈 문자열 */
+/** 진입 시점의 URL 해시에서 곡 blob(v1…)을 한 번 캡처 — 없으면 빈 문자열 */
 const readInitialHash = (): string => {
   const h = window.location.hash;
-  return h.startsWith('#v1.') ? h.slice(1) : '';
+  return h.startsWith('#v1') ? h.slice(1) : '';
 };
 
 type Status =

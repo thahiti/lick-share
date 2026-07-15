@@ -130,7 +130,8 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
     fireEvent.click(first.container.querySelector('[data-p="60"][data-st="0"]') as Element);
     vi.advanceTimersByTime(500);
     const saved = first.hashStore.read();
-    expect(saved.startsWith('v1.')).toBe(true);
+    expect(saved.startsWith('v1')).toBe(true);
+    expect(saved).not.toContain('.');
     expect(decodeSong(saved)?.notes.some((n) => n.p === 60)).toBe(true);
     cleanup();
 
@@ -235,13 +236,16 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     expect(container.textContent).toContain('Spring Sketch');
   });
 
-  test('레거시 열람 Copy link → ?mode=view#v1. URL 클립보드 복사 + 해시 갱신 + 토스트', async () => {
+  test('레거시 열람 Copy link → 무점 ?mode=view#v1… URL 클립보드 복사 + 해시 갱신 + 토스트', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     vi.stubGlobal('navigator', { clipboard: { writeText } });
     const { container, hashStore, findByText } = setupView();
     click(container, '[data-btn="copy"]');
-    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('?mode=view#v1.'));
-    expect(hashStore.read().startsWith('v1.')).toBe(true);
+    const url = writeText.mock.calls[0]?.[0] as string;
+    expect(url).toContain('?mode=view#v1');
+    expect(url).not.toContain('#v1.'); // 링크 감지기가 '.'에서 절단하므로 무점이어야 함
+    expect(hashStore.read().startsWith('v1')).toBe(true);
+    expect(hashStore.read()).not.toContain('.');
     expect(await findByText('View link copied')).toBeTruthy();
     vi.unstubAllGlobals();
   });
@@ -259,7 +263,7 @@ describe('App: 열람 모드 + 공유 (IMPLEMENTATION_PLAN P8 DoD)', () => {
     );
     click(container, '[data-btn="share"]');
     expect(onShare).toHaveBeenCalledTimes(1);
-    expect((onShare.mock.calls[0]?.[0] as string).startsWith('v1.')).toBe(true);
+    expect((onShare.mock.calls[0]?.[0] as string).startsWith('v1')).toBe(true);
   });
 
   test('편집 Back 버튼 → onExit, View 버튼은 없다', () => {

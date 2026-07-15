@@ -1,7 +1,8 @@
 /**
- * URL 해시 코덱 (SPEC §7). 프로토타입의 b64e/b64d와 바이트 단위 호환.
- * 하위 호환: cb 없으면 코드 키를 마디 키로 간주해 ×4, "r" 노트(구버전 쉼표) 필터,
- * 누락 필드는 기본값. 미래 버전 해시(v1. 아님)는 조용히 깨지지 않고 null로 거부.
+ * URL 해시 코덱 (SPEC §7). 형식: `v1<base64url 페이로드>` — 구분자 없음.
+ * 메신저 링크 감지기가 '.'에서 URL을 절단해 해시가 유실되는 문제로 무점 형식만 사용하고,
+ * 구형(v1.) 해시는 하위 호환 폐기(2026-07-15 결정)로 다른 잘못된 해시와 함께 null로 거부.
+ * 페이로드 JSON 하위 호환: cb 없으면 코드 키 ×4, "r" 노트 필터, 누락 필드는 기본값.
  */
 import { BPM_M } from './constants';
 import {
@@ -83,13 +84,13 @@ export const encodeSong = (song: Song): string => {
     n: song.notes.map((n) => [n.s, n.d, n.p]),
     c: song.chords,
   };
-  return `v1.${b64e(JSON.stringify(o))}`;
+  return `v1${b64e(JSON.stringify(o))}`;
 };
 
 export const decodeSong = (hash: string): Song | null => {
   try {
-    if (!hash.startsWith('v1.')) return null;
-    const json = b64d(hash.slice(3));
+    if (!hash.startsWith('v1')) return null;
+    const json = b64d(hash.slice(2));
     if (json === null) return null;
     const o = JSON.parse(json) as EncodedSong;
 

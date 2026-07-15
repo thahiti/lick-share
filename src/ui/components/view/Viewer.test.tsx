@@ -46,9 +46,9 @@ describe('Viewer (SPEC §4)', () => {
     expect(cbs.onToEdit).toHaveBeenCalled();
   });
 
-  test('프로토타입 해시 3종(일반/pickup/구버전) 디코딩 렌더 성공', () => {
+  test('프로토타입 페이로드 3종(일반/pickup/구버전) 디코딩 렌더 성공', () => {
     for (const [name, hash] of Object.entries(hashes)) {
-      const song = decodeSong(hash);
+      const song = decodeSong(`v1${hash.slice(3)}`);
       expect(song, name).not.toBeNull();
       if (!song) continue;
       const { container, unmount } = render(<Viewer song={song} playing={false} {...cbs} />);
@@ -58,8 +58,8 @@ describe('Viewer (SPEC §4)', () => {
     }
   });
 
-  test('구버전 해시: "r" 쉼표 필터 후 노트 2개만 렌더', () => {
-    const song = decodeSong(hashes.legacy);
+  test('구버전 페이로드: "r" 쉼표 필터 후 노트 2개만 렌더', () => {
+    const song = decodeSong(`v1${hashes.legacy.slice(3)}`);
     if (!song) throw new Error('legacy 디코딩 실패');
     const { container } = render(<Viewer song={song} playing={false} {...cbs} />);
     const ids = new Set(

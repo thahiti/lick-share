@@ -20,25 +20,28 @@ const makeNote = (id: number, [s, d, p]: readonly [number, number, number]): Not
  */
 const prototypeDemo: Song = { ...demoSong, title: '봄날의 스케치' };
 
+/** 프로토타입 픽스처(구형 v1.)를 새 무점 형식으로 변환 — 페이로드 바이트는 동일 */
+const noDot = (h: string): string => `v1${h.slice(3)}`;
+
 describe('codec (SPEC §7)', () => {
-  test('encode(프로토타입 데모 곡) = 프로토타입이 생성한 해시와 바이트 단위 동일', () => {
-    expect(encodeSong(prototypeDemo)).toBe(hashes.normal);
+  test('encode(프로토타입 데모 곡) = 무점 v1 접두사 + 프로토타입과 동일한 페이로드', () => {
+    expect(encodeSong(prototypeDemo)).toBe(noDot(hashes.normal));
   });
 
-  test('프로토타입 해시(일반) 디코딩 → 원본 곡 복원', () => {
-    expect(decodeSong(hashes.normal)).toEqual(prototypeDemo);
+  test('해시(일반) 디코딩 → 원본 곡 복원', () => {
+    expect(decodeSong(noDot(hashes.normal))).toEqual(prototypeDemo);
   });
 
-  test('프로토타입 해시(pickup) 디코딩', () => {
-    const song = decodeSong(hashes.pickup);
+  test('해시(pickup) 디코딩', () => {
+    const song = decodeSong(noDot(hashes.pickup));
     expect(song).not.toBeNull();
     expect(song?.pickup).toBe(8);
     expect(song?.notes[0]?.s).toBe(8);
     expect(song?.chords).toEqual({ 2: 'C', 6: 'Am', 10: 'F', 14: 'G7' });
   });
 
-  test('구버전 해시: cb 없음 → 코드 키 ×4, "r" 노트 필터, 기본값 적용', () => {
-    const song = decodeSong(hashes.legacy);
+  test('페이로드 하위 필드: cb 없음 → 코드 키 ×4, "r" 노트 필터, 기본값 적용', () => {
+    const song = decodeSong(noDot(hashes.legacy));
     expect(song).not.toBeNull();
     expect(song?.title).toBe('옛 곡');
     expect(song?.tempo).toBe(90);
@@ -60,8 +63,17 @@ describe('codec (SPEC §7)', () => {
 
   test('잘못된 해시 → null', () => {
     expect(decodeSong('garbage')).toBeNull();
-    expect(decodeSong('v2.abc')).toBeNull();
-    expect(decodeSong('v1.!!!')).toBeNull();
+    expect(decodeSong('v2abc')).toBeNull();
+    expect(decodeSong('v1!!!')).toBeNull();
+  });
+
+  test('구형(v1.) 해시는 명시적으로 거부 → null', () => {
+    expect(decodeSong(hashes.normal)).toBeNull();
+  });
+
+  test('잘린 해시(접두사만 남음) → null', () => {
+    expect(decodeSong('v1')).toBeNull();
+    expect(decodeSong('v1.')).toBeNull();
   });
 
   test('프로퍼티: 임의 Song 왕복 동일성 (deep equal)', () => {
