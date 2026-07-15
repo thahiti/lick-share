@@ -82,6 +82,13 @@ describe('insertAtFreeBeat: 현재 마디의 다음 빈 박에 입력', () => {
     expect(out.song.notes).toHaveLength(2);
     expect(out.song.notes.some((n) => n.s === 4 && n.p === 60)).toBe(true);
   });
+  test('빈 박 입력 시 뒤 노트를 덮지 않도록 클램프', () => {
+    const s = song({ meas: 1, notes: [note(1, 2, 2, 64)] });
+    const out = insertAtFreeBeat(ctx(s), asMidi(60), 4);
+    const added = out.song.notes.find((n) => n.id === out.sel);
+    expect(added).toMatchObject({ s: 0, d: 2, p: 60 });
+    expect(out.song.notes.find((n) => n.id === 1)).toMatchObject({ s: 2, d: 2 });
+  });
   test('마디가 가득 차면 토스트 + 변화 없음', () => {
     const notes = [note(1, 0, 4), note(2, 4, 4), note(3, 8, 4), note(4, 12, 4)];
     const s = song({ meas: 1, notes });

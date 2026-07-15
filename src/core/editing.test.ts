@@ -53,6 +53,22 @@ describe('padTap: 음 행 (SPEC §3.5)', () => {
     expect(out.song.notes.find((n) => n.id === 1)?.d).toBe(4);
   });
 
+  test('빈 칸 입력: 뒤 노트를 덮지 않도록 다음 노트 시작까지로 클램프', () => {
+    const base = song({ meas: 1, notes: [note(1, 2, 4, 60)] });
+    const out = padTap(ctx(base), asMidi(64), 0);
+    const added = out.song.notes.find((n) => n.id === out.sel);
+    expect(added).toMatchObject({ s: 0, d: 2 });
+    expect(out.song.notes.find((n) => n.id === 1)).toMatchObject({ s: 2, d: 4 });
+  });
+
+  test('빈 칸 입력: 뒤 노트까지 4스텝 이상이면 4분음표 유지', () => {
+    const base = song({ meas: 1, notes: [note(1, 4, 4, 60)] });
+    const out = padTap(ctx(base), asMidi(64), 0);
+    const added = out.song.notes.find((n) => n.id === out.sel);
+    expect(added).toMatchObject({ s: 0, d: 4 });
+    expect(out.song.notes.find((n) => n.id === 1)).toMatchObject({ s: 4, d: 4 });
+  });
+
   test('켜진 칸(비선택) → 선택만, 변경 없음', () => {
     const base = song({ meas: 1, notes: [note(1, 0, 4)] });
     const out = padTap(ctx(base), asMidi(64), 2);

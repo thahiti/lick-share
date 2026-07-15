@@ -43,6 +43,12 @@ const nextId = (song: Song): number => song.notes.reduce((m, n) => Math.max(m, n
 export const noteAt = (song: Song, abs: number, p: Midi | null = null): Note | null =>
   song.notes.find((n) => (p === null || n.p === p) && n.s <= abs && abs < n.s + n.d) ?? null;
 
+/** 빈 지점 입력 길이: 뒤 노트를 덮지 않도록 다음 노트 시작·곡 끝까지로 클램프 */
+const freeLen = (song: Song, abs: number, len: number): number => {
+  const next = song.notes.reduce((m, n) => (n.s > abs && n.s < m ? n.s : m), total(song));
+  return Math.max(1, Math.min(len, next - abs));
+};
+
 /** 패드 셀 탭. pv='rest'는 쉼표 행 */
 export const padTap = (ctx: EditCtx, pv: Midi | 'rest', st: number): EditOut => {
   const { song, sel, curM } = ctx;
@@ -86,10 +92,12 @@ export const padTap = (ctx: EditCtx, pv: Midi | 'rest', st: number): EditOut => 
     return { ...keep(ctx), sel: hit.id, preview: hit };
   }
 
+  // 다른 피치의 노트가 점유한 지점이면 덮어쓰기(겹침 해소), 완전히 빈 지점이면 뒤 노트 앞까지로 클램프
+  const occupied = noteAt(song, abs) !== null;
   const n: Note = {
     id: nextId(song),
     s: asStep(abs),
-    d: Math.min(INPUT_LEN, total(song) - abs),
+    d: occupied ? Math.min(INPUT_LEN, total(song) - abs) : freeLen(song, abs, INPUT_LEN),
     p: pv,
   };
   return {
@@ -367,7 +375,7 @@ export const insertAtFreeBeat = (ctx: EditCtx, p: Midi, len: number): EditOut =>
       const n: Note = {
         id: nextId(song),
         s: asStep(abs),
-        d: Math.max(1, Math.min(len, total(song) - abs)),
+        d: freeLen(song, abs, len),
         p,
       };
       return {
