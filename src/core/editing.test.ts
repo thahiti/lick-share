@@ -6,6 +6,7 @@ import {
   cycleMeasureAcc,
   deleteSel,
   gotoMeasure,
+  insertRecorded,
   padTap,
   selectDir,
   setChord,
@@ -383,5 +384,20 @@ describe('gotoMeasure (SPEC §3.2)', () => {
     const out = gotoMeasure(ctx(song({ meas: 2, notes: [note(1, 0, 4)] })), asBar(1));
     expect(out.sel).toBeNull();
     expect(out.preview).toBeUndefined();
+  });
+});
+
+describe('insertRecorded (piano-recording-design §2.4)', () => {
+  test('새 id로 삽입하고 기존 노트를 유지', () => {
+    const base = song({ meas: 2, notes: [note(1, 0, 4, 60)] });
+    const out = insertRecorded(base, { s: asStep(8), d: 4, p: asMidi(64) });
+    expect(out.notes).toHaveLength(2);
+    expect(out.notes.find((n) => n.s === 8)).toMatchObject({ id: 2, d: 4, p: 64 });
+  });
+
+  test('겹치는 기존 노트는 resolveOverlap 규칙으로 잘리거나 제거', () => {
+    const base = song({ meas: 2, notes: [note(1, 0, 4, 60)] });
+    const out = insertRecorded(base, { s: asStep(2), d: 4, p: asMidi(64) });
+    expect(out.notes.find((n) => n.id === 1)?.d).toBe(2); // 앞부분만 남음
   });
 });

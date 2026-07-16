@@ -440,6 +440,13 @@ export const updateNote = (
   };
 };
 
+/** 레코딩 커밋: 지정 스텝·길이로 삽입 + 겹침 해소 (piano-recording-design §2.4).
+ *  선택·프리뷰 변경 없음 — 탭 사운드는 즉시 발음 경로가 담당 */
+export const insertRecorded = (song: Song, spec: Pick<Note, 's' | 'd' | 'p'>): Song => {
+  const n: Note = { id: nextId(song), ...spec };
+  return { ...song, notes: resolveOverlap([...song.notes, n], n) };
+};
+
 const ACC_CYCLE: readonly (MeasureAcc | undefined)[] = [undefined, 'pad', 'comp', 'arp', 'off'];
 
 /** 현재 마디 반주 오버라이드 순환: 기본→pad→comp→arp→off→기본 */
