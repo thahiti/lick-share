@@ -738,3 +738,83 @@ body {
   outline: 2px solid var(--brand-outline);
   outline-offset: -2px;
 }
+
+/* ── 레코딩 피아노 (piano-recording-design §3.2) ── */
+.rpiano {
+  background: var(--bg-pad-zone);
+  padding: 10px 12px 14px;
+}
+.rp-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.rp-oct {
+  width: 44px;
+  height: 30px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 12px;
+}
+.rp-oct:disabled {
+  color: var(--mut);
+  border-color: var(--line);
+}
+.rp-range {
+  font-size: 11px;
+  color: var(--mut2);
+  letter-spacing: 0.04em;
+}
+.rp-keys {
+  position: relative;
+  display: flex;
+  height: 132px;
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-pad);
+  overflow: hidden;
+  background: var(--paper);
+  touch-action: none;
+}
+.rp-white {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  border-right: 1px solid var(--line2);
+  background: var(--paper);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 5px;
+}
+.rp-white:last-child {
+  border-right: 0;
+}
+.rp-white.pressed {
+  background: var(--brand-tint);
+  box-shadow: inset 0 0 0 2px var(--brand-outline);
+}
+.rp-lab {
+  font-size: 9px;
+  color: var(--mut2);
+}
+.rp-white.pressed .rp-lab {
+  color: var(--brand-tint-text);
+  font-weight: 700;
+}
+.rp-black {
+  position: absolute;
+  top: 0;
+  height: 58%;
+  transform: translateX(-50%);
+  border: 1px solid var(--ink);
+  border-radius: 0 0 var(--radius-pad) var(--radius-pad);
+  background: var(--ink);
+  z-index: 2;
+}
+.rp-black.pressed {
+  background: var(--brand-outline);
+  border-color: var(--brand-outline);
+}
