@@ -43,6 +43,15 @@ export interface WorkspaceProps {
   readonly cpBeat: number | null;
   readonly inputLen: number;
 
+  // ── 레코딩 (piano-recording-design §3.3) ──
+  readonly recPhase: 'idle' | 'countIn' | 'recording';
+  readonly countBeat: number | null;
+  readonly recEl: number | null;
+  readonly onRecord: () => void;
+  readonly onRecStop: () => void;
+  readonly onRecKeyDown: (p: Midi) => void;
+  readonly onRecKeyUp: (p: Midi) => void;
+
   readonly onCellTap: (m: number, pv: Midi | 'rest', st: number) => void;
   readonly onDragNote: (id: number, patch: { s?: number; p?: Midi; d?: number }) => void;
   readonly onSlotTap: (m: number, b: number) => void;
@@ -80,6 +89,13 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
     playEl,
     cpBeat,
     inputLen,
+    recPhase,
+    countBeat,
+    recEl,
+    onRecord,
+    onRecStop,
+    onRecKeyDown,
+    onRecKeyUp,
     onCellTap,
     onDragNote,
     onSlotTap,
@@ -108,7 +124,13 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
   const [tempoPop, setTempoPop] = useState(false);
   const [tempoInput, setTempoInput] = useState(String(song.tempo));
 
-  const playheadStep = playing && playEl !== null ? playEl : undefined;
+  const recActive = recPhase !== 'idle';
+  const playheadStep =
+    recPhase === 'recording' && recEl !== null
+      ? recEl
+      : playing && playEl !== null
+        ? playEl
+        : undefined;
   const zoom = (d: number): void => setPxPerStep((v) => clampZoom(v + d));
   const applyTempo = (v: number): void => {
     onTempoApply(v);
@@ -126,10 +148,25 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
               data-btn="playall"
               className="ws-play"
               aria-label="Play/Stop all"
+              disabled={recActive}
               onClick={onTogglePlay}
             >
               <Icon name={playing ? 'pause' : 'play'} size={16} color="var(--brand-tint-text)" />
             </button>
+            <button
+              type="button"
+              data-btn="rec"
+              className={`ws-icon-btn ws-rec${recActive ? ' on' : ''}`}
+              aria-label={recActive ? 'Stop recording' : 'Record'}
+              onClick={recActive ? onRecStop : onRecord}
+            >
+              <span className={recActive ? 'rec-stop-square' : 'rec-dot'} />
+            </button>
+            {recActive && (
+              <span className="ws-rec-chip" role="status">
+                {recPhase === 'countIn' ? `Count-in ${countBeat ?? ''}` : 'REC'}
+              </span>
+            )}
             <div className="ws-tempo-wrap">
               <button
                 type="button"
@@ -178,10 +215,24 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
               <Icon name="metro" color={metroOn ? 'var(--paper)' : 'var(--ink)'} />
             </button>
             <span className="ws-transport-sep" />
-            <button type="button" data-btn="undo" className="ws-icon-btn" aria-label="Undo" onClick={onUndo}>
+            <button
+              type="button"
+              data-btn="undo"
+              className="ws-icon-btn"
+              aria-label="Undo"
+              disabled={recActive}
+              onClick={onUndo}
+            >
               <Icon name="undo" />
             </button>
-            <button type="button" data-btn="redo" className="ws-icon-btn" aria-label="Redo" onClick={onRedo}>
+            <button
+              type="button"
+              data-btn="redo"
+              className="ws-icon-btn"
+              aria-label="Redo"
+              disabled={recActive}
+              onClick={onRedo}
+            >
               <Icon name="redo" />
             </button>
             <button
@@ -189,6 +240,7 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
               data-btn="del"
               className="ws-icon-btn"
               aria-label="Delete selection"
+              disabled={recActive}
               onClick={onDelete}
             >
               <Icon name="del" color="var(--red)" />
@@ -215,8 +267,8 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
               song={song}
               pxPerStep={pxPerStep}
               sel={sel}
-              onCellTap={onCellTap}
-              onDragNote={onDragNote}
+              onCellTap={recActive ? () => {} : onCellTap}
+              onDragNote={recActive ? () => {} : onDragNote}
               {...(playheadStep !== undefined ? { playheadStep } : {})}
             />
           </div>
@@ -230,7 +282,12 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
             ))}
           </div>
 
-          <PianoKeys onKeyTap={onKeyTap} />
+          <PianoKeys
+            onKeyTap={onKeyTap}
+            recording={recActive}
+            onRecKeyDown={onRecKeyDown}
+            onRecKeyUp={onRecKeyUp}
+          />
         </div>
 
         <PropertyPanel

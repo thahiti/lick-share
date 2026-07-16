@@ -43,6 +43,13 @@ const setup = (over: Partial<Parameters<typeof Workspace>[0]> = {}) => {
       playing={false}
       playEl={null}
       cpBeat={null}
+      recPhase="idle"
+      countBeat={null}
+      recEl={null}
+      onRecord={() => {}}
+      onRecStop={() => {}}
+      onRecKeyDown={() => {}}
+      onRecKeyUp={() => {}}
       inputLen={4}
       {...h}
       {...over}

@@ -230,30 +230,35 @@ export const App = ({
     setPlaying(true);
   };
 
+  /* 레코딩 중에는 정지 계열만 통과 — 편집 단축키는 전부 가드 */
+  const guard = (fn: () => void) => (): void => {
+    if (!recActive) fn();
+  };
   const shortcuts: Record<ShortcutAction, () => void> = {
-    selectPrev: () => store.getState().selectDir(-1),
-    selectNext: () => store.getState().selectDir(1),
-    pitchUp: () => store.getState().stepPitch(1),
-    pitchDown: () => store.getState().stepPitch(-1),
-    posBack: () => store.getState().stepPos(-1),
-    posFwd: () => store.getState().stepPos(1),
-    lenInc: () => store.getState().stepLen(1),
-    lenDec: () => store.getState().stepLen(-1),
-    playToggle: togglePlay,
-    playMeasure,
-    del: () => store.getState().deleteSel(),
-    measPrev: measurePrev,
-    measNext: measureNext,
-    undo: () => store.getState().undoAction(),
-    redo: () => store.getState().redoAction(),
-    escape: () => setCpBeat(null),
-    noteA: () => store.getState().noteLetter('A'),
-    noteB: () => store.getState().noteLetter('B'),
-    noteC: () => store.getState().noteLetter('C'),
-    noteD: () => store.getState().noteLetter('D'),
-    noteE: () => store.getState().noteLetter('E'),
-    noteF: () => store.getState().noteLetter('F'),
-    noteG: () => store.getState().noteLetter('G'),
+    selectPrev: guard(() => store.getState().selectDir(-1)),
+    selectNext: guard(() => store.getState().selectDir(1)),
+    pitchUp: guard(() => store.getState().stepPitch(1)),
+    pitchDown: guard(() => store.getState().stepPitch(-1)),
+    posBack: guard(() => store.getState().stepPos(-1)),
+    posFwd: guard(() => store.getState().stepPos(1)),
+    lenInc: guard(() => store.getState().stepLen(1)),
+    lenDec: guard(() => store.getState().stepLen(-1)),
+    playToggle: () => (recActive ? rec.stop() : togglePlay()),
+    playMeasure: guard(playMeasure),
+    del: guard(() => store.getState().deleteSel()),
+    measPrev: guard(measurePrev),
+    measNext: guard(measureNext),
+    undo: guard(() => store.getState().undoAction()),
+    redo: guard(() => store.getState().redoAction()),
+    escape: () => (recActive ? rec.stop() : setCpBeat(null)),
+    record: () => (recActive ? rec.stop() : recStart()),
+    noteA: guard(() => store.getState().noteLetter('A')),
+    noteB: guard(() => store.getState().noteLetter('B')),
+    noteC: guard(() => store.getState().noteLetter('C')),
+    noteD: guard(() => store.getState().noteLetter('D')),
+    noteE: guard(() => store.getState().noteLetter('E')),
+    noteF: guard(() => store.getState().noteLetter('F')),
+    noteG: guard(() => store.getState().noteLetter('G')),
   };
   useKeyboardShortcuts(shortcuts, mode === 'edit');
 
@@ -302,6 +307,13 @@ export const App = ({
           playEl={playEl}
           cpBeat={cpBeat}
           inputLen={s.inputLen}
+          recPhase={rec.phase}
+          countBeat={rec.countBeat}
+          recEl={rec.recEl}
+          onRecord={recStart}
+          onRecStop={rec.stop}
+          onRecKeyDown={rec.keyDown}
+          onRecKeyUp={rec.keyUp}
           onCellTap={(m, pv, st) => store.getState().padTapAt(m, pv, st)}
           onDragNote={(id, patch) => store.getState().dragNote(id, patch)}
           onSlotTap={(m, b) => {

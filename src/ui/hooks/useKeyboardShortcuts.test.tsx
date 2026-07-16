@@ -112,6 +112,7 @@ const emptyHandlers = (): Record<ShortcutAction, () => void> => ({
   lenDec: noop,
   playToggle: noop,
   playMeasure: noop,
+  record: noop,
   del: noop,
   measPrev: noop,
   measNext: noop,
@@ -170,5 +171,17 @@ describe('useKeyboardShortcuts', () => {
     unmount();
     fireEvent.keyDown(window, { key: 'l' });
     expect(h.selectNext).not.toHaveBeenCalled();
+  });
+});
+
+describe('레코딩 단축키 (piano-recording-design §3.3)', () => {
+  test('r → record', () => {
+    expect(resolveShortcut(new KeyboardEvent('keydown', { key: 'r' }))).toBe('record');
+  });
+
+  test('한글 자판 ㄱ(KeyR 물리 위치) → record', () => {
+    expect(
+      resolveShortcut(new KeyboardEvent('keydown', { key: 'ㄱ', code: 'KeyR' })),
+    ).toBe('record');
   });
 });

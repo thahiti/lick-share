@@ -18,6 +18,8 @@ export type ShortcutAction =
   | 'undo'
   | 'redo'
   | 'escape'
+  // 레코딩 시작/정지 (piano-recording-design §3.3)
+  | 'record'
   // A~G 음 입력 (데스크톱 워크스페이스)
   | 'noteA'
   | 'noteB'
@@ -33,6 +35,7 @@ const CODE_KEYS: Readonly<Record<string, string>> = {
   KeyJ: 'j',
   KeyK: 'k',
   KeyL: 'l',
+  KeyR: 'r',
   KeyZ: 'z',
   KeyA: 'a',
   KeyB: 'b',
@@ -98,6 +101,8 @@ export const resolveShortcut = (e: KeyboardEvent): ShortcutAction | null => {
       return 'measNext';
     case 'escape':
       return 'escape';
+    case 'r':
+      return 'record';
     default:
       // a~g 음 입력 (shift 무관). h/j/k/l/z는 위에서 이미 처리됨
       return NOTE_ACTIONS[lower] ?? null;
