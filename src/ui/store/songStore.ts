@@ -11,6 +11,7 @@ import {
   deleteSel,
   gotoMeasure,
   insertAtFreeBeat,
+  insertRecorded,
   letterPitch,
   padTap,
   renoteSel,
@@ -47,6 +48,8 @@ export interface SongStore {
   readonly preview: Note | null;
   /** 새 음 입력 시 기본 길이 (세션, 워크스페이스 음길이 세그먼트) */
   readonly inputLen: number;
+  /** 레코딩 테이크: off=아님, clean=시작(커밋 전), dirty=커밋 있음 (undo push는 첫 커밋 1회) */
+  readonly recTake: 'off' | 'clean' | 'dirty';
 
   padTap(pv: Midi | 'rest', st: number): void;
   /** 지정 마디 기준 padTap — 전곡 피아노롤용 (단일 undo 엔트리) */
@@ -77,6 +80,13 @@ export interface SongStore {
   clearToast(): void;
   undoAction(): void;
   redoAction(): void;
+
+  // ── 레코딩 (piano-recording-design §2.4) ──
+  /** 레코딩 시작: 선택·프리뷰 해제. undo push는 첫 recordCommit이 담당 */
+  beginRecord(): void;
+  /** 양자화된 노트 삽입 + 겹침 해소. undo push는 테이크 첫 커밋만 1회 */
+  recordCommit(spec: Pick<Note, 's' | 'd' | 'p'>): void;
+  endRecord(): void;
 
   // ── 데스크톱 워크스페이스 ──
   /** 드래그 편집 커밋 (이동·피치·리사이즈, pointerup 단일 undo) */
@@ -119,6 +129,7 @@ export const createSongStore = (initial: Song = demoSong) =>
       toast: null,
       preview: null,
       inputLen: INPUT_LEN,
+      recTake: 'off',
 
       padTap: (pv, st) => apply((c) => padTap(c, pv, st)),
       padTapAt: (m, pv, st) => apply((c) => padTap({ ...c, curM: asBar(m) }, pv, st)),
@@ -177,6 +188,19 @@ export const createSongStore = (initial: Song = demoSong) =>
         }),
       showToast: (msg) => set({ toast: msg }),
       clearToast: () => set({ toast: null }),
+
+      beginRecord: () => set({ recTake: 'clean', sel: null, preview: null, toast: null }),
+      recordCommit: (spec) =>
+        set((s) =>
+          s.recTake === 'off'
+            ? s
+            : {
+                song: insertRecorded(s.song, spec),
+                undo: s.recTake === 'clean' ? pushUndo(s.undo, s.song) : s.undo,
+                recTake: 'dirty',
+              },
+        ),
+      endRecord: () => set({ recTake: 'off' }),
 
       undoAction: () =>
         set((s) => {

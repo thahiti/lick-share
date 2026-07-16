@@ -252,3 +252,50 @@ describe('songStore: 데스크톱 워크스페이스 액션', () => {
     expect(store.getState().undo.past).toHaveLength(0);
   });
 });
+
+describe('songStore: 레코딩 액션 (piano-recording-design §2.4)', () => {
+  test('테이크 전체가 undo 1회로 롤백', () => {
+    const store = createSongStore();
+    const before = store.getState().song.notes;
+    store.getState().beginRecord();
+    store.getState().recordCommit({ s: asStep(0), d: 2, p: asMidi(60) });
+    store.getState().recordCommit({ s: asStep(4), d: 2, p: asMidi(64) });
+    store.getState().endRecord();
+    store.getState().undoAction();
+    expect(store.getState().song.notes).toEqual(before);
+  });
+
+  test('빈 테이크(커밋 없음)는 undo 스택에 안 쌓임', () => {
+    const store = createSongStore();
+    store.getState().beginRecord();
+    store.getState().endRecord();
+    expect(store.getState().undo.past).toHaveLength(0);
+  });
+
+  test('beginRecord는 선택·프리뷰를 해제하고 recTake를 켠다', () => {
+    const store = createSongStore();
+    store.getState().selectDir(1);
+    store.getState().beginRecord();
+    expect(store.getState().sel).toBeNull();
+    expect(store.getState().preview).toBeNull();
+    expect(store.getState().recTake).toBe('clean');
+    store.getState().endRecord();
+    expect(store.getState().recTake).toBe('off');
+  });
+
+  test('recordCommit은 beginRecord 없이는 no-op', () => {
+    const store = createSongStore();
+    const before = store.getState().song;
+    store.getState().recordCommit({ s: asStep(0), d: 2, p: asMidi(60) });
+    expect(store.getState().song).toBe(before);
+  });
+
+  test('recordCommit은 겹치는 기존 노트를 덮어쓴다', () => {
+    const store = createSongStore(); // demoSong: 스텝 0에 기존 노트 존재
+    store.getState().beginRecord();
+    store.getState().recordCommit({ s: asStep(0), d: 4, p: asMidi(72) });
+    const notes = store.getState().song.notes;
+    expect(notes.some((n) => n.p === 72 && n.s === 0 && n.d === 4)).toBe(true);
+    expect(notes.filter((n) => n.s === 0)).toHaveLength(1);
+  });
+});
