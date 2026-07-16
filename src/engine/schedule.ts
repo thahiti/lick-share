@@ -84,3 +84,30 @@ export const schedule = (
       (a.kind !== 'metro' && b.kind !== 'metro' ? a.midi - b.midi : 0),
   );
 };
+
+// ── 레코딩 (piano-recording-design §2.2) ──
+
+/** 예비박 박 수 (1마디, 4/4) */
+export const COUNT_IN_BEATS = 4;
+
+/** 예비박 클릭 — t=0이 예비박 시작. 주파수·볼륨은 본편 메트로놈과 동일 */
+export const countInEvents = (tempo: number): SoundEvent[] => {
+  const spb = secPerStep(tempo) * 4;
+  return Array.from({ length: COUNT_IN_BEATS }, (_, b) => ({
+    kind: 'metro' as const,
+    t: asSec(b * spb),
+    freq: b === 0 ? 1568 : 1047,
+    vol: b === 0 ? 0.16 : 0.1,
+  }));
+};
+
+/** 레코딩 세션 이벤트: 예비박 + 본편(멜로디 음소거·메트로 강제·반주는 토글) 시프트 병합 */
+export const recordingEvents = (song: Song, accomp: boolean, fromStep: Step): SoundEvent[] => {
+  const ciLen = COUNT_IN_BEATS * 4 * secPerStep(song.tempo);
+  const forced: Song = song.metro === 'off' ? { ...song, metro: 'quarter' } : song;
+  const main = schedule(forced, { melody: false, accomp, metro: true }, fromStep).map((e) => ({
+    ...e,
+    t: asSec(e.t + ciLen),
+  }));
+  return [...countInEvents(song.tempo), ...main];
+};

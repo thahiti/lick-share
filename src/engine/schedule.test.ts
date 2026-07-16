@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { demoSong } from '../core/demo-song';
-import { asStep, type Song } from '../core/types';
-import { schedule, secPerStep, type PlayOpts } from './schedule';
+import { asMidi, asStep, type Song } from '../core/types';
+import { countInEvents, recordingEvents, schedule, secPerStep, type PlayOpts } from './schedule';
 
 const opts = (over: Partial<PlayOpts> = {}): PlayOpts => ({
   melody: true,
@@ -122,5 +122,53 @@ describe('schedule: 메트로놈 (SPEC §6.3)', () => {
   test('멜로디만: 반주·메트로놈 0건', () => {
     const evs = schedule(withAcc(demoSong, 'arp'), opts(), asStep(0));
     expect(evs.every((e) => e.kind === 'melody')).toBe(true);
+  });
+});
+
+describe('countInEvents (piano-recording-design §2.2)', () => {
+  test('4분음표 클릭 4개, 첫 박 액센트 (템포 100 → 박당 0.6초)', () => {
+    const evs = countInEvents(100);
+    expect(evs).toHaveLength(4);
+    const ts = evs.map((e) => e.t);
+    [0, 0.6, 1.2, 1.8].forEach((v, i) => expect(ts[i]).toBeCloseTo(v, 10));
+    expect(evs[0]).toMatchObject({ kind: 'metro', freq: 1568, vol: 0.16 });
+    expect(evs[1]).toMatchObject({ kind: 'metro', freq: 1047, vol: 0.1 });
+  });
+});
+
+describe('recordingEvents (piano-recording-design §2.2)', () => {
+  const recSong: Song = {
+    title: '',
+    tempo: 100,
+    meas: 2,
+    pickup: 0,
+    accPat: 'pad',
+    metro: 'off',
+    mAcc: {},
+    notes: [{ id: 1, s: asStep(0), d: 4, p: asMidi(60) }],
+    chords: { 0: 'C' },
+  };
+
+  test('멜로디 제외, 메트로놈은 metro=off여도 강제 포함', () => {
+    const evs = recordingEvents(recSong, false, asStep(0));
+    expect(evs.some((e) => e.kind === 'melody')).toBe(false);
+    // 예비박 4클릭 + 본편 2마디×4박 = 12개
+    expect(evs.filter((e) => e.kind === 'metro')).toHaveLength(12);
+  });
+
+  test('본편 이벤트는 예비박 길이(2.4초)만큼 시프트', () => {
+    const evs = recordingEvents(recSong, false, asStep(0));
+    const main = evs.filter((e) => e.kind === 'metro' && e.t >= 2.4);
+    expect(main[0]?.t).toBeCloseTo(2.4, 5);
+  });
+
+  test('accomp=true면 반주 포함, false면 제외', () => {
+    expect(recordingEvents(recSong, true, asStep(0)).some((e) => e.kind === 'acc')).toBe(true);
+    expect(recordingEvents(recSong, false, asStep(0)).some((e) => e.kind === 'acc')).toBe(false);
+  });
+
+  test('fromStep부터 본편 스케줄 (마디 2 시작 → 예비박 4 + 본편 4클릭)', () => {
+    const evs = recordingEvents(recSong, false, asStep(16));
+    expect(evs.filter((e) => e.kind === 'metro')).toHaveLength(4 + 4);
   });
 });
