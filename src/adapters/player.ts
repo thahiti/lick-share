@@ -4,8 +4,8 @@
  * 재생 상태는 React 밖에서 관리하고 onTick으로 플레이헤드만 전달한다 (설계 문서 §3).
  */
 import { total } from '../core/geometry';
-import { asMidi, asSec, asStep, type Song, type Step } from '../core/types';
-import { schedule, secPerStep, type PlayOpts } from '../engine/schedule';
+import { asMidi, asSec, asStep, type Sec, type Song, type Step } from '../core/types';
+import { COUNT_IN_BEATS, recordingEvents, schedule, secPerStep, type PlayOpts } from '../engine/schedule';
 import type { AudioSink } from '../ports/audio-sink';
 import type { Clock } from '../ports/clock';
 
@@ -29,6 +29,10 @@ export interface Player {
   onTick(cb: (el: number) => void): () => void;
   /** 세션 종료(자동/수동) 구독. 반환값은 해제 함수 */
   onEnded(cb: () => void): () => void;
+  /** 레코딩 세션: 예비박(1마디) 후 fromStep부터 곡 끝까지 사운드.
+   *  onFrame(t)는 본편 시작 기준 상대 초 — 예비박 동안 음수 */
+  record(song: Song, accomp: boolean, fromStep: Step, onFrame: (t: Sec) => void): void;
+  isRecording(): boolean;
   /** 입력·선택 프리뷰 사운드 */
   preview(midi: number): void;
 }
@@ -47,6 +51,8 @@ interface Session {
 
 export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
   let session: Session | null = null;
+  /** 레코딩 세션 프레임 구독 해제 (null=레코딩 아님) */
+  let recUnsub: (() => void) | null = null;
   const tickCbs = new Set<(el: number) => void>();
   const endedCbs = new Set<() => void>();
 
@@ -55,9 +61,11 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
     Math.max(s.fromStep, (sink.now() - s.t0) / s.sps + s.fromStep);
 
   const stop = (): void => {
-    if (!session) return;
-    session.unsubFrame();
+    if (!session && !recUnsub) return;
+    session?.unsubFrame();
     session = null;
+    recUnsub?.();
+    recUnsub = null;
     sink.stop();
     endedCbs.forEach((cb) => cb());
   };
@@ -142,6 +150,20 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
       endedCbs.add(cb);
       return () => endedCbs.delete(cb);
     },
+
+    record(song, accomp, fromStep, onFrame) {
+      stop();
+      sink.stop(); // 프리뷰가 남긴 스테일 epoch 리셋 (play와 동일한 이유)
+      const ciLen = COUNT_IN_BEATS * 4 * secPerStep(song.tempo);
+      const t0 = sink.now() + 0.06; // sink epoch과 동일
+      recUnsub = clock.onFrame(() => {
+        if (!recUnsub) return;
+        onFrame(asSec(sink.now() - t0 - ciLen));
+      });
+      sink.play(recordingEvents(song, accomp, fromStep));
+    },
+
+    isRecording: () => recUnsub !== null,
 
     preview(midi) {
       sink.playNow([
