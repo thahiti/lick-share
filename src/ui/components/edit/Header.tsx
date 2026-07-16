@@ -11,6 +11,10 @@ export interface HeaderProps {
   readonly accOn: boolean;
   readonly metroOn: boolean;
   readonly playing: boolean;
+  /** 레코딩 모드 — true면 Stop만 활성 (piano-recording-design §3.2) */
+  readonly recording: boolean;
+  readonly onRecord: () => void;
+  readonly onStop: () => void;
   readonly onAccSelect: (v: AccPattern | 'off') => void;
   readonly onToggleMetro: () => void;
   readonly onTogglePlay: () => void;
@@ -34,6 +38,9 @@ export const Header = ({
   accOn,
   metroOn,
   playing,
+  recording,
+  onRecord,
+  onStop,
   onAccSelect,
   onToggleMetro,
   onTogglePlay,
@@ -59,6 +66,7 @@ export const Header = ({
             data-btn="back"
             className="icon-btn"
             aria-label="Back to community"
+            disabled={recording}
             onClick={onExit}
           >
             <Icon name="prev" size={15} />
@@ -74,6 +82,7 @@ export const Header = ({
             data-btn="acc"
             className={`icon-btn${accOn ? ' on' : ''}`}
             aria-label="Chord accompaniment"
+            disabled={recording}
             onClick={() => setAccPop((v) => !v)}
           >
             <Icon name="chord" color={accOn ? '#fff' : 'var(--ink)'} />
@@ -83,15 +92,38 @@ export const Header = ({
             data-btn="metro"
             className={`icon-btn${metroOn ? ' on' : ''}`}
             aria-label="Metronome"
+            disabled={recording}
             onClick={onToggleMetro}
           >
             <Icon name="metro" color={metroOn ? '#fff' : 'var(--ink)'} />
           </button>
+          {recording ? (
+            <button
+              type="button"
+              data-btn="stop-rec"
+              className="icon-btn rec-stop"
+              aria-label="Stop recording"
+              onClick={onStop}
+            >
+              <span className="rec-stop-square" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              data-btn="rec"
+              className="icon-btn rec-btn"
+              aria-label="Record"
+              onClick={onRecord}
+            >
+              <span className="rec-dot" />
+            </button>
+          )}
           <button
             type="button"
             data-btn="playall"
             className="icon-btn"
             aria-label="Play/Stop all"
+            disabled={recording}
             onClick={onTogglePlay}
           >
             <Icon name={playing ? 'pause' : 'play'} />
@@ -100,6 +132,7 @@ export const Header = ({
             type="button"
             data-btn="tempo"
             className="chip"
+            disabled={recording}
             onClick={() => {
               setTempoInput(String(song.tempo));
               setTempoPop((v) => !v);
@@ -107,7 +140,14 @@ export const Header = ({
           >
             {`♩=${song.tempo}`}
           </button>
-          <button type="button" data-btn="share" className="icon-btn" aria-label="Share" onClick={onShare}>
+          <button
+            type="button"
+            data-btn="share"
+            className="icon-btn"
+            aria-label="Share"
+            disabled={recording}
+            onClick={onShare}
+          >
             <Icon name="share" size={15} />
           </button>
         </div>

@@ -406,3 +406,41 @@ describe('데스크톱 워크스페이스 편집 (editor-workspace)', () => {
     expect(player.isPlaying()).toBe(true);
   });
 });
+
+describe('모바일 레코딩 모드 (piano-recording-design §3.2)', () => {
+  test('Rec 탭 → 카운트인 오버레이 + RecordingPiano 표시, Pad 숨김', () => {
+    const { container } = setup();
+    click(container, '[data-btn="rec"]');
+    expect(container.querySelector('.rec-countin')).not.toBeNull();
+    expect(container.querySelector('.rpiano')).not.toBeNull();
+    expect(container.querySelector('.pcell')).toBeNull();
+    expect(container.querySelector('.rec-state')).not.toBeNull();
+  });
+
+  test('Stop 탭 → 편집 UI 복원 + recTake 해제', () => {
+    const { container, store } = setup();
+    click(container, '[data-btn="rec"]');
+    click(container, '[data-btn="stop-rec"]');
+    expect(container.querySelector('.rpiano')).toBeNull();
+    expect(container.querySelector('.pcell')).not.toBeNull();
+    expect(store.getState().recTake).toBe('off');
+  });
+
+  test('레코딩 건반 pointerdown/up → 노트 커밋', () => {
+    const { container, time, clock, store } = setup();
+    click(container, '[data-btn="rec"]');
+    act(() => {
+      time.t = EPOCH + 16 * SPS; // 본편 t=0
+      clock.frame();
+    });
+    const key = container.querySelector('.rp-keys [data-key="60"]');
+    if (!key) throw new Error('건반 없음');
+    fireEvent.pointerDown(key);
+    act(() => {
+      time.t = EPOCH + 16 * SPS + 4 * SPS; // 4스텝 홀드
+      clock.frame();
+    });
+    fireEvent.pointerUp(key);
+    expect(store.getState().song.notes.some((n) => n.p === 60 && n.s === 0 && n.d === 4)).toBe(true);
+  });
+});

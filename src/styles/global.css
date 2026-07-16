@@ -818,3 +818,72 @@ body {
   background: var(--brand-outline);
   border-color: var(--brand-outline);
 }
+
+/* ── 레코딩 모드 (piano-recording-design §3.2) ── */
+.rec-btn .rec-dot,
+.rec-state .rec-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--red);
+}
+.rec-stop {
+  background: var(--red);
+  border-color: var(--red);
+}
+.rec-stop-square {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  background: var(--paper);
+}
+.rec-blink {
+  animation: rec-blink 1s steps(2) infinite;
+}
+@keyframes rec-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+.rec-state {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 14px;
+  font-size: 11px;
+  border-bottom: 1px solid var(--line);
+}
+.rec-lab {
+  color: var(--red);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.rec-meta {
+  color: var(--mut2);
+}
+.score-wrap {
+  position: relative;
+}
+.rec-countin {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: color-mix(in srgb, var(--bg-page) 90%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.rec-ci-num {
+  font-size: 72px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+.rec-ci-hint {
+  font-size: 12px;
+  color: var(--mut2);
+}

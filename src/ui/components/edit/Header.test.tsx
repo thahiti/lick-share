@@ -13,11 +13,21 @@ const cbs = {
   onTempoApply: vi.fn(),
   onShare: vi.fn(),
   onExit: vi.fn(),
+  onRecord: vi.fn(),
+  onStop: vi.fn(),
 };
 
 const renderHeader = (over: Partial<Parameters<typeof Header>[0]> = {}) =>
   render(
-    <Header song={demoSong} accOn={true} metroOn={false} playing={false} {...cbs} {...over} />,
+    <Header
+      song={demoSong}
+      accOn={true}
+      metroOn={false}
+      playing={false}
+      recording={false}
+      {...cbs}
+      {...over}
+    />,
   );
 
 const $ = (c: HTMLElement, sel: string): Element => {
@@ -89,5 +99,24 @@ describe('Header (SPEC §3.1)', () => {
     fireEvent.click($(container, '[data-btn="back"]'));
     expect(cbs.onExit).toHaveBeenCalled();
     expect(container.querySelector('[data-btn="view"]')).toBeNull();
+  });
+});
+
+describe('레코딩 버튼 (piano-recording-design §3.2)', () => {
+  test('평상시 Rec 버튼 표시, 탭하면 onRecord', () => {
+    const { container } = renderHeader();
+    fireEvent.click($(container, '[data-btn="rec"]'));
+    expect(cbs.onRecord).toHaveBeenCalled();
+    expect(container.querySelector('[data-btn="stop-rec"]')).toBeNull();
+  });
+
+  test('레코딩 중엔 Stop만 활성 — 재생·템포·공유·뒤로·반주·메트로놈 비활성', () => {
+    const { container } = renderHeader({ recording: true });
+    fireEvent.click($(container, '[data-btn="stop-rec"]'));
+    expect(cbs.onStop).toHaveBeenCalled();
+    expect(container.querySelector('[data-btn="rec"]')).toBeNull();
+    for (const sel of ['playall', 'tempo', 'share', 'back', 'acc', 'metro']) {
+      expect(($(container, `[data-btn="${sel}"]`) as HTMLButtonElement).disabled).toBe(true);
+    }
   });
 });
