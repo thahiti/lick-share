@@ -133,7 +133,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  padding: 12px 0;
+  /* 모바일: 프레임이 화면 가장자리에 붙지 않게 좌우 여백 */
+  padding: 12px;
 }
 
 .c-detail-title {
@@ -1269,6 +1270,11 @@ a.c-tag:hover {
 
 /* 데스크톱(≥1024px): 푸터 한 줄, 태그 우측 끝, 액션은 라벨 폭 */
 @media (min-width: 1024px) {
+  /* 데스크톱은 그리드 거터가 여백을 담당 — 컬럼 폭을 그대로 쓴다 */
+  .c-detail {
+    padding: 12px 0;
+  }
+
   .c-footer {
     flex-direction: row;
     align-items: center;
