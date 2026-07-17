@@ -777,6 +777,10 @@ body {
   overflow: hidden;
   background: var(--paper);
   touch-action: none;
+  /* iPadOS long-press가 선택 핸들·확대경을 띄우지 않도록 (touch-action으로는 못 막음) */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .rp-white {
   flex: 1;

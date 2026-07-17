@@ -312,6 +312,10 @@
   cursor: grab;
   padding: 0;
   touch-action: none;
+  /* 터치 드래그 중 iPadOS 선택 제스처 억제 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .roll-note.sel {
@@ -368,6 +372,10 @@
   border-radius: 8px;
   background: var(--bg-card);
   padding: 6px;
+  /* iPadOS long-press가 선택 핸들·확대경을 띄우지 않도록 (touch-action으로는 못 막음) */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 
 .pk-scroll {
