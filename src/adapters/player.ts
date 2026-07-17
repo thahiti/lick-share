@@ -33,8 +33,11 @@ export interface Player {
    *  onFrame(t)는 본편 시작 기준 상대 초 — 예비박 동안 음수 */
   record(song: Song, accomp: boolean, fromStep: Step, onFrame: (t: Sec) => void): void;
   isRecording(): boolean;
-  /** 입력·선택 프리뷰 사운드 */
+  /** 입력·선택 프리뷰 사운드 (짧은 고정 길이) */
   preview(midi: number): void;
+  /** 건반 홀드 프리뷰 — previewUp까지 지속 발음 */
+  previewDown(midi: number): void;
+  previewUp(midi: number): void;
 }
 
 interface Session {
@@ -169,6 +172,14 @@ export const createPlayer = ({ sink, clock }: PlayerDeps): Player => {
       sink.playNow([
         { kind: 'melody', midi: asMidi(midi), t: asSec(0), dur: asSec(0.35), vol: 0.22 },
       ]);
+    },
+
+    previewDown(midi) {
+      sink.noteOn(asMidi(midi), 0.22);
+    },
+
+    previewUp(midi) {
+      sink.noteOff(asMidi(midi));
     },
   };
 };

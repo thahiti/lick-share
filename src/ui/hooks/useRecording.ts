@@ -116,7 +116,7 @@ export const useRecording = (store: StoreApi<SongStore>, player: Player): Record
     (midi: Midi): void => {
       const r = live.current;
       if (!r) return;
-      player.preview(midi);
+      player.previewDown(midi);
       const { st, commit: spec } = recKeyDown(r.st, r.sps, midi, r.t);
       r.st = st;
       commit(spec);
@@ -128,18 +128,23 @@ export const useRecording = (store: StoreApi<SongStore>, player: Player): Record
     (midi: Midi): void => {
       const r = live.current;
       if (!r) return;
+      player.previewUp(midi);
       const { st, commit: spec } = recKeyUp(r.st, r.sps, midi, r.t);
       r.st = st;
       commit(spec);
     },
-    [commit],
+    [player, commit],
   );
 
-  const keyAbort = useCallback((midi: Midi): void => {
-    const r = live.current;
-    if (!r) return;
-    r.st = recKeyAbort(r.st, midi);
-  }, []);
+  const keyAbort = useCallback(
+    (midi: Midi): void => {
+      const r = live.current;
+      if (!r) return;
+      player.previewUp(midi);
+      r.st = recKeyAbort(r.st, midi);
+    },
+    [player],
+  );
 
   return { phase, countBeat, recEl, start, stop, keyDown, keyUp, keyAbort };
 };

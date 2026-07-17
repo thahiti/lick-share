@@ -84,12 +84,14 @@ describe('useRecording', () => {
     expect(store.getState().song).toBe(before);
   });
 
-  it('keyDown은 프리뷰 사운드를 즉시 발음', () => {
+  it('keyDown은 지속음 시작, keyUp에서 릴리즈 (홀드 중 계속 발음)', () => {
     const { clock, sink, hook } = setup();
     act(() => hook.result.current.start());
     act(() => frameAt(clock, 0.06 + 2.4));
     act(() => hook.result.current.keyDown(asMidi(60)));
-    expect(sink.playNowCount).toBe(1);
+    expect(sink.noteLog).toEqual(['on m60 vol=0.22']);
+    act(() => hook.result.current.keyUp(asMidi(60)));
+    expect(sink.noteLog).toEqual(['on m60 vol=0.22', 'off m60']);
   });
 });
 
@@ -105,5 +107,14 @@ describe('keyAbort (스크롤 취소)', () => {
     act(() => hook.result.current.stop());
     expect(store.getState().song.notes.some((n) => n.p === 75)).toBe(false);
     expect(store.getState().song.notes.length).toBe(before);
+  });
+
+  it('keyAbort도 지속음을 릴리즈한다', () => {
+    const { clock, sink, hook } = setup();
+    act(() => hook.result.current.start());
+    act(() => frameAt(clock, 0.06 + 2.4));
+    act(() => hook.result.current.keyDown(asMidi(75)));
+    act(() => hook.result.current.keyAbort(asMidi(75)));
+    expect(sink.noteLog).toContain('off m75');
   });
 });
