@@ -44,11 +44,6 @@ export const measLabel = (song: BarSpec, m: BarIndex): string =>
 export const computeMw = (song: BarSpec, width: number): number =>
   (width - LAYOUT.PAD_X * 2 - LAYOUT.CLEF_W) / (LAYOUT.MPL + (song.pickup ? LAYOUT.PICKW : 0));
 
-/** 열람 악보 확대 배율 — 표시폭 w에 대해 논리폭 = w/viewScale(w).
- *  svg viewBox 스케일로 넓은 화면일수록 기보가 크게 보인다 */
-export const viewScale = (w: number): number =>
-  w >= LAYOUT.VZ_DESKTOP_MIN ? LAYOUT.VZ_DESKTOP : w >= LAYOUT.VZ_TABLET_MIN ? LAYOUT.VZ_TABLET : 1;
-
 /** 마디 좌측 x */
 export const measX = (song: BarSpec, mw: number, m: BarIndex): number => {
   const x0 = LAYOUT.PAD_X + LAYOUT.CLEF_W;

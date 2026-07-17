@@ -1,10 +1,10 @@
 /**
  * 열람 화면 (SPEC §4). 곡 전체 멀티라인 악보 + 배지 + 큰 재생 버튼(곡 데이터대로 반주·메트로놈 포함).
  * 음표 탭 = 그 위치부터 끝까지 재생.
- * 악보 폭은 스크롤 영역 실측 — 넓은 화면은 viewScale 배율로 기보를 확대한다.
+ * 악보 폭은 스크롤 영역 실측 1:1 — 음표 크기는 고정, 넓을수록 여유롭게 조판된다.
  */
 import { useRef, type JSX } from 'react';
-import { measCountAll, viewScale } from '../../../core/geometry';
+import { measCountAll } from '../../../core/geometry';
 import type { Song } from '../../../core/types';
 import { useElementWidth } from '../../hooks/useElementWidth';
 import { Icon } from '../common/Icon';
@@ -30,8 +30,7 @@ export const Viewer = ({
   onToEdit,
 }: ViewerProps): JSX.Element => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const w = useElementWidth(scrollRef, 384);
-  const width = Math.round(w / viewScale(w));
+  const width = useElementWidth(scrollRef, 384);
   return (
     <div className="viewer">
       <div className="hero">

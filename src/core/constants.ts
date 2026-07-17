@@ -51,11 +51,6 @@ export const LAYOUT = {
   PAD_X: 8,
   /** 음자리표 영역 폭 */
   CLEF_W: 26,
-  /** 열람 악보 확대 배율 계층 — 표시폭이 이 값 이상이면 해당 배율 (viewScale) */
-  VZ_DESKTOP_MIN: 1000,
-  VZ_DESKTOP: 1.6,
-  VZ_TABLET_MIN: 700,
-  VZ_TABLET: 1.35,
   /** 단일 줄 기준 보표 top */
   STAFF_TOP: 42,
   /** 마디 히트영역 높이 */

@@ -677,7 +677,7 @@ body {
     --app-max-width: 680px;
   }
 
-  /* 열람은 편집 티어(680px)와 달리 가로폭을 최대한 활용 (viewScale 배율과 짝) */
+  /* 열람은 편집 티어(680px)와 달리 가로폭을 최대한 활용 */
   .app--view {
     max-width: min(94vw, 960px);
   }
@@ -707,7 +707,7 @@ body {
 }
 
 /* ── 데스크톱 열람 (DESIGN §7) — 편집은 워크스페이스(ws.css)가 담당.
-   가로폭을 최대한 활용하고 기보는 viewScale 배율로 확대 ── */
+   가로폭을 최대한 활용 — 악보는 실측 폭 1:1 조판(음표 크기 고정) ── */
 @media (min-width: 1024px) {
   .app--view {
     max-width: min(92vw, 1240px);
