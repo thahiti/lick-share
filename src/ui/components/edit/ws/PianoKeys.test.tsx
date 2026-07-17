@@ -17,15 +17,16 @@ describe('PianoKeys', () => {
     expect(container.querySelectorAll('.pk-black')).toHaveLength(20);
   });
 
-  test('흰건반 클릭 → onKeyTap(pitch)', () => {
+  test('흰건반 pointerdown → onKeyTap(pitch) — 소리 프리뷰용', () => {
     const { container, onKeyTap } = setup();
-    fireEvent.click(container.querySelector('[data-key="60"]') as Element); // C4
+    fireEvent.pointerDown(container.querySelector('[data-key="60"]') as Element); // C4
     expect(onKeyTap).toHaveBeenCalledWith(60);
+    expect(onKeyTap).toHaveBeenCalledTimes(1);
   });
 
-  test('검은건반 클릭 → onKeyTap(pitch)', () => {
+  test('검은건반 pointerdown → onKeyTap(pitch)', () => {
     const { container, onKeyTap } = setup();
-    fireEvent.click(container.querySelector('[data-key="61"]') as Element); // C♯4
+    fireEvent.pointerDown(container.querySelector('[data-key="61"]') as Element); // C♯4
     expect(onKeyTap).toHaveBeenCalledWith(61);
   });
 
@@ -65,9 +66,9 @@ describe('레코딩 모드 (piano-recording-design §3.3)', () => {
     expect(up).toHaveBeenCalledWith(61);
   });
 
-  test('recording=false면 기존 클릭 동작 유지 + recording 클래스 없음', () => {
+  test('recording=false면 pointerdown 프리뷰 + recording 클래스 없음', () => {
     const { container, onKeyTap } = setup();
-    fireEvent.click(container.querySelector('[data-key="60"]') as Element);
+    fireEvent.pointerDown(container.querySelector('[data-key="60"]') as Element);
     expect(onKeyTap).toHaveBeenCalledWith(60);
     expect(container.querySelector('.pk.recording')).toBeNull();
   });

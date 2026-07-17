@@ -99,8 +99,9 @@ tick(st, tempo, t)          → { st: RecState; done: boolean; commit?: NoteSpec
 
 ### 3.3 레코딩 모드 전환 (데스크톱)
 
-- 기존 `PianoKeys`가 **armed** 상태로 전환: 빨간 보더, `onClick` 대신 `pointerdown/up`으로
-  keyDown/keyUp 캡처. 비레코딩 시엔 기존 "다음 빈 박자 삽입" 클릭 동작 유지.
+- 기존 `PianoKeys`가 **recording** 상태로 전환: 빨간 보더, `pointerdown/up`으로
+  keyDown/keyUp 캡처. 비레코딩 시 건반은 **프리뷰 사운드 전용** — 노트 입력은
+  레코딩으로만 한다 (2026-07-17 변경: 상시 대형 건반 도입으로 즉시 삽입 제거).
 - 트랜스포트에 상태 칩: 예비박 중 `4·3·2·1` 카운트, 레코딩 중 `REC · M{n}` 위치.
 - PianoRoll·StaffLane 편집 인터랙션(셀 탭·드래그)과 Undo/Redo/Delete 비활성.
 

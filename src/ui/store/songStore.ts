@@ -95,8 +95,6 @@ export interface SongStore {
   setLen(len: number): void;
   /** A~G 입력: 선택 있으면 재배치, 없으면 다음 빈 박에 입력 */
   noteLetter(letter: string): void;
-  /** 건반 클릭: 지정 피치를 다음 빈 박에 입력 */
-  keyTap(p: Midi): void;
   /** 제목 설정 (메타데이터 — undo 스택에 쌓지 않음) */
   setTitle(title: string): void;
 }
@@ -164,10 +162,6 @@ export const createSongStore = (initial: Song = demoSong) =>
           const p = letterPitch(ref, letter);
           return applyOut(s, insertAtFreeBeat(ctx, p, s.inputLen));
         }),
-      keyTap: (p) =>
-        set((s) =>
-          applyOut(s, insertAtFreeBeat({ song: s.song, sel: s.sel, curM: s.curM }, p, s.inputLen)),
-        ),
       setTitle: (title) => set((s) => ({ song: { ...s.song, title } })),
       toggleMetro: () =>
         set((s) => ({

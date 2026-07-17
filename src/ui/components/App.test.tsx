@@ -390,13 +390,15 @@ describe('데스크톱 워크스페이스 편집 (editor-workspace)', () => {
     expect(store.getState().song.notes.length).toBe(before + 1);
   });
 
-  test('건반 클릭 → 음 입력', () => {
+  test('건반 pointerdown → 프리뷰 사운드만, 노트 입력 없음', () => {
     stubDesktop();
-    const { container, store } = setup();
-    store.getState().addMeasure();
+    const { container, store, sink } = setup();
     const before = store.getState().song.notes.length;
-    click(container, '.pk [data-key="72"]');
-    expect(store.getState().song.notes.length).toBe(before + 1);
+    const key = container.querySelector('.pk [data-key="72"]');
+    if (!key) throw new Error('건반 없음');
+    fireEvent.pointerDown(key);
+    expect(store.getState().song.notes.length).toBe(before); // 삽입 없음
+    expect(sink.playNowCount).toBe(1); // 프리뷰 사운드
   });
 
   test('키보드 Space 재생 유지', () => {

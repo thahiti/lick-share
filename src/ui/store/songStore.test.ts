@@ -238,13 +238,6 @@ describe('songStore: 데스크톱 워크스페이스 액션', () => {
     expect(store.getState().sel).toBe(n?.id);
   });
 
-  test('keyTap: 지정 피치를 다음 빈 박에 입력', () => {
-    const store = createSongStore();
-    store.getState().loadSong({ ...demoSong, meas: 1, notes: [] });
-    store.getState().keyTap(asMidi(60));
-    expect(store.getState().song.notes[0]).toMatchObject({ s: 0, p: 60 });
-  });
-
   test('setTitle: 제목 갱신하되 undo 스택에는 쌓지 않는다', () => {
     const store = createSongStore();
     store.getState().setTitle('My Lick');

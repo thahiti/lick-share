@@ -103,9 +103,9 @@ describe('Workspace 조립', () => {
     expect(container.querySelector('.chord-pick')).not.toBeNull();
   });
 
-  test('건반 클릭 → onKeyTap', () => {
+  test('건반 pointerdown → onKeyTap (프리뷰)', () => {
     const { container, onKeyTap } = setup();
-    fireEvent.click(container.querySelector('.pk [data-key="60"]') as Element);
+    fireEvent.pointerDown(container.querySelector('.pk [data-key="60"]') as Element);
     expect(onKeyTap).toHaveBeenCalledWith(60);
   });
 });
