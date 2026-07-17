@@ -3,9 +3,10 @@
  * 흰건반 15개 균등 분할 + 검은건반은 경계 위 배치 (PianoKeys와 동일 기하).
  * pointerdown/up/cancel로 누른 길이를 캡처한다. 글리산도 미지원(키별 capture).
  */
-import { useState, type JSX, type PointerEvent } from 'react';
+import { useRef, useState, type JSX, type PointerEvent } from 'react';
 import { BLACK_PC, pName } from '../../../core/constants';
 import { asMidi, type Midi, type Song } from '../../../core/types';
+import { useSuppressNativeGestures } from '../../hooks/useSuppressNativeGestures';
 
 export interface RecordingPianoProps {
   /** 창 시작 C 피치 (36~60) */
@@ -32,6 +33,10 @@ export const RecordingPiano = ({
   onKeyUp,
 }: RecordingPianoProps): JSX.Element => {
   const [pressed, setPressed] = useState<ReadonlySet<number>>(new Set());
+  const keysRef = useRef<HTMLDivElement>(null);
+
+  /* 건반 위 터치는 항상 연주 — 선택·스크롤 등 네이티브 제스처 차단 (iPadOS) */
+  useSuppressNativeGestures(keysRef);
 
   const whites: number[] = [];
   const blacks: number[] = [];
@@ -87,7 +92,7 @@ export const RecordingPiano = ({
           ▶
         </button>
       </div>
-      <div className="rp-keys">
+      <div className="rp-keys" ref={keysRef}>
         {whites.map((p) => (
           <button
             type="button"

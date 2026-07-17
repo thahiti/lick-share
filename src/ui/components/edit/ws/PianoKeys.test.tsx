@@ -81,3 +81,21 @@ describe('레코딩 모드 (piano-recording-design §3.3)', () => {
     expect(container.querySelector('.pk.recording')).toBeNull();
   });
 });
+
+describe('iPadOS 네이티브 제스처 차단', () => {
+  test('건반 touchstart 기본 동작 취소 — long-press 선택·확대경·스크롤 억제', () => {
+    const { container } = setup();
+    const key = container.querySelector('[data-key="60"]') as Element;
+    const ev = new Event('touchstart', { bubbles: true, cancelable: true });
+    key.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(true);
+  });
+
+  test('건반 contextmenu 기본 동작 취소 — long-press 콜아웃 억제', () => {
+    const { container } = setup();
+    const key = container.querySelector('[data-key="61"]') as Element;
+    const ev = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    key.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(true);
+  });
+});

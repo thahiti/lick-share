@@ -58,6 +58,22 @@ describe('RecordingPiano', () => {
     rerender(<RecordingPiano baseC={60} onShift={shift} onKeyDown={noop} onKeyUp={noop} />);
     expect((screen.getByLabelText('Octave up') as HTMLButtonElement).disabled).toBe(true);
   });
+
+  it('건반 touchstart 기본 동작 취소 — iPadOS 선택·확대경·스크롤 억제', () => {
+    render(<RecordingPiano baseC={48} onShift={noop} onKeyDown={noop} onKeyUp={noop} />);
+    const key = document.querySelector('[data-key="52"]') as HTMLElement;
+    const ev = new Event('touchstart', { bubbles: true, cancelable: true });
+    key.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(true);
+  });
+
+  it('건반 contextmenu 기본 동작 취소 — long-press 콜아웃 억제', () => {
+    render(<RecordingPiano baseC={48} onShift={noop} onKeyDown={noop} onKeyUp={noop} />);
+    const key = document.querySelector('[data-key="48"]') as HTMLElement;
+    const ev = new MouseEvent('contextmenu', { bubbles: true, cancelable: true });
+    key.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(true);
+  });
 });
 
 describe('initialBaseC', () => {

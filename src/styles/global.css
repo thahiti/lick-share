@@ -743,6 +743,10 @@ body {
 .rpiano {
   background: var(--bg-pad-zone);
   padding: 10px 12px 14px;
+  /* long-press 선택이 인접 텍스트(옥타브 라벨 등)로 스냅되지 않도록 패널 전체 차단 */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
 }
 .rp-top {
   display: flex;

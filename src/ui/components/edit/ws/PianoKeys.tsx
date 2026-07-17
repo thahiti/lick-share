@@ -1,15 +1,17 @@
 /**
  * 가로 피아노 건반 (설계 §6.3). 흰건반은 폭을 균등 분할, 검은건반은
  * 인접 흰건반 경계에 겹쳐 배치한다. 건반 폭은 컨테이너의 2배 —
- * 좌우 스크롤로 탐색하고, 첫 마운트에 중앙(C4 부근)으로 위치시킨다.
+ * 휠/트랙패드 스크롤로 탐색하고, 첫 마운트에 중앙(C4 부근)으로 위치시킨다.
+ * 건반 위 터치는 항상 연주 — 네이티브 제스처(선택·팬)는 차단한다 (iPadOS).
  * 노트 입력은 레코딩으로만 — 평소 pointerdown은 프리뷰 사운드(onKeyTap),
  * 레코딩 중(recording)에는 pointer down/up으로 누른 길이를 캡처하고
- * pointercancel(스크롤 제스처)은 커밋 없이 버린다 (piano-recording-design §3.3).
+ * pointercancel(시스템 인터럽트)은 커밋 없이 버린다 (piano-recording-design §3.3).
  * 재생 눌림 애니메이션은 범위 제외(설계 §2).
  */
 import { useEffect, useRef, type JSX, type PointerEvent } from 'react';
 import { BLACK_PC, PMAX, PMIN, pName } from '../../../../core/constants';
 import { asMidi, type Midi } from '../../../../core/types';
+import { useSuppressNativeGestures } from '../../../hooks/useSuppressNativeGestures';
 
 export interface PianoKeysProps {
   /** 비레코딩 pointerdown — 프리뷰 사운드 전용 (노트 삽입 없음) */
@@ -32,6 +34,9 @@ export const PianoKeys = ({
   onRecKeyAbort,
 }: PianoKeysProps): JSX.Element => {
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  /* 건반 위 터치는 항상 연주 — 선택·스크롤 등 네이티브 제스처 차단 (iPadOS) */
+  useSuppressNativeGestures(scrollRef);
 
   /* 첫 마운트에 스크롤을 중앙(C4 부근)으로 */
   useEffect(() => {
