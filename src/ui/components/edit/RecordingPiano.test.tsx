@@ -2,7 +2,14 @@
  * RecordingPiano 테스트 (piano-recording-design §3.2).
  */
 import { fireEvent, render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+/* jsdom에는 elementFromPoint가 없다 — 이동 중 건반 판정을 좌표 대신 목으로 대체 */
+type DocWithPoint = { elementFromPoint?: (x: number, y: number) => Element | null };
+
+afterEach(() => {
+  delete (document as unknown as DocWithPoint).elementFromPoint;
+});
 import { asMidi, asStep, type Song } from '../../../core/types';
 import { initialBaseC, RecordingPiano } from './RecordingPiano';
 
@@ -57,6 +64,19 @@ describe('RecordingPiano', () => {
     expect(shift).toHaveBeenCalledWith(1);
     rerender(<RecordingPiano baseC={60} onShift={shift} onKeyDown={noop} onKeyUp={noop} />);
     expect((screen.getByLabelText('Octave up') as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it('글리산도: 드래그로 다른 건반 진입 → 이전 up + 새 down', () => {
+    const down = vi.fn();
+    const up = vi.fn();
+    render(<RecordingPiano baseC={48} onShift={noop} onKeyDown={down} onKeyUp={up} />);
+    const e3 = document.querySelector('[data-key="52"]') as HTMLElement;
+    const f3 = document.querySelector('[data-key="53"]') as HTMLElement;
+    fireEvent.pointerDown(e3);
+    (document as unknown as DocWithPoint).elementFromPoint = () => f3;
+    fireEvent.pointerMove(window, { clientX: 10, clientY: 5 });
+    expect(up).toHaveBeenCalledWith(52);
+    expect(down).toHaveBeenLastCalledWith(53);
   });
 
   it('건반 touchstart 기본 동작 취소 — iPadOS 선택·확대경·스크롤 억제', () => {

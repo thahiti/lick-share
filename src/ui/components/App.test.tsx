@@ -390,7 +390,7 @@ describe('데스크톱 워크스페이스 편집 (editor-workspace)', () => {
     expect(store.getState().song.notes.length).toBe(before + 1);
   });
 
-  test('건반 pointerdown → 프리뷰 사운드만, 노트 입력 없음', () => {
+  test('건반 pointerdown → 지속 프리뷰만, 노트 입력 없음', () => {
     stubDesktop();
     const { container, store, sink } = setup();
     const before = store.getState().song.notes.length;
@@ -398,7 +398,9 @@ describe('데스크톱 워크스페이스 편집 (editor-workspace)', () => {
     if (!key) throw new Error('건반 없음');
     fireEvent.pointerDown(key);
     expect(store.getState().song.notes.length).toBe(before); // 삽입 없음
-    expect(sink.playNowCount).toBe(1); // 프리뷰 사운드
+    expect(sink.noteLog).toEqual(['on m72 vol=0.22']); // 홀드 프리뷰 시작
+    fireEvent.pointerUp(key);
+    expect(sink.noteLog).toEqual(['on m72 vol=0.22', 'off m72']); // 뗌 릴리즈
   });
 
   test('키보드 Space 재생 유지', () => {

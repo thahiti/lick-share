@@ -342,7 +342,8 @@ export const App = ({
           onCycleAcc={() => store.getState().cycleMeasureAcc()}
           onSetTitle={(title) => store.getState().setTitle(title)}
           onTempoApply={(v) => store.getState().setTempo(v)}
-          onKeyTap={(p) => player.preview(p)}
+          onPreviewDown={(p) => player.previewDown(p)}
+          onPreviewUp={(p) => player.previewUp(p)}
           onTogglePlay={togglePlay}
           onToggleMetro={metroToggle}
           onUndo={() => store.getState().undoAction()}

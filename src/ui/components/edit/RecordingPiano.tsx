@@ -1,11 +1,12 @@
 /**
  * 레코딩용 2옥타브 피아노 (piano-recording-design §3.2).
  * 흰건반 15개 균등 분할 + 검은건반은 경계 위 배치 (PianoKeys와 동일 기하).
- * pointerdown/up/cancel로 누른 길이를 캡처한다. 글리산도 미지원(키별 capture).
+ * down/up으로 누른 길이를 캡처하고, 이동 경로의 건반은 글리산도로 발음한다.
  */
-import { useRef, useState, type JSX, type PointerEvent } from 'react';
+import { useRef, useState, type JSX } from 'react';
 import { BLACK_PC, pName } from '../../../core/constants';
-import { asMidi, type Midi, type Song } from '../../../core/types';
+import type { Midi, Song } from '../../../core/types';
+import { useGlissando } from '../../hooks/useGlissando';
 import { useSuppressNativeGestures } from '../../hooks/useSuppressNativeGestures';
 
 export interface RecordingPianoProps {
@@ -43,31 +44,22 @@ export const RecordingPiano = ({
   for (let p = baseC; p <= baseC + 24; p++) (isWhite(p) ? whites : blacks).push(p);
   const wPct = 100 / whites.length;
 
-  const down = (p: number) => (e: PointerEvent<HTMLButtonElement>): void => {
-    try {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    } catch {
-      /* jsdom·미지원 환경 무시 */
-    }
+  const down = (p: Midi): void => {
     setPressed((s) => new Set(s).add(p));
-    onKeyDown(asMidi(p));
+    onKeyDown(p);
   };
-  const up = (p: number) => (): void => {
+  const up = (p: Midi): void => {
     setPressed((s) => {
       if (!s.has(p)) return s;
       const n = new Set(s);
       n.delete(p);
       return n;
     });
-    onKeyUp(asMidi(p));
+    onKeyUp(p);
   };
 
-  const keyProps = (p: number) => ({
-    'data-key': p,
-    onPointerDown: down(p),
-    onPointerUp: up(p),
-    onPointerCancel: up(p),
-  });
+  /* 누름·이동·뗌 글리산도 추적 — pointercancel도 keyUp으로 처리(기존 동작 유지) */
+  useGlissando(keysRef, { onDown: down, onUp: up });
 
   return (
     <div className="rpiano" role="group" aria-label="Recording piano">
@@ -97,9 +89,9 @@ export const RecordingPiano = ({
           <button
             type="button"
             key={p}
+            data-key={p}
             className={`rp-white${pressed.has(p) ? ' pressed' : ''}`}
             aria-label={pName(p)}
-            {...keyProps(p)}
           >
             {p % 12 === 0 && <span className="rp-lab">{pName(p)}</span>}
           </button>
@@ -111,10 +103,10 @@ export const RecordingPiano = ({
             <button
               type="button"
               key={p}
+              data-key={p}
               className={`rp-black${pressed.has(p) ? ' pressed' : ''}`}
               aria-label={pName(p)}
               style={{ left: `${(wi + 1) * wPct}%`, width: `${wPct * 0.62}%` }}
-              {...keyProps(p)}
             />
           );
         })}

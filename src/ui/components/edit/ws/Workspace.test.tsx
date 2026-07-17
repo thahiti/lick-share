@@ -22,7 +22,8 @@ const handlers = () => ({
   onCycleAcc: vi.fn(),
   onSetTitle: vi.fn(),
   onTempoApply: vi.fn(),
-  onKeyTap: vi.fn(),
+  onPreviewDown: vi.fn(),
+  onPreviewUp: vi.fn(),
   onTogglePlay: vi.fn(),
   onToggleMetro: vi.fn(),
   onUndo: vi.fn(),
@@ -104,9 +105,9 @@ describe('Workspace 조립', () => {
     expect(container.querySelector('.chord-pick')).not.toBeNull();
   });
 
-  test('건반 pointerdown → onKeyTap (프리뷰)', () => {
-    const { container, onKeyTap } = setup();
+  test('건반 pointerdown → onPreviewDown (홀드 프리뷰)', () => {
+    const { container, onPreviewDown } = setup();
     fireEvent.pointerDown(container.querySelector('.pk [data-key="60"]') as Element);
-    expect(onKeyTap).toHaveBeenCalledWith(60);
+    expect(onPreviewDown).toHaveBeenCalledWith(60);
   });
 });

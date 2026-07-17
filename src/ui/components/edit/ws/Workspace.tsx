@@ -68,7 +68,8 @@ export interface WorkspaceProps {
   readonly onCycleAcc: () => void;
   readonly onSetTitle: (title: string) => void;
   readonly onTempoApply: (v: number) => void;
-  readonly onKeyTap: (p: Midi) => void;
+  readonly onPreviewDown: (p: Midi) => void;
+  readonly onPreviewUp: (p: Midi) => void;
   readonly onTogglePlay: () => void;
   readonly onToggleMetro: () => void;
   readonly onUndo: () => void;
@@ -113,7 +114,8 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
     onCycleAcc,
     onSetTitle,
     onTempoApply,
-    onKeyTap,
+    onPreviewDown,
+    onPreviewUp,
     onTogglePlay,
     onToggleMetro,
     onUndo,
@@ -285,7 +287,8 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
           </div>
 
           <PianoKeys
-            onKeyTap={onKeyTap}
+            onPreviewDown={onPreviewDown}
+            onPreviewUp={onPreviewUp}
             recording={recActive}
             onRecKeyDown={onRecKeyDown}
             onRecKeyUp={onRecKeyUp}
