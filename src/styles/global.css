@@ -616,7 +616,8 @@ body {
 }
 
 .viewer .score-scroll {
-  max-height: 300px;
+  /* 멀티라인 악보가 접히지 않게 화면 높이 기준으로 완화 */
+  max-height: 70vh;
   overflow-y: auto;
 }
 
@@ -676,6 +677,11 @@ body {
     --app-max-width: 680px;
   }
 
+  /* 열람은 편집 티어(680px)와 달리 가로폭을 최대한 활용 (viewScale 배율과 짝) */
+  .app--view {
+    max-width: min(94vw, 960px);
+  }
+
   .hsteppers {
     flex-direction: row;
   }
@@ -700,10 +706,11 @@ body {
   color: var(--mut2);
 }
 
-/* ── 데스크톱 열람 (DESIGN §7) — 편집은 워크스페이스(ws.css)가 담당 ── */
+/* ── 데스크톱 열람 (DESIGN §7) — 편집은 워크스페이스(ws.css)가 담당.
+   가로폭을 최대한 활용하고 기보는 viewScale 배율로 확대 ── */
 @media (min-width: 1024px) {
   .app--view {
-    max-width: 680px;
+    max-width: min(92vw, 1240px);
   }
 }
 

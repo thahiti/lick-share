@@ -13,6 +13,7 @@ import {
   pitchDia,
   posX,
   total,
+  viewScale,
 } from './geometry';
 
 /** DoD 검증용 마디 스펙 (IMPLEMENTATION_PLAN P1) */
@@ -124,5 +125,20 @@ describe('pitchDia: 온음계 좌표 (SPEC §3.2)', () => {
   });
   test('검은건반은 acc=true (♯ 표기)', () => {
     expect(pitchDia(asMidi(66))).toEqual({ step: 1, acc: true }); // F♯4
+  });
+});
+
+describe('viewScale: 열람 악보 확대 배율 (표시폭 계층)', () => {
+  test('좁은 폭(폰)은 1배 — 밀도 유지', () => {
+    expect(viewScale(384)).toBe(1);
+    expect(viewScale(699)).toBe(1);
+  });
+  test('중간 폭(태블릿)은 1.35배 확대', () => {
+    expect(viewScale(700)).toBe(1.35);
+    expect(viewScale(999)).toBe(1.35);
+  });
+  test('넓은 폭(데스크톱)은 1.6배 확대', () => {
+    expect(viewScale(1000)).toBe(1.6);
+    expect(viewScale(1240)).toBe(1.6);
   });
 });

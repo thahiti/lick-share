@@ -279,7 +279,6 @@ export const App = ({
         <Viewer
           song={s.song}
           playing={playing}
-          width={scoreW}
           {...(playing && playEl !== null ? { playheadStep: playEl } : {})}
           onPlayAll={viewTogglePlay}
           onNoteTap={viewNoteTap}
