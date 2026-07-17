@@ -138,6 +138,64 @@ describe('WebAudioSink: pianoAt 게인 시퀀스 (SPEC §6.1 DoD)', () => {
   });
 });
 
+describe('WebAudioSink: noteOn/noteOff 지속음 (건반 홀드)', () => {
+  test('noteOn 엔벨로프 = 어택→서스테인, 릴리즈·정지 예약 없음', () => {
+    const { ctx, gains, oscs } = createMockCtx();
+    const sink = createWebAudioSink(ctx);
+    sink.noteOn(asMidi(60), 0.22);
+    const env = gains.find((g) => g.gainCalls.length >= 3);
+    expect(env?.gainCalls.map((c) => c.method)).toEqual([
+      'setValueAtTime',
+      'linearRampToValueAtTime',
+      'setTargetAtTime',
+    ]);
+    expect(env?.gainCalls[1]?.args[0]).toBe(0.22);
+    /* 홀드 중에는 osc.stop이 예약되지 않는다 */
+    expect(oscs.flatMap((o) => o.stopped)).toEqual([]);
+  });
+
+  test('noteOff → setTargetAtTime 릴리즈 후 osc 정지 (게인 점프 없음)', () => {
+    const { ctx, gains, oscs } = createMockCtx();
+    const sink = createWebAudioSink(ctx);
+    sink.noteOn(asMidi(60), 0.22);
+    ctx.advance(1);
+    sink.noteOff(asMidi(60));
+    const env = gains.find((g) => g.gainCalls.length >= 4);
+    const release = env?.gainCalls[3];
+    expect(release?.method).toBe('setTargetAtTime');
+    expect(release?.args[0]).toBe(0.0001);
+    /* 릴리즈 여유 후 정지 — 즉시 stop(now)이면 팝 노이즈 */
+    const stops = oscs.flatMap((o) => o.stopped);
+    expect(stops).toHaveLength(2);
+    for (const s of stops) expect(s).toBeGreaterThan(1);
+  });
+
+  test('noteOff는 누르지 않은 음이면 no-op', () => {
+    const { ctx, oscs } = createMockCtx();
+    const sink = createWebAudioSink(ctx);
+    expect(() => sink.noteOff(asMidi(60))).not.toThrow();
+    expect(oscs).toHaveLength(0);
+  });
+
+  test('같은 음 재-noteOn → 기존 노트 릴리즈 후 새 노트 시작', () => {
+    const { ctx, oscs } = createMockCtx();
+    const sink = createWebAudioSink(ctx);
+    sink.noteOn(asMidi(60), 0.22);
+    sink.noteOn(asMidi(60), 0.22);
+    expect(oscs).toHaveLength(4);
+    /* 첫 노트의 osc 2개는 정지 예약됨 */
+    expect(oscs.filter((o) => o.stopped.length > 0)).toHaveLength(2);
+  });
+
+  test('stop() → 홀드 중 노트도 정지', () => {
+    const { ctx, oscs } = createMockCtx();
+    const sink = createWebAudioSink(ctx);
+    sink.noteOn(asMidi(60), 0.22);
+    sink.stop();
+    expect(oscs.every((o) => o.stopped.length > 0)).toBe(true);
+  });
+});
+
 describe('WebAudioSink: 노드군 취소 (SPEC §6.2~6.3 DoD)', () => {
   test('cancelFrom(0, [metro]) → 클릭만 정지, 멜로디 유지', () => {
     const { ctx, oscs } = createMockCtx();

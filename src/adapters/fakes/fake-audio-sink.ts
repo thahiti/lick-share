@@ -3,12 +3,14 @@
  * dumpLines()가 골든 스냅샷의 정답지 형식.
  */
 import type { AudioSink, SoundEvent, SoundKind } from '../../ports/audio-sink';
-import type { Sec } from '../../core/types';
+import type { Midi, Sec } from '../../core/types';
 
 export interface FakeAudioSink extends AudioSink {
   readonly events: readonly SoundEvent[];
   /** playNow 호출 횟수 (프리뷰 경로 검증용) */
   readonly playNowCount: number;
+  /** noteOn/noteOff 호출 로그 — "on m60 vol=0.22" / "off m60" */
+  readonly noteLog: readonly string[];
   dumpLines(): string[];
 }
 
@@ -22,6 +24,7 @@ const line = (e: SoundEvent): string =>
 export const createFakeAudioSink = (nowFn: () => number = () => 0): FakeAudioSink => {
   let events: SoundEvent[] = [];
   let playNowCount = 0;
+  let noteLog: string[] = [];
   return {
     now() {
       return nowFn() as Sec;
@@ -38,6 +41,15 @@ export const createFakeAudioSink = (nowFn: () => number = () => 0): FakeAudioSin
     playNow(evs: readonly SoundEvent[]) {
       playNowCount++;
       events = [...events, ...evs];
+    },
+    get noteLog() {
+      return noteLog;
+    },
+    noteOn(midi: Midi, vol: number) {
+      noteLog = [...noteLog, `on m${midi} vol=${vol}`];
+    },
+    noteOff(midi: Midi) {
+      noteLog = [...noteLog, `off m${midi}`];
     },
     cancelFrom(t: Sec, kinds?: readonly SoundKind[]) {
       events = events.filter((e) => e.t < t || (kinds !== undefined && !kinds.includes(e.kind)));

@@ -60,6 +60,18 @@ export const createWebAudioSink = (ctx: AudioCtxLike): AudioSink => {
   let master: AudioNodeLike | null = null;
   let epoch: number | null = null;
   let nodes: Scheduled[] = [];
+  /** noteOn으로 울리는 중인 지속음 (midi → 보이스) */
+  const held = new Map<number, { oscs: readonly OscillatorLike[]; gain: GainLike }>();
+
+  const releaseHeld = (midi: number): void => {
+    const v = held.get(midi);
+    if (!v) return;
+    const now = ctx.currentTime;
+    /* 현재 값에서 이어지는 릴리즈 — setValueAtTime 점프 금지 */
+    v.gain.gain.setTargetAtTime(0.0001, now, 0.045);
+    v.oscs.forEach((o) => o.stop(now + 0.35));
+    held.delete(midi);
+  };
 
   const getMaster = (): AudioNodeLike => {
     if (master) return master;
@@ -77,7 +89,8 @@ export const createWebAudioSink = (ctx: AudioCtxLike): AudioSink => {
     return master;
   };
 
-  const pianoAt = (kind: SoundKind, relT: number, m: number, t: number, dur: number, vol: number): void => {
+  /** 피아노 보이스 그래프(osc 2 + 배음 게인 + 로우패스) — 엔벨로프·시작·정지는 호출부 책임 */
+  const makeVoice = (m: number, t: number, dur: number): { oscs: readonly OscillatorLike[]; gain: GainLike } => {
     const f = midiHz(m);
     const o1 = ctx.createOscillator();
     o1.type = 'triangle';
@@ -102,6 +115,11 @@ export const createWebAudioSink = (ctx: AudioCtxLike): AudioSink => {
     g2.connect(g);
     g.connect(lp);
     lp.connect(getMaster());
+    return { oscs: [o1, o2], gain: g };
+  };
+
+  const pianoAt = (kind: SoundKind, relT: number, m: number, t: number, dur: number, vol: number): void => {
+    const { oscs, gain: g } = makeVoice(m, t, dur);
     const end = t + Math.max(dur, 0.06);
     /* 불연속 없는 엔벨로프: 어택 → 자연 감쇠 → 릴리즈 (팝 노이즈 제거) */
     g.gain.setValueAtTime(0, t);
@@ -109,11 +127,11 @@ export const createWebAudioSink = (ctx: AudioCtxLike): AudioSink => {
     g.gain.setTargetAtTime(vol * 0.28, t + 0.005, 0.3);
     g.gain.setTargetAtTime(0.0001, end, 0.045);
     const tail = end + 0.35;
-    o1.start(t);
-    o2.start(t);
-    o1.stop(tail);
-    o2.stop(tail);
-    nodes.push({ kind, t: relT, oscs: [o1, o2] });
+    oscs.forEach((o) => {
+      o.start(t);
+      o.stop(tail);
+    });
+    nodes.push({ kind, t: relT, oscs });
   };
 
   const clickAt = (relT: number, t: number, freq: number, vol: number): void => {
@@ -152,6 +170,20 @@ export const createWebAudioSink = (ctx: AudioCtxLike): AudioSink => {
       }
     },
 
+    noteOn(midi, vol) {
+      releaseHeld(midi); // 같은 음 재타건 — 기존 보이스는 릴리즈
+      const t = ctx.currentTime + 0.01;
+      const v = makeVoice(midi, t, 1);
+      /* 어택 → 서스테인(자연 감쇠 목표) — 릴리즈는 noteOff에서 */
+      v.gain.gain.setValueAtTime(0, t);
+      v.gain.gain.linearRampToValueAtTime(vol, t + 0.005);
+      v.gain.gain.setTargetAtTime(vol * 0.28, t + 0.005, 0.3);
+      v.oscs.forEach((o) => o.start(t));
+      held.set(midi, v);
+    },
+
+    noteOff: releaseHeld,
+
     cancelFrom(t: Sec, kinds?: readonly SoundKind[]) {
       const now = ctx.currentTime;
       nodes = nodes.filter((n) => {
@@ -165,6 +197,8 @@ export const createWebAudioSink = (ctx: AudioCtxLike): AudioSink => {
       const now = ctx.currentTime;
       nodes.forEach((n) => n.oscs.forEach((o) => o.stop(now)));
       nodes = [];
+      held.forEach((v) => v.oscs.forEach((o) => o.stop(now)));
+      held.clear();
       epoch = null;
     },
   };
