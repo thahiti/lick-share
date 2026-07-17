@@ -73,7 +73,7 @@ export const PianoKeys = ({
               data-key={p}
               className="pk-black"
               aria-label={pName(p)}
-              style={{ left: `${left}%`, width: `${whitePct * 0.62}%` }}
+              style={{ left: `${left}%`, width: `${whitePct * 0.66}%` }}
               {...handlers(p)}
             />
           );

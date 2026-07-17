@@ -3,7 +3,10 @@
    공유한다. 좌측 거터는 sticky로 고정되어 마디 경계가 두 패널에서 일치한다. */
 
 .ws {
-  min-height: 100dvh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--bg-page);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -86,14 +89,18 @@
   display: grid;
   grid-template-columns: 1fr 260px;
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
+  width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   padding: 16px 20px;
+  flex: 1;
+  min-height: 0;
 }
 
 .ws-canvas {
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -204,7 +211,8 @@
    거터는 sticky left:0 으로 고정돼 마디 경계 정렬을 유지한다. */
 .ws-scroll {
   overflow: auto;
-  max-height: 520px;
+  flex: 1;
+  min-height: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--bg-page);
@@ -365,7 +373,7 @@
 .pk-keys {
   position: relative;
   display: flex;
-  height: 64px;
+  height: clamp(96px, 22vh, 192px);
 }
 
 .pk-white {
@@ -389,7 +397,7 @@
 .pk-black {
   position: absolute;
   top: 0;
-  height: 58%;
+  height: 60%;
   transform: translateX(-50%);
   border: 1px solid var(--ink);
   border-radius: 0 0 3px 3px;
@@ -400,6 +408,8 @@
 
 /* ── 속성 패널 ── */
 .pp {
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 12px;
