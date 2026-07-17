@@ -36,7 +36,7 @@ describe('PianoKeys', () => {
   });
 });
 
-describe('레코딩 armed 모드 (piano-recording-design §3.3)', () => {
+describe('레코딩 모드 (piano-recording-design §3.3)', () => {
   test('recording=true면 pointerdown/up이 레코딩 콜백으로, 클릭 삽입 비활성', () => {
     const onKeyTap = vi.fn();
     const down = vi.fn();
@@ -51,7 +51,7 @@ describe('레코딩 armed 모드 (piano-recording-design §3.3)', () => {
     expect(up).toHaveBeenCalledWith(60);
     fireEvent.click(key);
     expect(onKeyTap).not.toHaveBeenCalled();
-    expect(container.querySelector('.pk.armed')).not.toBeNull();
+    expect(container.querySelector('.pk.recording')).not.toBeNull();
   });
 
   test('pointercancel도 keyUp으로 처리', () => {
@@ -65,10 +65,10 @@ describe('레코딩 armed 모드 (piano-recording-design §3.3)', () => {
     expect(up).toHaveBeenCalledWith(61);
   });
 
-  test('recording=false면 기존 클릭 동작 유지 + armed 클래스 없음', () => {
+  test('recording=false면 기존 클릭 동작 유지 + recording 클래스 없음', () => {
     const { container, onKeyTap } = setup();
     fireEvent.click(container.querySelector('[data-key="60"]') as Element);
     expect(onKeyTap).toHaveBeenCalledWith(60);
-    expect(container.querySelector('.pk.armed')).toBeNull();
+    expect(container.querySelector('.pk.recording')).toBeNull();
   });
 });
