@@ -5,6 +5,7 @@
 import type { JSX } from 'react';
 import { decodeSong } from '../../core/codec';
 import { Score } from '../../ui/components/edit/Score';
+import { useElementWidth } from '../../ui/hooks/useElementWidth';
 import type { LickRow } from '../api/licks';
 import { navigate } from '../routing';
 import { OverflowMenu } from './OverflowMenu';
@@ -19,6 +20,8 @@ interface Props {
 export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
   const song = decodeSong(lick.blob);
   const profiles = lick.profiles;
+  /* 미리보기 악보도 실측 폭 1:1 — 모든 화면에서 음표 크기 동일 (편집 화면 기준) */
+  const [scoreBoxRef, scoreW] = useElementWidth(420);
   return (
     <article className="c-card">
       <button type="button" className="c-cardhit" onClick={() => navigate('/lick/' + lick.id)}>
@@ -27,7 +30,9 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
           <span className="c-date">{new Date(lick.created_at).toLocaleDateString('en-US')}</span>
         </div>
         {song ? (
-          <Score song={song} mode="view" width={420} />
+          <div ref={scoreBoxRef}>
+            <Score song={song} mode="view" width={scoreW} />
+          </div>
         ) : (
           <p className="c-state">Couldn't read this score</p>
         )}

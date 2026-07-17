@@ -3,7 +3,7 @@
  * 음표 탭 = 그 위치부터 끝까지 재생.
  * 악보 폭은 스크롤 영역 실측 1:1 — 음표 크기는 고정, 넓을수록 여유롭게 조판된다.
  */
-import { useRef, type JSX } from 'react';
+import type { JSX } from 'react';
 import { measCountAll } from '../../../core/geometry';
 import type { Song } from '../../../core/types';
 import { useElementWidth } from '../../hooks/useElementWidth';
@@ -29,8 +29,7 @@ export const Viewer = ({
   onCopyLink,
   onToEdit,
 }: ViewerProps): JSX.Element => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const width = useElementWidth(scrollRef, 384);
+  const [scrollRef, width] = useElementWidth(384);
   return (
     <div className="viewer">
       <div className="hero">
