@@ -50,6 +50,7 @@ const setup = (over: Partial<Parameters<typeof Workspace>[0]> = {}) => {
       onRecStop={() => {}}
       onRecKeyDown={() => {}}
       onRecKeyUp={() => {}}
+      onRecKeyAbort={() => {}}
       inputLen={4}
       {...h}
       {...over}

@@ -314,6 +314,7 @@ export const App = ({
           onRecStop={rec.stop}
           onRecKeyDown={rec.keyDown}
           onRecKeyUp={rec.keyUp}
+          onRecKeyAbort={rec.keyAbort}
           onCellTap={(m, pv, st) => store.getState().padTapAt(m, pv, st)}
           onDragNote={(id, patch) => store.getState().dragNote(id, patch)}
           onSlotTap={(m, b) => {

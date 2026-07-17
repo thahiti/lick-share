@@ -55,15 +55,23 @@ describe('레코딩 모드 (piano-recording-design §3.3)', () => {
     expect(container.querySelector('.pk.recording')).not.toBeNull();
   });
 
-  test('pointercancel도 keyUp으로 처리', () => {
+  test('pointercancel(스크롤 제스처)은 keyUp이 아니라 abort', () => {
     const up = vi.fn();
+    const abort = vi.fn();
     const { container } = render(
-      <PianoKeys onKeyTap={vi.fn()} recording onRecKeyDown={vi.fn()} onRecKeyUp={up} />,
+      <PianoKeys
+        onKeyTap={vi.fn()}
+        recording
+        onRecKeyDown={vi.fn()}
+        onRecKeyUp={up}
+        onRecKeyAbort={abort}
+      />,
     );
     const key = container.querySelector('[data-key="61"]') as Element;
     fireEvent.pointerDown(key);
     fireEvent.pointerCancel(key);
-    expect(up).toHaveBeenCalledWith(61);
+    expect(abort).toHaveBeenCalledWith(61);
+    expect(up).not.toHaveBeenCalled();
   });
 
   test('recording=false면 pointerdown 프리뷰 + recording 클래스 없음', () => {

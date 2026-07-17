@@ -3,7 +3,7 @@
  * 시각은 전부 숫자로 주입 — 템포 100 기준 sps=0.15.
  */
 import { describe, expect, it } from 'vitest';
-import { initRecording, recKeyDown, recKeyUp, recTick } from './recording';
+import { initRecording, recKeyAbort, recKeyDown, recKeyUp, recTick } from './recording';
 import { asBar, asMidi, asSec, type Song } from './types';
 
 const mkSong = (over: Partial<Song> = {}): Song => ({
@@ -134,5 +134,21 @@ describe('recTick과 곡 끝', () => {
     const d = recKeyDown(st0, SPS, C4, asSec(32 * SPS));
     const u = recKeyUp(d.st, SPS, C4, asSec(33 * SPS));
     expect(u.commit).toBeNull();
+  });
+});
+
+describe('recKeyAbort (스크롤 제스처로 인한 취소)', () => {
+  it('held와 같은 피치면 커밋 없이 버린다', () => {
+    const st0 = initRecording(mkSong(), asBar(0));
+    const d = recKeyDown(st0, SPS, C4, asSec(0));
+    const a = recKeyAbort(d.st, C4);
+    expect(a.held).toBeNull();
+  });
+
+  it('held와 다른 피치(레가토 컷 잔여)는 무시', () => {
+    const st0 = initRecording(mkSong(), asBar(0));
+    const d2 = recKeyDown(recKeyDown(st0, SPS, C4, asSec(0)).st, SPS, E4, asSec(0.3));
+    const a = recKeyAbort(d2.st, C4);
+    expect(a.held).toEqual({ p: E4, downT: 0.3 });
   });
 });

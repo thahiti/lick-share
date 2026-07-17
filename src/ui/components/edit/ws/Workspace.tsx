@@ -51,6 +51,7 @@ export interface WorkspaceProps {
   readonly onRecStop: () => void;
   readonly onRecKeyDown: (p: Midi) => void;
   readonly onRecKeyUp: (p: Midi) => void;
+  readonly onRecKeyAbort: (p: Midi) => void;
 
   readonly onCellTap: (m: number, pv: Midi | 'rest', st: number) => void;
   readonly onDragNote: (id: number, patch: { s?: number; p?: Midi; d?: number }) => void;
@@ -96,6 +97,7 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
     onRecStop,
     onRecKeyDown,
     onRecKeyUp,
+    onRecKeyAbort,
     onCellTap,
     onDragNote,
     onSlotTap,
@@ -287,6 +289,7 @@ export const Workspace = (props: WorkspaceProps): JSX.Element => {
             recording={recActive}
             onRecKeyDown={onRecKeyDown}
             onRecKeyUp={onRecKeyUp}
+            onRecKeyAbort={onRecKeyAbort}
           />
         </div>
 

@@ -370,10 +370,19 @@
   padding: 6px;
 }
 
+.pk-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
 .pk-keys {
   position: relative;
   display: flex;
+  /* 좌우 2배 폭 — 컨테이너를 넘치는 만큼 .pk-scroll이 가로 스크롤 */
+  width: 200%;
   height: clamp(96px, 22vh, 192px);
+  /* 가로 팬은 스크롤 제스처로 허용 — 취소된 누름은 pointercancel로 버려짐 */
+  touch-action: pan-x;
 }
 
 .pk-white {

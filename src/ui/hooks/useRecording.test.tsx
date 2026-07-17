@@ -92,3 +92,18 @@ describe('useRecording', () => {
     expect(sink.playNowCount).toBe(1);
   });
 });
+
+describe('keyAbort (스크롤 취소)', () => {
+  it('held를 커밋 없이 버린다', () => {
+    const { clock, store, hook } = setup();
+    const before = store.getState().song.notes.length;
+    act(() => hook.result.current.start());
+    act(() => frameAt(clock, 0.06 + 2.4));
+    act(() => hook.result.current.keyDown(asMidi(75)));
+    act(() => frameAt(clock, 0.06 + 2.4 + 0.3));
+    act(() => hook.result.current.keyAbort(asMidi(75)));
+    act(() => hook.result.current.stop());
+    expect(store.getState().song.notes.some((n) => n.p === 75)).toBe(false);
+    expect(store.getState().song.notes.length).toBe(before);
+  });
+});

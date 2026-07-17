@@ -8,6 +8,7 @@ import type { Player } from '../../adapters/player';
 import { measOf } from '../../core/geometry';
 import {
   initRecording,
+  recKeyAbort,
   recKeyDown,
   recKeyUp,
   recTick,
@@ -30,6 +31,8 @@ export interface RecordingApi {
   stop(): void;
   keyDown(midi: Midi): void;
   keyUp(midi: Midi): void;
+  /** pointercancel — 스크롤 제스처 등으로 취소된 누름을 커밋 없이 버림 */
+  keyAbort(midi: Midi): void;
 }
 
 interface Live {
@@ -132,5 +135,11 @@ export const useRecording = (store: StoreApi<SongStore>, player: Player): Record
     [commit],
   );
 
-  return { phase, countBeat, recEl, start, stop, keyDown, keyUp };
+  const keyAbort = useCallback((midi: Midi): void => {
+    const r = live.current;
+    if (!r) return;
+    r.st = recKeyAbort(r.st, midi);
+  }, []);
+
+  return { phase, countBeat, recEl, start, stop, keyDown, keyUp, keyAbort };
 };

@@ -60,6 +60,11 @@ export const recKeyUp = (st: RecState, sps: number, midi: Midi, t: Sec): RecResu
     ? { st: { ...st, held: null }, commit: commitHeld(st, sps, t) }
     : { st, commit: null };
 
+/** 건반 취소(pointercancel — 브라우저가 스크롤 제스처로 가져간 경우):
+ *  의도된 연주가 아니므로 held를 커밋 없이 버린다. 피치 불일치는 무시 */
+export const recKeyAbort = (st: RecState, midi: Midi): RecState =>
+  st.held && st.held.p === midi ? { ...st, held: null } : st;
+
 /** 프레임 틱: 본편 끝 도달 시 done + held 잔여 커밋 */
 export const recTick = (st: RecState, sps: number, t: Sec): TickResult => {
   if (t < (st.endStep - st.startStep) * sps) return { st, commit: null, done: false };
