@@ -1,6 +1,8 @@
 /* 커뮤니티 레이아웃 — tokens.css 변수만 사용, c- 프리픽스로 기존 스타일과 분리 */
 
 .community {
+  /* #root가 flex 센터링이라 width 미지정 시 shrink-to-fit으로 좁아진다 */
+  width: 100%;
   max-width: var(--app-max-width);
   margin: 0 auto;
   font-family: var(--font-sans);
@@ -709,6 +711,13 @@ a.c-tag:hover {
   color: #fff;
   background: var(--rank-accent);
   border-color: var(--rank-accent);
+}
+
+/* 태블릿 티어 — 모바일 단일 컬럼을 유지하되 폭을 넓혀 악보 가독성 확보 */
+@media (min-width: 640px) and (max-width: 1023px) {
+  .community {
+    max-width: min(94vw, 760px);
+  }
 }
 
 @media (min-width: 1024px) {
