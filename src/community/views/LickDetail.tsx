@@ -8,9 +8,10 @@ import { useEffect, useRef, useState, type JSX } from 'react';
 import type { User } from '@supabase/supabase-js';
 import type { Player } from '../../adapters/player';
 import { decodeSong } from '../../core/codec';
-import { measCountAll, total } from '../../core/geometry';
+import { measCountAll, total, viewScale } from '../../core/geometry';
 import { asStep, type Song } from '../../core/types';
 import { Score } from '../../ui/components/edit/Score';
+import { useElementWidth } from '../../ui/hooks/useElementWidth';
 import { deleteLick, fetchLick, type LickRow } from '../api/licks';
 import { addLike, fetchLikeCounts, fetchMyLikedSet, likeTargetId, removeLike } from '../api/likes';
 import { DeleteLickDialog } from '../components/DeleteLickDialog';
@@ -60,6 +61,10 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
   const started = useRef(false);
   const alive = useRef(true);
   const lastEl = useRef(0);
+  /* 악보 폭 = 프레임 실측 — 넓은 화면은 viewScale 배율로 기보 확대 */
+  const scoreBoxRef = useRef<HTMLDivElement>(null);
+  const scoreBoxW = useElementWidth(scoreBoxRef, 420);
+  const scoreW = Math.round(scoreBoxW / viewScale(scoreBoxW));
 
   /* 릭·악보 로드 — StrictMode 이중 이펙트에서도 fetchLick은 정확히 1회 (Feed와 동일 패턴).
      실패는 loaderror로 구분해 재시도 버튼을 보인다 (핸드오프 §13). */
@@ -340,13 +345,15 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
           />
         }
       >
-        <Score
-          song={song}
-          mode="view"
-          width={420}
-          {...(playheadStep !== null ? { playheadStep } : {})}
-          onNoteTap={onNoteTap}
-        />
+        <div ref={scoreBoxRef}>
+          <Score
+            song={song}
+            mode="view"
+            width={scoreW}
+            {...(playheadStep !== null ? { playheadStep } : {})}
+            onNoteTap={onNoteTap}
+          />
+        </div>
       </ScoreFrame>
 
       <footer className="c-footer">
