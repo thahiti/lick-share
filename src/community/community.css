@@ -11,6 +11,12 @@
   padding-bottom: 72px;
 }
 
+/* 모바일: 카드·리스트가 화면 가장자리에 붙지 않게 본문 공통 좌우 여백.
+   데스크톱(≥1024px)은 3컬럼 그리드 거터가 담당하므로 해제한다. */
+.c-main {
+  padding: 0 12px;
+}
+
 .c-list {
   display: flex;
   flex-direction: column;
@@ -133,8 +139,8 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  /* 모바일: 프레임이 화면 가장자리에 붙지 않게 좌우 여백 */
-  padding: 12px;
+  /* 좌우 여백은 .c-main 공통 거터가 담당 */
+  padding: 12px 0;
 }
 
 .c-detail-title {
@@ -853,6 +859,7 @@ a.c-tag:hover {
 
   .c-main {
     min-width: 0;
+    padding: 0; /* 그리드 거터가 여백 담당 */
   }
 
   /* 우측 Top Licks 위젯 */
@@ -1270,11 +1277,6 @@ a.c-tag:hover {
 
 /* 데스크톱(≥1024px): 푸터 한 줄, 태그 우측 끝, 액션은 라벨 폭 */
 @media (min-width: 1024px) {
-  /* 데스크톱은 그리드 거터가 여백을 담당 — 컬럼 폭을 그대로 쓴다 */
-  .c-detail {
-    padding: 12px 0;
-  }
-
   .c-footer {
     flex-direction: row;
     align-items: center;
