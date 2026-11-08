@@ -619,11 +619,12 @@ a.c-tag:hover {
   max-width: var(--app-max-width);
   display: flex;
   align-items: stretch;
-  /* border-box라 홈 인디케이터 여백을 높이에 더하지 않으면 아이콘 영역이 그만큼 줄어든다 */
+  /* 홈 인디케이터 여백만큼 높이를 늘리되 하단 패딩은 두지 않는다.
+     패딩을 두면 아이콘이 위로 쏠려 보이고, 전체 높이 기준으로
+     가운데 정렬해도 라벨이 인디케이터와 겹치지 않는다. */
   height: calc(60px + env(safe-area-inset-bottom));
   background: var(--bg-card);
   border-top: 1px solid var(--line);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .c-tab {
