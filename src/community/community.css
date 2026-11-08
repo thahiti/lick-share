@@ -8,7 +8,7 @@
   font-family: var(--font-sans);
   color: var(--ink);
   /* 하단 탭바 높이만큼 본문 여백 (모바일) — 데스크톱은 미디어쿼리에서 해제 */
-  padding-bottom: 72px;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 /* 모바일: 카드·리스트가 화면 가장자리에 붙지 않게 본문 공통 좌우 여백.
@@ -619,10 +619,12 @@ a.c-tag:hover {
   max-width: var(--app-max-width);
   display: flex;
   align-items: stretch;
-  height: 60px;
+  /* 홈 인디케이터 여백만큼 높이를 늘리되 하단 패딩은 두지 않는다.
+     패딩을 두면 아이콘이 위로 쏠려 보이고, 전체 높이 기준으로
+     가운데 정렬해도 라벨이 인디케이터와 겹치지 않는다. */
+  height: calc(60px + env(safe-area-inset-bottom));
   background: var(--bg-card);
   border-top: 1px solid var(--line);
-  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .c-tab {
@@ -722,8 +724,9 @@ a.c-tag:hover {
 
 /* 태블릿 티어 — 모바일 단일 컬럼을 유지하되 폭을 넓혀 악보 가독성 확보 */
 @media (min-width: 640px) and (max-width: 1023px) {
+  /* max-width가 아니라 변수를 바꿔야 fixed인 하단 탭바도 같은 폭을 따른다 */
   .community {
-    max-width: min(94vw, 760px);
+    --app-max-width: min(94vw, 760px);
   }
 }
 
