@@ -722,8 +722,9 @@ a.c-tag:hover {
 
 /* 태블릿 티어 — 모바일 단일 컬럼을 유지하되 폭을 넓혀 악보 가독성 확보 */
 @media (min-width: 640px) and (max-width: 1023px) {
+  /* max-width가 아니라 변수를 바꿔야 fixed인 하단 탭바도 같은 폭을 따른다 */
   .community {
-    max-width: min(94vw, 760px);
+    --app-max-width: min(94vw, 760px);
   }
 }
 
