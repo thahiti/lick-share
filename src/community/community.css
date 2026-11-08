@@ -8,7 +8,7 @@
   font-family: var(--font-sans);
   color: var(--ink);
   /* 하단 탭바 높이만큼 본문 여백 (모바일) — 데스크톱은 미디어쿼리에서 해제 */
-  padding-bottom: 72px;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
 }
 
 /* 모바일: 카드·리스트가 화면 가장자리에 붙지 않게 본문 공통 좌우 여백.
@@ -619,7 +619,8 @@ a.c-tag:hover {
   max-width: var(--app-max-width);
   display: flex;
   align-items: stretch;
-  height: 60px;
+  /* border-box라 홈 인디케이터 여백을 높이에 더하지 않으면 아이콘 영역이 그만큼 줄어든다 */
+  height: calc(60px + env(safe-area-inset-bottom));
   background: var(--bg-card);
   border-top: 1px solid var(--line);
   padding-bottom: env(safe-area-inset-bottom);
