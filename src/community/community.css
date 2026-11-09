@@ -212,6 +212,49 @@
   outline: none;
 }
 
+/* 표시 이름 머리글 (My licks) — 보기: 이름 + Edit, 편집: 입력이 남는 폭을 차지하고 버튼은 라벨 폭 */
+.c-namehead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+}
+
+.c-namehead .c-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.c-namehead .c-form-actions {
+  flex: 1;
+}
+
+.c-namehead .c-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.c-namehead .c-btn {
+  padding: 9px 14px;
+}
+
+.c-namehead-edit {
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-ctl);
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--mut2);
+  background: var(--bg-card);
+  cursor: pointer;
+}
+
+.c-namehead-err {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 12px;
+  color: var(--red);
+}
+
 .c-tags {
   display: flex;
   flex-wrap: wrap;
