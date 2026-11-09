@@ -935,10 +935,12 @@ a.c-tag:hover {
     color: var(--mut2);
   }
 
-  /* 2열 카드 그리드 + 카드 리디자인 */
+  /* 카드 그리드 + 카드 리디자인.
+     카드 폭이 560px 이상 나올 때만 열을 늘린다. 336px 남짓한 2열에서는
+     4마디 악보의 음표가 뭉쳐 읽히지 않는다. */
   .c-list {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr));
     gap: 18px;
     padding: 16px 0;
   }
