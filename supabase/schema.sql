@@ -19,18 +19,29 @@ $$ select translate(encode(extensions.gen_random_bytes(len), 'base64'), '+/=', '
 create table profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   public_id text not null unique default gen_short_id(6),
-  display_name text not null,
+  -- 표시 이름은 라벨일 뿐 정체성이 아니다(릭과 좋아요는 id를 참조). 사용자가 바꿀 수 있다.
+  display_name text not null
+    constraint profiles_display_name_len check (length(btrim(display_name)) between 1 and 30),
   avatar_url text,
   created_at timestamptz not null default now()
 );
 
+-- 사칭 방지: 대소문자와 앞뒤 공백만 다른 이름은 같은 이름으로 본다
+create unique index profiles_display_name_key on profiles (lower(btrim(display_name)));
+
 create function public.handle_new_user() returns trigger
 language plpgsql security definer as $$
+declare
+  base text := left(coalesce(nullif(btrim(new.raw_user_meta_data->>'name'), ''), '이름없는 연주자'), 30);
+  pid text := public.gen_short_id(6);
+  name text := base;
 begin
-  insert into public.profiles (id, display_name, avatar_url)
-  values (new.id,
-          coalesce(new.raw_user_meta_data->>'name', '이름없는 연주자'),
-          new.raw_user_meta_data->>'avatar_url');
+  -- 동명이인이 가입해도 실패하지 않도록 public_id 앞 4자를 꼬리로 붙인다. 본인이 나중에 바꾸면 된다.
+  if exists (select 1 from public.profiles where lower(btrim(display_name)) = lower(name)) then
+    name := left(base, 25) || ' ' || left(pid, 4);
+  end if;
+  insert into public.profiles (id, public_id, display_name, avatar_url)
+  values (new.id, pid, name, new.raw_user_meta_data->>'avatar_url');
   return new;
 end $$;
 
@@ -87,6 +98,9 @@ create policy "read licks" on licks for select using (true);
 create policy "read likes" on likes for select using (true);
 create policy "update own profile" on profiles for update
   using (id = auth.uid()) with check (id = auth.uid());
+-- RLS는 행만 가르므로 열은 권한으로 막는다: 본인 행이라도 바꿀 수 있는 열은 display_name뿐
+revoke update on profiles from anon, authenticated;
+grant update (display_name) on profiles to authenticated;
 create policy "insert own lick" on licks for insert with check (author_id = auth.uid());
 create policy "delete own lick" on licks for delete using (author_id = auth.uid());
 create policy "insert own like" on likes for insert with check (user_id = auth.uid());
