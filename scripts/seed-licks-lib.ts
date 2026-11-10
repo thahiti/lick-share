@@ -195,3 +195,33 @@ const SEED_STEP_MS = 345 * 60 * 1000;
 /** R6: 유일 목록 i 번째 항목의 게시 시각. 383건이 2026-06 전에 서로 다른 시각으로 끝난다 */
 export const publishedAt = (i: number): string =>
   new Date(SEED_START_MS + SEED_STEP_MS * i).toISOString();
+
+const SEED_AUTHOR_ID = '4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf';
+const SEED_DISPLAY_NAME = 'Lick Library';
+
+// R7: 문자열 값의 이스케이프는 작은따옴표를 두 번 쓰는 것뿐이다
+const literal = (s: string): string => `'${s.replaceAll("'", "''")}'`;
+
+/**
+ * R7: 표시 이름 UPDATE, 릭 INSERT, created_at UPDATE 세 문장.
+ * 트리거가 insert 때 created_at 을 now() 로 덮으므로 날짜 UPDATE 는 INSERT 뒤에 와야 한다 (E9).
+ */
+export const seedSql = (licks: readonly SeedLick[]): string => {
+  const author = literal(SEED_AUTHOR_ID);
+  const rows = licks.map(
+    (l) =>
+      `  (${author}, ${literal(l.name)}, ${literal(l.hash)}, ${literal(l.melodyHash)}, ` +
+      `array[${l.tags.map(literal).join(',')}])`,
+  );
+  const times = licks.map(
+    (l, i) => `  (${literal(l.melodyHash)}, timestamptz ${literal(publishedAt(i))})`,
+  );
+  const statements = [
+    `update profiles set display_name = ${literal(SEED_DISPLAY_NAME)} where id = ${author};`,
+    `insert into licks (author_id, title, blob, melody_hash, tags) values\n${rows.join(',\n')}\n` +
+      'on conflict (author_id, melody_hash) do nothing;',
+    `update licks l set created_at = v.ts from (values\n${times.join(',\n')}\n` +
+      `) as v(h, ts) where l.author_id = ${author} and l.melody_hash = v.h;`,
+  ];
+  return `${statements.join('\n\n')}\n`;
+};

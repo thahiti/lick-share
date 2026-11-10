@@ -8,6 +8,7 @@ import {
   lickTags,
   parseLicks,
   publishedAt,
+  seedSql,
   type ParsedLick,
   type SeedLick,
 } from './seed-licks-lib';
@@ -25,6 +26,13 @@ const lick = (over: Partial<ParsedLick>): ParsedLick => ({
   suffix: 'Tune',
   meta: 'meta',
   hash: 'v2abc',
+  ...over,
+});
+
+const seed = (over: Partial<SeedLick>): SeedLick => ({
+  ...lick(over),
+  melodyHash: 'aaa',
+  tags: [],
   ...over,
 });
 
@@ -138,12 +146,6 @@ describe('lickTags', () => {
 
 describe('dedupeByMelody', () => {
   it('AC-7 같은 melody_hash 가 다시 나오면 첫 항목만 남기고 뒤 항목을 제외 목록에 둔다', () => {
-    const seed = (over: Partial<SeedLick>): SeedLick => ({
-      ...lick(over),
-      melodyHash: 'aaa',
-      tags: [],
-      ...over,
-    });
     const first = seed({ file: 'nottingham', section: 'I–IV–V', name: 'Punch Bowl arch motif' });
     const other = seed({ file: 'nottingham', name: 'Other Tune', melodyHash: 'bbb' });
     const again = seed({ file: 'nottingham', section: 'I–IV–V–I', name: 'Arching Punch Bowl' });
@@ -182,5 +184,33 @@ describe('publishedAt', () => {
     expect(publishedAt(0)).toBe('2026-03-01T00:00:00.000Z');
     expect(publishedAt(1)).toBe('2026-03-01T05:45:00.000Z');
     expect(publishedAt(382)).toBe('2026-05-31T12:30:00.000Z');
+  });
+});
+
+describe('seedSql', () => {
+  it('AC-9 세 문장을 R7 순서로 쓰고 작은따옴표는 두 번 쓴다', () => {
+    const author = "'4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf'";
+    const sql = seedSql([
+      seed({
+        name: "Bird's Chromatic Climb and Turn",
+        hash: 'v2abc',
+        melodyHash: 'f00d',
+        tags: ['ii-v-i', 'jazz', 'bebop'],
+      }),
+    ]);
+
+    const order = [
+      `update profiles set display_name = 'Lick Library' where id = ${author};`,
+      'insert into licks (author_id, title, blob, melody_hash, tags) values',
+      'on conflict (author_id, melody_hash) do nothing;',
+      'update licks l set created_at = v.ts from (values',
+      `as v(h, ts) where l.author_id = ${author} and l.melody_hash = v.h;`,
+    ].map((s) => sql.indexOf(s));
+    expect(order[0]).toBe(0);
+    expect(order.every((at, i) => at > (order[i - 1] ?? -1))).toBe(true);
+    expect(sql).toContain(
+      `(${author}, 'Bird''s Chromatic Climb and Turn', 'v2abc', 'f00d', array['ii-v-i','jazz','bebop'])`,
+    );
+    expect(sql).toContain("('f00d', timestamptz '2026-03-01T00:00:00.000Z')");
   });
 });
