@@ -1537,3 +1537,44 @@ a.c-tag:hover {
 .c-play-panel {
   position: relative;
 }
+/* 카운트다운 (R8): 악보를 흐리게 하고 가운데에 남은 박 수 */
+.c-play-frame--dim svg {
+  opacity: 0.35;
+}
+.c-play-count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  text-align: center;
+}
+.c-play-count-num {
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.c-play-count-cap {
+  margin-top: 6px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+.c-play-count-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.c-play-count-dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line2);
+}
+.c-play-count-dots i.on {
+  background: var(--playhead);
+}

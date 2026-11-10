@@ -235,3 +235,35 @@ describe('PlayOverlay: 현재 장과 재생 (swipe-play R6 ~ R10)', () => {
     expect(sink.events).toHaveLength(0);
   });
 });
+
+describe('PlayOverlay: 카운트다운 (swipe-play R8)', () => {
+  test('AC-16 간격 중에는 남은 박 수와 Again in 이 보이고 끝나면 사라진다', () => {
+    mount();
+    // 둘째 곡(4마디, 64스텝)이 끝나는 시각
+    time.t = EPOCH + 64 * SPS + 0.01;
+    act(() => clock.frame());
+    expect(screen.getByText('4')).toBeTruthy();
+    expect(screen.getByText('Again in')).toBeTruthy();
+    time.t += 4 * SPS; // 한 박
+    act(() => clock.frame());
+    expect(screen.getByText('3')).toBeTruthy();
+    expect(document.querySelectorAll('.c-play-count .on')).toHaveLength(1);
+    time.t += 3 * 4 * SPS + 0.01; // 간격 끝
+    act(() => clock.frame());
+    expect(screen.queryByText('Again in')).toBeNull();
+    expect(player.isPlaying()).toBe(true);
+  });
+
+  test('R7 카운트다운 중 탭하면 멈추고 재개는 0 부터', () => {
+    mount();
+    time.t = EPOCH + 64 * SPS + 0.01;
+    act(() => clock.frame());
+    const frame = document.querySelectorAll('.c-play-frame')[1];
+    if (!frame) throw new Error('프레임 없음');
+    fireEvent.click(frame);
+    expect(player.isPlaying()).toBe(false);
+    expect(screen.queryByText('Again in')).toBeNull();
+    fireEvent.click(frame);
+    expect(firstMelodyMidi()).toBe(76);
+  });
+});

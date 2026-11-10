@@ -62,6 +62,8 @@ interface PageProps {
   readonly current: boolean;
   readonly playing: boolean;
   readonly playheadStep: number | null;
+  /** 간격 중 남은 박 수 (R8). null 이면 간격이 아니다 */
+  readonly countdown: number | null;
   readonly last: boolean;
   readonly loadError: boolean;
   readonly source: string;
@@ -76,6 +78,7 @@ const Page = ({
   current,
   playing,
   playheadStep,
+  countdown,
   last,
   loadError,
   source,
@@ -87,7 +90,11 @@ const Page = ({
     <section className="c-play-page" data-index={index}>
       <div className="c-play-body">
         {/* R7: 악보 탭은 멈춤과 재개. 음표 탭 핸들러를 주지 않아 클릭이 여기로 올라온다 */}
-        <div className="c-play-frame" ref={boxRef} onClick={onTap}>
+        <div
+          className={countdown !== null ? 'c-play-frame c-play-frame--dim' : 'c-play-frame'}
+          ref={boxRef}
+          onClick={onTap}
+        >
           {song ? (
             <Score
               song={song}
@@ -97,6 +104,17 @@ const Page = ({
             />
           ) : (
             <p className="c-state">Couldn&apos;t read this score</p>
+          )}
+          {countdown !== null && (
+            <div className="c-play-count" aria-live="polite">
+              <div className="c-play-count-num">{countdown}</div>
+              <div className="c-play-count-cap">Again in</div>
+              <div className="c-play-count-dots">
+                {[0, 1, 2, 3].map((b) => (
+                  <i key={b} className={b < LOOP.gapBeats - countdown ? 'on' : ''} />
+                ))}
+              </div>
+            </div>
           )}
           {current && !playing && song && (
             <div className="c-play-paused">
@@ -148,6 +166,7 @@ export const PlayOverlay = ({
   const [index, setIndex] = useState(startIndex);
   const [playing, setPlaying] = useState(true);
   const [playheadStep, setPlayheadStep] = useState<number | null>(null);
+  const [countdown, setCountdown] = useState<number | null>(null);
   const [hint, setHint] = useState(readHint);
   const hintRef = useRef(hint);
   const indexRef = useRef(startIndex);
@@ -259,14 +278,16 @@ export const PlayOverlay = ({
     setPlaying(true);
   };
 
-  /* 플레이헤드 구독, 언마운트 시 정지 (R4, R8) */
+  /* 플레이헤드와 간격 구독, 언마운트 시 정지 (R4, R8). 간격은 stop 이나 새 play 가 null 로 끝낸다 */
   useEffect(() => {
     const unsubTick = player.onTick((el) => {
       lastEl.current = el;
       setPlayheadStep(el);
     });
+    const unsubGap = player.onGap((n) => setCountdown(n));
     return () => {
       unsubTick();
+      unsubGap();
       player.stop();
     };
   }, [player]);
@@ -306,6 +327,7 @@ export const PlayOverlay = ({
               current={i === index}
               playing={playing}
               playheadStep={i === index ? playheadStep : null}
+              countdown={i === index ? countdown : null}
               last={!hasMore && !loadError && i === licks.length - 1}
               loadError={loadError && i === licks.length - 1}
               source={source}
