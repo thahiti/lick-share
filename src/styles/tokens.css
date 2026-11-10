@@ -26,6 +26,7 @@
   --note-block-selected: #0f6e56; /* 선택 음표/셀 */
   --playhead: #d85a30; /* 재생 헤드 (코랄) */
   --rank-accent: #ba7517; /* 랭킹 1위 (amber) */
+  --scrim: rgba(17, 17, 17, 0.55); /* 전체 화면 오버레이 뒤 (데스크톱) */
 
   /* 악보 내부 전용 */
   --staff: #c9c9c9; /* 보표/마디선 */

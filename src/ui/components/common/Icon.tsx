@@ -9,6 +9,7 @@ const PATHS: Readonly<Record<string, readonly string[]>> = {
   play: ['M8 5.5 L18 12 L8 18.5 Z'],
   pause: ['M8.5 5 V19', 'M15.5 5 V19'],
   plus: ['M12 5 V19', 'M5 12 H19'],
+  close: ['M6 6 L18 18', 'M18 6 L6 18'],
   up: ['M6 15 L12 8.5 L18 15'],
   down: ['M6 9 L12 15.5 L18 9'],
   undo: ['M8.5 13.5 L4 9 L8.5 4.5', 'M4 9 H14.5 a4.7 4.7 0 0 1 0 9.4 H11'],

@@ -1380,3 +1380,114 @@ a.c-tag:hover {
     overflow: hidden;
   }
 }
+
+/* ── 넘기기 재생 오버레이 (swipe-play) ── 목록 위 전체 화면. 탭바(z 10) 위 */
+.c-play {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+}
+.c-play-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.c-play-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 6px;
+}
+.c-play-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.c-play-counter {
+  font-size: 11px;
+  color: var(--mut2);
+  font-variant-numeric: tabular-nums;
+}
+.c-play-source {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--mut2);
+}
+/* 세로 스냅 페이저: 스와이프, 휠, 방향키가 브라우저 기본 동작으로 넘긴다 (R6) */
+.c-play-pager {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+}
+.c-play-page {
+  height: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+}
+/* 장 본문: 긴 릭은 여기서 세로 스크롤 (R15) */
+.c-play-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.c-play-frame {
+  position: relative;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  padding: 10px 12px;
+}
+.c-play-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+.c-play-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--mut2);
+}
+.c-play-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+@media (min-width: 1024px) {
+  .c-play {
+    background: var(--scrim);
+    align-items: center;
+    justify-content: center;
+  }
+  .c-play-panel {
+    flex: none;
+    width: 680px;
+    max-height: 92dvh;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-popover);
+    overflow: hidden;
+  }
+  .c-play-top {
+    padding-top: 10px;
+  }
+}
