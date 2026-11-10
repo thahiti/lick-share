@@ -188,3 +188,10 @@ export const buildSeed = async (inputs: readonly SeedInput[]): Promise<Seed> => 
     ...dedupeByMelody(licks),
   };
 };
+
+const SEED_START_MS = Date.UTC(2026, 2, 1);
+const SEED_STEP_MS = 345 * 60 * 1000;
+
+/** R6: 유일 목록 i 번째 항목의 게시 시각. 383건이 2026-06 전에 서로 다른 시각으로 끝난다 */
+export const publishedAt = (i: number): string =>
+  new Date(SEED_START_MS + SEED_STEP_MS * i).toISOString();

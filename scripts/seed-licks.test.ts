@@ -7,6 +7,7 @@ import {
   dedupeByMelody,
   lickTags,
   parseLicks,
+  publishedAt,
   type ParsedLick,
   type SeedLick,
 } from './seed-licks-lib';
@@ -173,5 +174,13 @@ describe('buildSeed', () => {
     ]);
     expect(seed.excluded.map((l) => l.file)).toEqual(['nottingham', 'nottingham', 'nottingham']);
     expect(seed.unique).toHaveLength(383);
+  });
+});
+
+describe('publishedAt', () => {
+  it('AC-8 i 번째 게시 시각은 2026-03-01 00:00 UTC 부터 345분 간격이다', () => {
+    expect(publishedAt(0)).toBe('2026-03-01T00:00:00.000Z');
+    expect(publishedAt(1)).toBe('2026-03-01T05:45:00.000Z');
+    expect(publishedAt(382)).toBe('2026-05-31T12:30:00.000Z');
   });
 });
