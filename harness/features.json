@@ -290,7 +290,12 @@
         "community"
       ],
       "stage": "plan",
-      "approved": {},
+      "approved": {
+        "plan": {
+          "date": "2026-11-10",
+          "note": ""
+        }
+      },
       "history": [
         {
           "date": "2026-11-10",
