@@ -1,6 +1,13 @@
 /** seed-licks 명세(docs/features/seed-licks/03-spec.md)의 단위 기준 */
 import { describe, expect, it } from 'vitest';
-import { decodeLick, lickTags, parseLicks, type ParsedLick } from './seed-licks-lib';
+import {
+  decodeLick,
+  dedupeByMelody,
+  lickTags,
+  parseLicks,
+  type ParsedLick,
+  type SeedLick,
+} from './seed-licks-lib';
 
 const LINK = 'https://lickshare.pages.dev/?mode=view#';
 const DOT = ' \u00b7 ';
@@ -9,7 +16,7 @@ const md = (...lines: string[]): string => lines.join('\n');
 
 const lick = (over: Partial<ParsedLick>): ParsedLick => ({
   file: 'omnibook',
-  section: 'ii\u2013V\u2013I',
+  section: 'ii–V–I',
   number: 1,
   name: 'Line',
   suffix: 'Tune',
@@ -123,5 +130,26 @@ describe('lickTags', () => {
     expect(() => lickTags(lick({ file: 'nottingham', section: 'ii–V–I' }))).toThrow(
       /nottingham.*ii–V–I/,
     );
+  });
+});
+
+describe('dedupeByMelody', () => {
+  it('AC-7 같은 melody_hash 가 다시 나오면 첫 항목만 남기고 뒤 항목을 제외 목록에 둔다', () => {
+    const seed = (over: Partial<SeedLick>): SeedLick => ({
+      ...lick(over),
+      melodyHash: 'aaa',
+      tags: [],
+      ...over,
+    });
+    const first = seed({ file: 'nottingham', section: 'I–IV–V', name: 'Punch Bowl arch motif' });
+    const other = seed({ file: 'nottingham', name: 'Other Tune', melodyHash: 'bbb' });
+    const again = seed({ file: 'nottingham', section: 'I–IV–V–I', name: 'Arching Punch Bowl' });
+
+    const { unique, excluded } = dedupeByMelody([first, other, again]);
+
+    expect(unique).toEqual([first, other]);
+    expect(excluded.map(({ file, section, name }) => [file, section, name])).toEqual([
+      ['nottingham', 'I–IV–V–I', 'Arching Punch Bowl'],
+    ]);
   });
 });

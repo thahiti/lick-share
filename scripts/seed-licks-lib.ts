@@ -145,3 +145,17 @@ export const lickTags = (lick: ParsedLick): string[] => {
   if (!rule || !pair) throw new Error(`${where(lick)}: 매핑표에 없는 섹션 키 ${lick.section}`);
   return normalizeTags([...pair, rule.style(lick)]);
 };
+
+export interface SeedLick extends ParsedLick {
+  melodyHash: string;
+  tags: string[];
+}
+
+/** R5: 같은 melody_hash 가 다시 나오면 뒤 항목을 제외 목록으로 돌린다 */
+export const dedupeByMelody = (
+  licks: readonly SeedLick[],
+): { unique: SeedLick[]; excluded: SeedLick[] } => {
+  const isFirst = (lick: SeedLick, i: number): boolean =>
+    licks.findIndex((l) => l.melodyHash === lick.melodyHash) === i;
+  return { unique: licks.filter(isFirst), excluded: licks.filter((l, i) => !isFirst(l, i)) };
+};
