@@ -1,11 +1,22 @@
 /** seed-licks 명세(docs/features/seed-licks/03-spec.md)의 단위 기준 */
 import { describe, expect, it } from 'vitest';
-import { parseLicks } from './seed-licks-lib';
+import { decodeLick, parseLicks, type ParsedLick } from './seed-licks-lib';
 
 const LINK = 'https://lickshare.pages.dev/?mode=view#';
 const DOT = ' \u00b7 ';
 
 const md = (...lines: string[]): string => lines.join('\n');
+
+const lick = (over: Partial<ParsedLick>): ParsedLick => ({
+  file: 'omnibook',
+  section: 'ii\u2013V\u2013I',
+  number: 1,
+  name: 'Line',
+  suffix: 'Tune',
+  meta: 'meta',
+  hash: 'v2abc',
+  ...over,
+});
 
 describe('parseLicks', () => {
   it('AC-1 섹션 키, 릭 이름, 접미, 메타 줄, 해시를 항목마다 뽑는다', () => {
@@ -81,5 +92,11 @@ describe('parseLicks', () => {
     );
 
     expect(() => parseLicks('nottingham', text)).toThrow(/nottingham.* 2번 항목/);
+  });
+});
+
+describe('decodeLick', () => {
+  it('AC-4 디코딩되지 않는 해시는 파일명과 항목 번호를 담은 에러를 던진다', () => {
+    expect(() => decodeLick(lick({ number: 7, hash: 'v2zzzz' }))).toThrow(/omnibook.* 7번 항목/);
   });
 });
