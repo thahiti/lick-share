@@ -15,9 +15,9 @@
 
 
  Test Files  71 passed (71)
-      Tests  691 passed (691)
-   Start at  20:36:50
-   Duration  14.92s (transform 4.48s, setup 7.55s, import 7.69s, tests 23.30s, environment 53.11s)
+      Tests  692 passed (692)
+   Start at  00:17:24
+   Duration  12.26s (transform 3.59s, setup 7.11s, import 6.95s, tests 18.44s, environment 41.18s)
 
 
 > scorelink@0.1.0 check-smp
@@ -25,4 +25,4 @@
 
 check-no-smp: OK
 통과. 다만 워킹트리에 미커밋 변경이 있어 .last-check 를 갱신하지 않는다. 커밋 후 다시 실행한다
-HEAD 0b7c18dc81659b3c406b59c955b18b973006e0f9
+HEAD eb3eed9f6bfa9fe7104c0082f33063882f8d751f
