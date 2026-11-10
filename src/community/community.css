@@ -25,10 +25,36 @@
 }
 
 .c-card {
+  position: relative; /* 재생 버튼의 기준 */
   border: 1px solid var(--ink);
   border-radius: var(--radius-pad);
   padding: 12px;
   background: var(--paper);
+}
+
+/* 카드 재생 버튼 (swipe-play R3): 악보 오른쪽 아래에 겹친다. 메타 행 위, 태그가 있으면 태그 줄 위 */
+.c-card-play {
+  position: absolute;
+  right: 12px;
+  bottom: 36px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(17, 17, 17, 0.25);
+}
+.c-card-play--tags {
+  bottom: 64px;
+}
+@media (hover: hover) {
+  .c-card-play:hover {
+    background: var(--brand-primary-hover);
+  }
 }
 
 .c-card .c-title {
