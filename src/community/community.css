@@ -535,8 +535,10 @@ a.c-tag:hover {
 .c-mappbar {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 10px 0;
+  gap: 8px;
+  /* 좌우 12px은 .c-main 의 카드 여백과 같은 값. 로고와 아바타가
+     카드 모서리에 정렬되고 아바타가 화면 가장자리에 붙지 않는다. */
+  padding: 10px 12px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -548,8 +550,9 @@ a.c-tag:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  /* 아바타(.c-avatar)와 같은 지름 — 오른쪽 두 원이 한 쌍으로 읽힌다 */
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 50%;
   background: none;
