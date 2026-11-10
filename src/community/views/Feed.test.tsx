@@ -45,12 +45,16 @@ vi.mock('../api/licks', () => ({
   deleteLick: (id: string) => deleteLick(id),
 }));
 
+const addLike = vi.fn(async (_id: string) => {});
 vi.mock('../api/likes', () => ({
   canonicalIds: (ls: readonly { id: string; canonical_id: string | null }[]): string[] => [
     ...new Set(ls.map((l) => l.canonical_id ?? l.id)),
   ],
   likeTargetId: (l: { id: string; canonical_id: string | null }): string => l.canonical_id ?? l.id,
   fetchLikeCounts: (ids: readonly string[]) => fetchLikeCounts(ids),
+  fetchMyLikedSet: async (_uid: string) => new Set<string>(),
+  addLike: (id: string) => addLike(id),
+  removeLike: async (_id: string) => {},
 }));
 
 import { Feed } from './Feed';
@@ -244,5 +248,25 @@ describe('Feed: 넘기기 재생 오버레이 (swipe-play R4)', () => {
     expect(document.querySelector('.c-play')).toBeNull();
     expect(fakePlayer.isPlaying()).toBe(false);
     expect(document.querySelector('.c-card')).toBe(cardBefore);
+  });
+
+  it('AC-19 오버레이의 좋아요가 카드의 좋아요 수에 반영된다', async () => {
+    const playable = lick({
+      id: 'p-2',
+      title: 'Playable lick',
+      blob: encodeSong(demoSong).replace(/^#/, ''),
+    });
+    fetchFeedPage.mockResolvedValue([playable]);
+    fetchLikeCounts.mockResolvedValue(new Map([['p-2', 4]]));
+    render(<Feed player={fakePlayer} user={{ id: 'u1' } as never} />);
+    await screen.findByText('Playable lick');
+    fireEvent.click(screen.getByLabelText('Play'));
+    const overlayLike = document.querySelector('.c-play .c-like');
+    if (!overlayLike) throw new Error('오버레이 좋아요 버튼 없음');
+    await act(async () => {
+      fireEvent.click(overlayLike);
+    });
+    expect(addLike).toHaveBeenCalledWith('p-2');
+    expect(document.querySelector('.c-card .c-meta')?.textContent).toContain('♥ 5');
   });
 });

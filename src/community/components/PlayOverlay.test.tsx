@@ -2,6 +2,7 @@
  * 전체 화면 넘기기 재생 오버레이 (swipe-play 명세 AC-7 ~ AC-18).
  * player 는 가짜 시계와 가짜 싱크로 만든 실제 player 다. IntersectionObserver 는 콜백을 꺼내 수동으로 부른다.
  */
+import { useState, type JSX } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { createFakeAudioSink, type FakeAudioSink } from '../../adapters/fakes/fake-audio-sink';
@@ -10,6 +11,7 @@ import { createPlayer, type Player } from '../../adapters/player';
 import { encodeSong } from '../../core/codec';
 import { demoSong } from '../../core/demo-song';
 import { asMidi, type Song } from '../../core/types';
+import type { User } from '@supabase/supabase-js';
 import type { LickRow } from '../api/licks';
 import { PlayOverlay } from './PlayOverlay';
 
@@ -265,5 +267,95 @@ describe('PlayOverlay: 카운트다운 (swipe-play R8)', () => {
     expect(screen.queryByText('Again in')).toBeNull();
     fireEvent.click(frame);
     expect(firstMelodyMidi()).toBe(76);
+  });
+});
+
+describe('PlayOverlay: 액션 (swipe-play R11, R12)', () => {
+  const likeOn = (i: number): Element => {
+    const btn = document.querySelectorAll('.c-play-page')[i]?.querySelector('.c-like');
+    if (!btn) throw new Error('좋아요 버튼 없음');
+    return btn;
+  };
+
+  test('AC-14 비로그인 좋아요는 Sign in to like 토스트만', () => {
+    mount();
+    fireEvent.click(likeOn(1));
+    expect(screen.getByText('Sign in to like')).toBeTruthy();
+    expect(addLike).not.toHaveBeenCalled();
+  });
+
+  test('AC-14 로그인 좋아요는 addLike 와 onCount, 실패하면 되돌리고 Like failed', async () => {
+    const user = { id: 'u1' } as unknown as User;
+    const onCount = vi.fn();
+    // FeedList 처럼 onCount 결과를 counts 로 되돌려 준다
+    const Host = (): JSX.Element => {
+      const [counts, setCounts] = useState(new Map([['b', 2]]));
+      return (
+        <PlayOverlay
+          licks={rows}
+          counts={counts}
+          startIndex={1}
+          hasMore={false}
+          loadError={false}
+          loadMore={async () => false}
+          source="Latest"
+          player={player}
+          user={user}
+          onClose={() => {}}
+          onCount={(t, c) => {
+            onCount(t, c);
+            setCounts((prev) => new Map(prev).set(t, c));
+          }}
+        />
+      );
+    };
+    render(<Host />);
+    await act(async () => {});
+    expect(fetchMyLikedSet).toHaveBeenCalledWith('u1');
+    await act(async () => {
+      fireEvent.click(likeOn(1));
+    });
+    expect(addLike).toHaveBeenCalledWith('b');
+    expect(onCount).toHaveBeenCalledWith('b', 3);
+
+    removeLike.mockRejectedValueOnce(new Error('network'));
+    await act(async () => {
+      fireEvent.click(likeOn(1));
+    });
+    expect(removeLike).toHaveBeenCalledWith('b');
+    expect(screen.getByText('Like failed')).toBeTruthy();
+    expect(onCount).toHaveBeenLastCalledWith('b', 3); // 2 로 내렸다가 되돌림
+  });
+
+  test('R11 공유는 /s/:id 를 클립보드에 넣고 Link copied', async () => {
+    const writeText = vi.fn(async (_t: string) => {});
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    mount();
+    const share = document.querySelectorAll('.c-play-page')[1]?.querySelector('.c-play-share');
+    if (!share) throw new Error('공유 버튼 없음');
+    await act(async () => {
+      fireEvent.click(share);
+    });
+    expect(writeText).toHaveBeenCalledWith(`${window.location.origin}/s/b`);
+    expect(screen.getByText('Link copied')).toBeTruthy();
+  });
+
+  test('AC-15 복제 편집은 정지하고 오버레이 항목을 /edit 로 바꾼다', () => {
+    const replace = vi.spyOn(window.history, 'replaceState').mockImplementation(() => {});
+    const { onClose } = mount();
+    const dup = document.querySelectorAll('.c-play-page')[1]?.querySelector('.c-play-dup');
+    if (!dup) throw new Error('복제 버튼 없음');
+    fireEvent.click(dup);
+    expect(player.isPlaying()).toBe(false);
+    expect(replace).toHaveBeenCalledWith(null, '', '/edit#' + rows[1]?.blob);
+    expect(pushState).toHaveBeenCalledTimes(1);
+    expect(onClose).not.toHaveBeenCalled(); // 라우트 전환이 언마운트한다
+    replace.mockRestore();
+  });
+
+  test('R12 작성자와 태그는 링크가 아니다', () => {
+    mount();
+    expect(document.querySelector('.c-play-meta a')).toBeNull();
+    expect(document.querySelector('.c-play-tags a, .c-play-tags button')).toBeNull();
   });
 });

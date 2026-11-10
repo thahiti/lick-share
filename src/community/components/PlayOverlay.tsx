@@ -14,6 +14,8 @@ import { Icon } from '../../ui/components/common/Icon';
 import { Score } from '../../ui/components/edit/Score';
 import { useElementWidth } from '../../ui/hooks/useElementWidth';
 import type { LickRow } from '../api/licks';
+import { addLike, fetchMyLikedSet, likeTargetId, removeLike } from '../api/likes';
+import { LikeButton } from './LikeButton';
 
 // 열람과 같이 종류를 모두 내보내고 실제 소리는 곡 데이터가 정한다 (R5)
 const VIEW_OPTS = { melody: true, accomp: true, metro: true };
@@ -69,6 +71,11 @@ interface PageProps {
   readonly source: string;
   readonly onTap: () => void;
   readonly onRetry: () => void;
+  readonly count: number;
+  readonly liked: boolean;
+  readonly onLike: () => void;
+  readonly onShare: () => void;
+  readonly onDuplicate: () => void;
 }
 
 const Page = ({
@@ -84,6 +91,11 @@ const Page = ({
   source,
   onTap,
   onRetry,
+  count,
+  liked,
+  onLike,
+  onShare,
+  onDuplicate,
 }: PageProps): JSX.Element => {
   const [boxRef, width] = useElementWidth(358);
   return (
@@ -149,25 +161,44 @@ const Page = ({
           </p>
         )}
       </div>
+      {/* R11, R16: 액션 행은 장 하단에 고정. 순서는 상세와 같다 */}
+      <div className="c-play-actions">
+        <button type="button" className="c-play-dup" onClick={onDuplicate}>
+          <Icon name="plus" color="var(--brand-primary-text)" size={14} />
+          Duplicate &amp; edit
+        </button>
+        <LikeButton liked={liked} count={count} onToggle={onLike} />
+        <button type="button" className="c-play-share" onClick={onShare}>
+          <Icon name="share" color="var(--ink)" size={15} />
+          Share
+        </button>
+      </div>
     </section>
   );
 };
 
 export const PlayOverlay = ({
   licks,
+  counts,
   startIndex,
   hasMore,
   loadError,
   loadMore,
   source,
   player,
+  user,
   onClose,
+  onCount,
 }: Props): JSX.Element => {
   const [index, setIndex] = useState(startIndex);
   const [playing, setPlaying] = useState(true);
   const [playheadStep, setPlayheadStep] = useState<number | null>(null);
   const [countdown, setCountdown] = useState<number | null>(null);
   const [hint, setHint] = useState(readHint);
+  const [liked, setLiked] = useState<ReadonlySet<string>>(new Set());
+  const [toast, setToast] = useState<string | null>(null);
+  const likeBusy = useRef(new Set<string>());
+  const popRef = useRef<() => void>(() => {});
   const hintRef = useRef(hint);
   const indexRef = useRef(startIndex);
   const songs = useMemo(() => licks.map((l) => decodeSong(l.blob)), [licks]);
@@ -203,9 +234,80 @@ export const PlayOverlay = ({
       player.stop();
       onCloseRef.current();
     };
+    popRef.current = onPop;
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, [player]);
+
+  /* R11: 내 좋아요 집합은 열릴 때 한 번. 비로그인은 빈 집합 */
+  useEffect(() => {
+    if (!user) return;
+    let alive = true;
+    void fetchMyLikedSet(user.id).then((set) => {
+      if (alive) setLiked(set);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [user]);
+
+  /* 토스트 자동 소멸 (상세와 같은 1.6초) */
+  useEffect(() => {
+    if (toast === null) return;
+    const t = setTimeout(() => setToast(null), 1600);
+    return () => clearTimeout(t);
+  }, [toast]);
+
+  /* R11: 낙관적 토글, 대상마다 단일 요청, 실패는 되돌림. 결과는 목록 카운트로 */
+  const onLike = (lick: LickRow): void => {
+    if (!user) {
+      setToast('Sign in to like');
+      return;
+    }
+    const target = likeTargetId(lick);
+    if (likeBusy.current.has(target)) return;
+    const was = liked.has(target);
+    const count = counts.get(target) ?? 0;
+    const withTarget = (prev: ReadonlySet<string>, add: boolean): ReadonlySet<string> => {
+      const next = new Set(prev);
+      if (add) next.add(target);
+      else next.delete(target);
+      return next;
+    };
+    likeBusy.current.add(target);
+    setLiked((prev) => withTarget(prev, !was));
+    onCount(target, count + (was ? -1 : 1));
+    void (was ? removeLike(target) : addLike(target))
+      .catch(() => {
+        setLiked((prev) => withTarget(prev, was));
+        onCount(target, count);
+        setToast('Like failed');
+      })
+      .finally(() => likeBusy.current.delete(target));
+  };
+
+  /* R11: 공유는 단축 URL. 상세와 같은 순서(공유 시트, 클립보드, 프롬프트) */
+  const onShare = (lick: LickRow): void => {
+    const url = `${window.location.origin}/s/${lick.id}`;
+    const nav = navigator as Navigator & { share?: (d: { title?: string; url: string }) => Promise<void> };
+    if (typeof nav.share === 'function') {
+      void nav.share({ title: lick.title, url }).catch(() => {});
+      return;
+    }
+    if (navigator.clipboard?.writeText) {
+      void navigator.clipboard.writeText(url).then(() => setToast('Link copied'));
+    } else {
+      window.prompt('Copy this link', url);
+    }
+  };
+
+  /* R11: 오버레이 항목을 편집 항목으로 바꿔 편집의 Back 이 목록으로 돌아오게 한다 */
+  const onDuplicate = (lick: LickRow): void => {
+    player.stop();
+    window.removeEventListener('popstate', popRef.current);
+    window.history.replaceState(null, '', '/edit#' + lick.blob);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+  };
 
   /* 시작 장으로 스크롤하고 닫기 버튼에 포커스 (R13) */
   useEffect(() => {
@@ -333,9 +435,19 @@ export const PlayOverlay = ({
               source={source}
               onTap={toggle}
               onRetry={() => void loadMore()}
+              count={counts.get(likeTargetId(lick)) ?? 0}
+              liked={user !== null && liked.has(likeTargetId(lick))}
+              onLike={() => onLike(lick)}
+              onShare={() => onShare(lick)}
+              onDuplicate={() => onDuplicate(lick)}
             />
           ))}
         </div>
+        {toast && (
+          <div className="c-toast" role="status">
+            {toast}
+          </div>
+        )}
         {hint && (
           <div className="c-play-hint">
             <Icon name="up" color="var(--paper)" size={14} />

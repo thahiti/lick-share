@@ -1578,3 +1578,43 @@ a.c-tag:hover {
 .c-play-count-dots i.on {
   background: var(--playhead);
 }
+/* 액션 행 (R11, R16): 장 하단 고정. Duplicate and edit, 좋아요 수, Share */
+.c-play-actions {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: stretch;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+.c-play-actions .c-like {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-ctl);
+  font-size: 13px;
+}
+.c-play-dup,
+.c-play-share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-ctl);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.c-play-dup {
+  border: none;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+}
+.c-play-share {
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
