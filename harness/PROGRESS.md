@@ -6,7 +6,7 @@
 ## 현재 상태
 
 - 운영: https://lickshare.pages.dev (Cloudflare Pages 프로젝트 `lickshare`). 2026-11-10 배포본은 main `2dd4391`(모바일 앱 바 여백 수정까지)의 빌드다. 번들은 앱, react, supabase 세 덩어리.
-- DB: Supabase 프로젝트 `tejndnivhbdxfstgybmm`. 2026-11-10 에 표시 이름 unique 인덱스, 길이 제약, 가입 trigger, 열 권한을 적용했다. 저장소 `supabase/schema.sql` 과 같은 상태.
+- DB: Supabase 프로젝트 `tejndnivhbdxfstgybmm`. 2026-11-10 에 표시 이름 unique 인덱스, 길이 제약, 가입 trigger, 열 권한을 적용했다. 저장소 `supabase/schema.sql` 과 같은 상태. 같은 날 시드 계정 Lick Library(`public_id` JSztbE7e)로 릭 383건을 넣었다. 스키마 변경은 없다.
 - 테스트: 68 파일 645개 통과. 게이트는 `harness/check.sh`.
 - 진행 중 기능: `seed-licks` (implement 단계, 브랜치 `feature/seed-licks`). 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
 - 기준 커밋: `1fadbf0` (seed-licks 명세 승인 직후).
