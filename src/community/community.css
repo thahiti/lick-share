@@ -1618,3 +1618,23 @@ a.c-tag:hover {
   background: var(--paper);
   color: var(--ink);
 }
+/* 데스크톱 키 안내 (R13): 스크림 아래 가운데. 폰에서는 없다 */
+.c-play-keys {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .c-play-keys {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--paper);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .c-play-hint {
+    display: none;
+  }
+}

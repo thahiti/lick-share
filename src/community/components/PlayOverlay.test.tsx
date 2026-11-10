@@ -359,3 +359,43 @@ describe('PlayOverlay: 액션 (swipe-play R11, R12)', () => {
     expect(document.querySelector('.c-play-tags a, .c-play-tags button')).toBeNull();
   });
 });
+
+describe('PlayOverlay: 키보드와 데스크톱 (swipe-play R4, R13)', () => {
+  const root = (): Element => {
+    const el = document.querySelector('.c-play');
+    if (!el) throw new Error('오버레이 없음');
+    return el;
+  };
+
+  test('AC-12 Esc 는 history.back, 방향키는 페이저를 장 높이만큼 스크롤, Space 는 토글', () => {
+    const scrollBy = vi.fn();
+    Element.prototype.scrollBy = scrollBy as unknown as Element['scrollBy'];
+    mount();
+    fireEvent.keyDown(root(), { key: 'Escape' });
+    expect(back).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(root(), { key: 'ArrowDown' });
+    expect(scrollBy).toHaveBeenCalledTimes(1);
+    expect(scrollBy.mock.calls[0]?.[0]).toEqual(expect.objectContaining({ behavior: 'smooth' }));
+    fireEvent.keyDown(root(), { key: 'ArrowUp' });
+    expect(scrollBy).toHaveBeenCalledTimes(2);
+    fireEvent.keyDown(root(), { key: ' ' });
+    expect(player.isPlaying()).toBe(false);
+    fireEvent.keyDown(root(), { key: ' ' });
+    expect(player.isPlaying()).toBe(true);
+  });
+
+  test('R13 열리면 닫기 버튼에 포커스', () => {
+    mount();
+    expect(document.activeElement).toBe(screen.getByLabelText('Close'));
+  });
+
+  test('R4 스크림(배경 자체) 클릭은 history.back, 패널 안 클릭은 아니다', () => {
+    mount();
+    fireEvent.click(root());
+    expect(back).toHaveBeenCalledTimes(1);
+    const panel = document.querySelector('.c-play-panel');
+    if (!panel) throw new Error('패널 없음');
+    fireEvent.click(panel);
+    expect(back).toHaveBeenCalledTimes(1);
+  });
+});

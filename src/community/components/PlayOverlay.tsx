@@ -5,6 +5,7 @@
  * 현재 장(60% 이상 보이는 장)만 재생하고, 끝나면 4박 무음 뒤 처음부터 반복한다.
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
+import type React from 'react';
 import type { User } from '@supabase/supabase-js';
 import type { Player } from '../../adapters/player';
 import { decodeSong } from '../../core/codec';
@@ -403,8 +404,32 @@ export const PlayOverlay = ({
     });
   }, [index, licks.length, hasMore, loadMore]);
 
+  /* R13: Esc 닫기, 방향키 넘기기, Space 토글. 입력 필드가 없어 루트에서 받는다 */
+  const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>): void => {
+    if (e.key === 'Escape') {
+      window.history.back();
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const pager = pagerRef.current;
+      if (!pager) return;
+      pager.scrollBy({ top: (e.key === 'ArrowDown' ? 1 : -1) * pager.clientHeight, behavior: 'smooth' });
+      e.preventDefault();
+    } else if (e.key === ' ') {
+      toggle();
+      e.preventDefault();
+    }
+  };
+
   return (
-    <div className="c-play" role="dialog" aria-modal="true">
+    <div
+      className="c-play"
+      role="dialog"
+      aria-modal="true"
+      onKeyDown={onKeyDown}
+      /* R4: 데스크톱 스크림(배경 자체) 클릭은 닫기. 패널 안 클릭은 올라오지 않게 대상만 본다 */
+      onClick={(e) => {
+        if (e.target === e.currentTarget) window.history.back();
+      }}
+    >
       <div className="c-play-panel">
         <div className="c-play-top">
           <button
@@ -455,6 +480,7 @@ export const PlayOverlay = ({
           </div>
         )}
       </div>
+      <div className="c-play-keys">Up and Down keys move between licks. Esc closes.</div>
     </div>
   );
 };

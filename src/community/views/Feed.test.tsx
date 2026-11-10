@@ -269,4 +269,28 @@ describe('Feed: 넘기기 재생 오버레이 (swipe-play R4)', () => {
     expect(addLike).toHaveBeenCalledWith('p-2');
     expect(document.querySelector('.c-card .c-meta')?.textContent).toContain('♥ 5');
   });
+
+  it('AC-17 출처 라벨: Latest, 태그 피드는 #태그, 작성자 피드는 표시 이름', async () => {
+    const playable = lick({
+      id: 'p-3',
+      title: 'Playable lick',
+      blob: encodeSong(demoSong).replace(/^#/, ''),
+      profiles: { public_id: 'pub-9', display_name: 'Author Z' },
+    });
+    fetchFeedPage.mockResolvedValue([playable]);
+    for (const [props, label] of [
+      [{}, 'Latest'],
+      [{ tag: 'bebop' }, '#bebop'],
+      [{ authorId: 'author-1' }, 'Author Z'],
+    ] as const) {
+      const view = render(<Feed player={fakePlayer} user={null} {...props} />);
+      await screen.findByText('Playable lick');
+      fireEvent.click(screen.getByLabelText('Play'));
+      expect(document.querySelector('.c-play-source')?.textContent).toBe(label);
+      act(() => {
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      });
+      view.unmount();
+    }
+  });
 });
