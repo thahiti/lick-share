@@ -233,7 +233,7 @@
       "deps": [
         "community"
       ],
-      "stage": "implement",
+      "stage": "verify",
       "approved": {
         "plan": {
           "date": "2026-11-10",
@@ -264,6 +264,12 @@
         {
           "date": "2026-11-10",
           "stage": "implement",
+          "model": "opus",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "verify",
           "model": "opus",
           "note": ""
         }

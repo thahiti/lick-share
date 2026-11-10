@@ -1,0 +1,32 @@
+guitarset 56
+nottingham 59
+omnibook 31
+wjazzd 240
+excluded nottingham I–IV–V–I Arching Punch Bowl Reel
+excluded nottingham I–IV–V–I Rising Climb to High C
+excluded nottingham I–IV–V–I Arched Reel Phrase to E
+unique 383
+tag bebop 75
+tag blues 32
+tag bossa-nova 3
+tag cool 42
+tag folk 56
+tag funk 14
+tag hardbop 62
+tag i-iv-i-v 16
+tag i-iv-v 24
+tag i-iv-v-i 13
+tag i-v-vi-iii 8
+tag i-vi-iv-v 3
+tag ii-v-i 162
+tag iii-iv-i 8
+tag iv-i 24
+tag iv-i-iv-v 8
+tag jazz 280
+tag minor-ii-v-i 63
+tag postbop 57
+tag rock 33
+tag songwriter 10
+tag swing 31
+tag traditional 60
+tag turnaround 54
