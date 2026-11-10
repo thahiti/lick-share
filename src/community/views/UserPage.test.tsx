@@ -47,7 +47,7 @@ describe('UserPage 유저 페이지', () => {
       avatar_url: null,
     });
 
-    render(<UserPage publicId="pub-1" player={fakePlayer} />);
+    render(<UserPage publicId="pub-1" user={null} player={fakePlayer} />);
 
     expect(await screen.findByText('Author A')).toBeTruthy();
     expect(fetchProfileByPublicId).toHaveBeenCalledWith('pub-1');
@@ -57,7 +57,7 @@ describe('UserPage 유저 페이지', () => {
   it('프로필이 없으면 안내 문구를 보여준다', async () => {
     fetchProfileByPublicId.mockResolvedValue(null);
 
-    render(<UserPage publicId="ghost" player={fakePlayer} />);
+    render(<UserPage publicId="ghost" user={null} player={fakePlayer} />);
 
     expect(await screen.findByText('User not found')).toBeTruthy();
   });

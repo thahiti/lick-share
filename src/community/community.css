@@ -25,10 +25,36 @@
 }
 
 .c-card {
+  position: relative; /* 재생 버튼의 기준 */
   border: 1px solid var(--ink);
   border-radius: var(--radius-pad);
   padding: 12px;
   background: var(--paper);
+}
+
+/* 카드 재생 버튼 (swipe-play R3): 악보 오른쪽 아래에 겹친다. 메타 행 위, 태그가 있으면 태그 줄 위 */
+.c-card-play {
+  position: absolute;
+  right: 12px;
+  bottom: 36px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-float);
+}
+.c-card-play--tags {
+  bottom: 64px;
+}
+@media (hover: hover) {
+  .c-card-play:hover {
+    background: var(--brand-primary-hover);
+  }
 }
 
 .c-card .c-title {
@@ -1353,4 +1379,278 @@ a.c-tag:hover {
     flex-wrap: nowrap;
     overflow: hidden;
   }
+}
+
+/* ── 넘기기 재생 오버레이 (swipe-play) ── 목록 위 전체 화면. 탭바(z 10) 위 */
+.c-play {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+}
+.c-play-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.c-play-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 6px;
+}
+.c-play-close {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.c-play-counter {
+  font-size: 11px;
+  color: var(--mut2);
+  font-variant-numeric: tabular-nums;
+}
+.c-play-source {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--mut2);
+}
+/* 세로 스냅 페이저: 스와이프, 휠, 방향키가 브라우저 기본 동작으로 넘긴다 (R6) */
+.c-play-pager {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+}
+.c-play-page {
+  height: 100%;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+}
+/* 장 본문: 긴 릭은 여기서 세로 스크롤 (R15) */
+.c-play-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 4px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.c-play-frame {
+  position: relative;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  padding: 10px 12px;
+}
+.c-play-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+.c-play-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--mut2);
+}
+.c-play-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+@media (min-width: 1024px) {
+  .c-play {
+    background: var(--scrim);
+    align-items: center;
+    justify-content: center;
+  }
+  .c-play-panel {
+    flex: none;
+    width: 680px;
+    max-height: 92dvh;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-popover);
+    overflow: hidden;
+  }
+  .c-play-top {
+    padding-top: 10px;
+  }
+}
+.c-play-frame {
+  cursor: pointer;
+}
+/* 멈춤 표시 (R7): 악보 가운데 반투명 원과 재생 삼각형 */
+.c-play-paused {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.c-play-paused span {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.8;
+  display: grid;
+  place-items: center;
+}
+.c-play-end {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--mut2);
+}
+/* 처음 한 번 힌트 (R10): 장 아래쪽 가운데 알약 */
+.c-play-hint {
+  position: absolute;
+  left: 50%;
+  /* 액션 행(약 64px) 위에 뜬다. 시안과 같은 84px */
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.c-play-panel {
+  position: relative;
+}
+/* 카운트다운 (R8): 악보를 흐리게 하고 가운데에 남은 박 수 */
+.c-play-frame--dim svg {
+  opacity: 0.35;
+}
+.c-play-count {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  text-align: center;
+}
+.c-play-count-num {
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.c-play-count-cap {
+  margin-top: 6px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mut2);
+}
+.c-play-count-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+.c-play-count-dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--line2);
+}
+.c-play-count-dots i.on {
+  background: var(--playhead);
+}
+/* 액션 행 (R11, R16): 장 하단 고정. Duplicate and edit, 좋아요 수, Share */
+.c-play-actions {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: stretch;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+.c-play-actions .c-like {
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-ctl);
+  font-size: 13px;
+}
+.c-play-dup,
+.c-play-share {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: var(--radius-ctl);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.c-play-dup {
+  border: none;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+}
+.c-play-share {
+  border: 1px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+}
+/* 데스크톱 키 안내 (R13): 스크림 아래 가운데. 폰에서는 없다 */
+.c-play-keys {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .c-play-keys {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: var(--paper);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .c-play-hint {
+    display: none;
+  }
+}
+/* 긴 릭 (R15): 본문이 넘치면 프레임 아래 그늘과 스크롤 캡션. 끝까지 내리면 사라진다 */
+.c-play-body--more .c-play-frame {
+  box-shadow: inset 0 -24px 24px -24px var(--scroll-shade);
+}
+.c-play-scrollcue {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding: 10px 0 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--mut2);
+  background: linear-gradient(to bottom, transparent, var(--paper) 60%);
+  pointer-events: none;
 }

@@ -11,7 +11,7 @@ interface Props {
   readonly player: Player;
 }
 
-const MyLicksView = ({ user }: { readonly user: User }): JSX.Element => {
+const MyLicksView = ({ user, player }: { readonly user: User; readonly player: Player }): JSX.Element => {
   const [name, setName] = useState<string | null>(null);
   const [renames, setRenames] = useState(0);
   const started = useRef(false);
@@ -44,15 +44,15 @@ const MyLicksView = ({ user }: { readonly user: User }): JSX.Element => {
     <div className="c-list">
       {name !== null && <NameEditor name={name} onSave={save} />}
       {/* 카드의 작성자 이름은 피드 질의에 박혀 있어 이름을 바꾸면 피드를 다시 불러온다 */}
-      <Feed key={renames} authorId={user.id} deletable />
+      <Feed key={renames} authorId={user.id} deletable player={player} user={user} />
     </div>
   );
 };
 
 /** 사용자별로 완전히 새 인스턴스 (UserPage와 동일한 key 리마운트 패턴) */
-export const MyLicks = ({ user }: Props): JSX.Element =>
+export const MyLicks = ({ user, player }: Props): JSX.Element =>
   user ? (
-    <MyLicksView key={user.id} user={user} />
+    <MyLicksView key={user.id} user={user} player={player} />
   ) : (
     <p className="c-state">Sign in required</p>
   );

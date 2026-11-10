@@ -70,9 +70,9 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
   const view = ((): JSX.Element => {
     switch (route.name) {
       case 'feed':
-        return <Feed />;
+        return <Feed player={player} user={user} />;
       case 'tag':
-        return <Feed tag={route.tag} />;
+        return <Feed tag={route.tag} player={player} user={user} />;
       case 'search':
         return <SearchResults query={route.query} />;
       case 'ranking':
@@ -84,7 +84,7 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
       case 'share':
         return <ShareRedirect id={route.id} />;
       case 'user':
-        return <UserPage publicId={route.publicId} player={player} />;
+        return <UserPage publicId={route.publicId} user={user} player={player} />;
       case 'me':
         return <MyLicks user={user} player={player} />;
       default:

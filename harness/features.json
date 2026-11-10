@@ -280,6 +280,84 @@
           "note": ""
         }
       ]
+    },
+    {
+      "id": "swipe-play",
+      "title": "카드 재생 버튼으로 여는 전체 화면 넘기기 재생",
+      "ref": "docs/features/swipe-play/01-plan.md",
+      "track": "full",
+      "deps": [
+        "community"
+      ],
+      "stage": "done",
+      "approved": {
+        "plan": {
+          "date": "2026-11-10",
+          "note": ""
+        },
+        "design": {
+          "date": "2026-11-10",
+          "note": ""
+        },
+        "spec": {
+          "date": "2026-11-10",
+          "note": "재승인 2026-11-11: R3 읽을 수 없는 카드는 버튼 없음, R6 60% 가시 120ms 유지, R15 끝까지 내리면 캡션 숨김"
+        }
+      },
+      "history": [
+        {
+          "date": "2026-11-10",
+          "stage": "intake"
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "plan",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "design",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "spec",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "implement",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "verify",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "implement",
+          "model": null,
+          "note": "NEEDS_WORK: R7 카운트다운 중 멈춤 뒤 재개가 0 부터가 아님, .c-card-play 그림자 색 하드코딩"
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "verify",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "done",
+          "model": "fable",
+          "note": ""
+        }
+      ]
     }
   ]
 }

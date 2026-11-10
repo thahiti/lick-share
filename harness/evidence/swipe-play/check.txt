@@ -1,0 +1,28 @@
+
+> scorelink@0.1.0 typecheck
+> tsc --noEmit && tsc -p tsconfig.pure.json --noEmit
+
+
+> scorelink@0.1.0 lint
+> eslint src scripts
+
+
+> scorelink@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.10 /Users/randy/claude_code/lick_share/scorelink
+
+
+ Test Files  71 passed (71)
+      Tests  692 passed (692)
+   Start at  00:17:24
+   Duration  12.26s (transform 3.59s, setup 7.11s, import 6.95s, tests 18.44s, environment 41.18s)
+
+
+> scorelink@0.1.0 check-smp
+> node scripts/check-no-smp.js
+
+check-no-smp: OK
+통과. 다만 워킹트리에 미커밋 변경이 있어 .last-check 를 갱신하지 않는다. 커밋 후 다시 실행한다
+HEAD eb3eed9f6bfa9fe7104c0082f33063882f8d751f

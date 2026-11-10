@@ -168,6 +168,78 @@ describe('player: 반복(loop)', () => {
   });
 });
 
+describe('player: 간격 반복 (swipe-play R1, R2)', () => {
+  const opts = { melody: true, accomp: false, metro: false };
+  const BEAT = 4 * SPS;
+  const END = EPOCH + 16 * SPS + 0.01;
+
+  test('AC-1 toStep 뒤 4박은 무음으로 유지되고 간격이 끝나면 fromStep 부터 다시 스케줄', () => {
+    const ended = vi.fn();
+    player.onEnded(ended);
+    player.play(demoSong, opts, asStep(0), asStep(16), { gapBeats: 4 });
+    time.t = END;
+    clock.frame();
+    expect(player.isPlaying()).toBe(true);
+    expect(ended).not.toHaveBeenCalled();
+    expect(sink.events).toHaveLength(0); // 간격 진입: 남은 소리 정리, 새 스케줄 없음
+    time.t = END + 2 * BEAT;
+    clock.frame();
+    expect(sink.events).toHaveLength(0);
+    time.t = END + 4 * BEAT + 0.001;
+    clock.frame();
+    expect(sink.events[0]?.kind).toBe('melody');
+    expect(sink.events[0]?.t).toBe(0);
+    expect(ended).not.toHaveBeenCalled();
+  });
+
+  test('AC-2 onGap 은 4, 3, 2, 1 뒤 null 을 한 번씩 알린다', () => {
+    const gaps: (number | null)[] = [];
+    player.onGap((n) => gaps.push(n));
+    player.play(demoSong, opts, asStep(0), asStep(16), { gapBeats: 4 });
+    for (const dt of [0, 0.1, BEAT, BEAT + 0.1, 2 * BEAT, 3 * BEAT, 3.5 * BEAT, 4 * BEAT + 0.001]) {
+      time.t = END + dt;
+      clock.frame();
+    }
+    expect(gaps).toEqual([4, 3, 2, 1, null]);
+  });
+
+  test('AC-3 간격 중 stop 이나 새 play 는 null 로 끝내고 재스케줄하지 않는다', () => {
+    const gaps: (number | null)[] = [];
+    const ended = vi.fn();
+    player.onGap((n) => gaps.push(n));
+    player.onEnded(ended);
+    player.play(demoSong, opts, asStep(0), asStep(16), { gapBeats: 4 });
+    time.t = END;
+    clock.frame();
+    player.stop();
+    expect(gaps).toEqual([4, null]);
+    expect(ended).toHaveBeenCalledTimes(1);
+    time.t = END + 5 * BEAT;
+    clock.frame();
+    expect(player.isPlaying()).toBe(false);
+    expect(sink.events).toHaveLength(0);
+
+    player.play(demoSong, opts, asStep(0), asStep(16), { gapBeats: 4 });
+    time.t += EPOCH + 16 * SPS + 0.01; // 새 세션의 epoch 뒤 toStep
+    clock.frame();
+    player.play(demoSong, opts, asStep(0), asStep(16), { gapBeats: 4 });
+    expect(gaps).toEqual([4, null, 4, null]);
+    expect(sink.events[0]?.t).toBe(0);
+  });
+
+  test('AC-4 간격 중에는 onTick 이 불리지 않는다', () => {
+    const ticks: number[] = [];
+    player.onTick((el) => ticks.push(el));
+    player.play(demoSong, opts, asStep(0), asStep(16), { gapBeats: 4 });
+    time.t = END;
+    clock.frame();
+    const n = ticks.length;
+    time.t = END + BEAT;
+    clock.frame();
+    expect(ticks.length).toBe(n);
+  });
+});
+
 describe('player: 스테일 epoch 무음 버그 회귀 (프로토타입은 항상 즉시 재생)', () => {
   test('play()는 이전 세션이 없어도 sink를 리셋 (프리뷰 잔여·스테일 epoch 제거)', () => {
     player.preview(64);

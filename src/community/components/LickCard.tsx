@@ -4,6 +4,7 @@
  */
 import type { JSX } from 'react';
 import { decodeSong } from '../../core/codec';
+import { Icon } from '../../ui/components/common/Icon';
 import { Score } from '../../ui/components/edit/Score';
 import { useElementWidth } from '../../ui/hooks/useElementWidth';
 import type { LickRow } from '../api/licks';
@@ -15,9 +16,11 @@ interface Props {
   readonly lick: LickRow;
   readonly likeCount: number;
   readonly onDelete?: (() => void) | undefined;
+  /** 있으면 재생 버튼을 그린다 (swipe-play R3). 검색 결과는 넘기지 않는다 */
+  readonly onPlay?: (() => void) | undefined;
 }
 
-export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
+export const LickCard = ({ lick, likeCount, onDelete, onPlay }: Props): JSX.Element => {
   const song = decodeSong(lick.blob);
   const profiles = lick.profiles;
   /* 미리보기 악보도 실측 폭 1:1 — 모든 화면에서 음표 크기 동일 (편집 화면 기준) */
@@ -37,6 +40,17 @@ export const LickCard = ({ lick, likeCount, onDelete }: Props): JSX.Element => {
           <p className="c-state">Couldn't read this score</p>
         )}
       </button>
+      {onPlay && song && (
+        /* .c-cardhit 가 button 이라 그 안에 둘 수 없어 형제로 두고 악보 위에 겹친다 */
+        <button
+          type="button"
+          className={lick.tags.length ? 'c-card-play c-card-play--tags' : 'c-card-play'}
+          aria-label="Play"
+          onClick={onPlay}
+        >
+          <Icon name="play" color="var(--brand-primary-text)" size={22} />
+        </button>
+      )}
       <TagChips tags={lick.tags} />
       <div className="c-meta">
         {profiles && (

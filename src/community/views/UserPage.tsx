@@ -3,12 +3,14 @@
  * 피드(Feed 재사용, authorId=profile.id)를 보여준다.
  */
 import { useEffect, useRef, useState, type JSX } from 'react';
+import type { User } from '@supabase/supabase-js';
 import type { Player } from '../../adapters/player';
 import { fetchProfileByPublicId, type Profile } from '../api/profiles';
 import { Feed } from './Feed';
 
 interface Props {
   readonly publicId: string;
+  readonly user: User | null;
   readonly player: Player;
 }
 
@@ -17,7 +19,7 @@ type Phase =
   | { readonly kind: 'notfound' }
   | { readonly kind: 'ready'; readonly profile: Profile };
 
-const UserPageView = ({ publicId }: Props): JSX.Element => {
+const UserPageView = ({ publicId, user, player }: Props): JSX.Element => {
   const [phase, setPhase] = useState<Phase>({ kind: 'loading' });
   const started = useRef(false);
   const alive = useRef(true);
@@ -47,7 +49,7 @@ const UserPageView = ({ publicId }: Props): JSX.Element => {
         {profile.avatar_url && <img src={profile.avatar_url} alt="" width={32} height={32} />}
         <div className="c-title">{profile.display_name}</div>
       </div>
-      <Feed authorId={profile.id} />
+      <Feed authorId={profile.id} player={player} user={user} />
     </div>
   );
 };

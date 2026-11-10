@@ -1,24 +1,31 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
+import type { User } from '@supabase/supabase-js';
+import type { Player } from '../../adapters/player';
 import { PAGE_SIZE, countLicks, deleteLick, fetchFeedPage, type LickRow } from '../api/licks';
 import { canonicalIds, fetchLikeCounts, likeTargetId } from '../api/likes';
 import { DeleteLickDialog } from '../components/DeleteLickDialog';
 import { LickCard } from '../components/LickCard';
+import { PlayOverlay } from '../components/PlayOverlay';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 interface Props {
   readonly authorId?: string;
   readonly deletable?: boolean;
   readonly tag?: string;
+  readonly player: Player;
+  readonly user: User | null;
 }
 
 interface ListProps {
   readonly authorId: string | undefined;
   readonly deletable: boolean | undefined;
   readonly tag: string | undefined;
+  readonly player: Player;
+  readonly user: User | null;
 }
 
 /** 한 (authorId, tag)에 대한 목록 인스턴스 — 필터 전환은 바깥 Feed의 key 리마운트가 처리한다. */
-const FeedList = ({ authorId, deletable, tag }: ListProps): JSX.Element => {
+const FeedList = ({ authorId, deletable, tag, player, user }: ListProps): JSX.Element => {
   const [licks, setLicks] = useState<LickRow[]>([]);
   const [counts, setCounts] = useState<Map<string, number>>(new Map());
   const [done, setDone] = useState(false);
@@ -30,6 +37,8 @@ const FeedList = ({ authorId, deletable, tag }: ListProps): JSX.Element => {
   const [pendingDelete, setPendingDelete] = useState<LickRow | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
   const [deleteErr, setDeleteErr] = useState<string | null>(null);
+  // 넘기기 재생 오버레이가 열린 카드 인덱스 (swipe-play R4). 열려 있으면 다시 열지 않는다
+  const [playAt, setPlayAt] = useState<number | null>(null);
 
   // 태그 피드 헤더의 총 개수 — 실패하면 조용히 생략 (헤더의 #tag는 유지)
   const [total, setTotal] = useState<number | null>(null);
@@ -97,14 +106,30 @@ const FeedList = ({ authorId, deletable, tag }: ListProps): JSX.Element => {
           {total !== null && <span className="c-tagcount">{total} licks</span>}
         </header>
       )}
-      {licks.map((lick) => (
+      {licks.map((lick, i) => (
         <LickCard
           key={lick.id}
           lick={lick}
           likeCount={counts.get(likeTargetId(lick)) ?? 0}
           onDelete={deletable ? () => setPendingDelete(lick) : undefined}
+          onPlay={() => setPlayAt((cur) => cur ?? i)}
         />
       ))}
+      {playAt !== null && (
+        <PlayOverlay
+          licks={licks}
+          counts={counts}
+          startIndex={Math.min(playAt, licks.length - 1)}
+          hasMore={!done}
+          loadError={error}
+          loadMore={loadMore}
+          source={tag ? '#' + tag : authorId ? (licks[0]?.profiles?.display_name ?? 'Licks') : 'Latest'}
+          player={player}
+          user={user}
+          onClose={() => setPlayAt(null)}
+          onCount={(target, count) => setCounts((prev) => new Map(prev).set(target, count))}
+        />
+      )}
       <DeleteLickDialog
         open={pendingDelete !== null}
         busy={deleteBusy}
@@ -133,11 +158,13 @@ const FeedList = ({ authorId, deletable, tag }: ListProps): JSX.Element => {
  * tag는 태그 피드 재사용). 필터가 바뀌면 key 리마운트로 커서·목록·카운트를 전부 초기화한다.
  * 정렬 pill(Latest/Popular)은 두지 않는다 — Popular는 내비의 Ranking과 중복이었다.
  */
-export const Feed = ({ authorId, deletable, tag }: Props): JSX.Element => (
+export const Feed = ({ authorId, deletable, tag, player, user }: Props): JSX.Element => (
   <FeedList
     key={(authorId ?? '') + '|' + (tag ?? '')}
     authorId={authorId}
     deletable={deletable}
     tag={tag}
+    player={player}
+    user={user}
   />
 );
