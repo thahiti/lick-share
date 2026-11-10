@@ -9,7 +9,7 @@
 
 **Architecture:** 자체 백엔드 0대. Supabase(Postgres + PostgREST + GoTrue + RLS)가 서버 역할. 프론트는 기존 React 19 + Zustand + Vite 8 앱에 `src/community/` 모듈을 추가하고, 경로 라우터로 편집기(기존 App)와 커뮤니티 화면을 가른다. 게시 blob은 기존 `encodeSong`/`decodeSong`(`v1.` 해시)를 그대로 저장·재생한다.
 
-**설계 스펙:** `docs/superpowers/specs/2026-07-12-community-design.md` (v1.1 확정본, 부록 A SQL 포함).
+**설계 스펙:** `docs/features/community/design.md` (v1.1 확정본, 부록 A SQL 포함).
 
 ## Global Constraints (기존 CLAUDE.md + 커뮤니티 추가)
 
@@ -271,7 +271,7 @@ git commit -m "feat(community): add transposition-invariant melody hash"
 
 **사용자 액션**: SQL 실행과 OAuth 설정은 사용자가 Supabase 대시보드에서 수행한다(파일 커밋은 에이전트).
 
-- [ ] **Step 1: `supabase/schema.sql` 작성** — 설계 스펙 부록 A 전문을 그대로 복사한다(`docs/superpowers/specs/2026-07-12-community-design.md`의 "부록 A. 통합 SQL 스크립트" 코드 블록 전체). ranking view의 `with (security_invoker = on)` 포함.
+- [ ] **Step 1: `supabase/schema.sql` 작성** — 설계 스펙 부록 A 전문을 그대로 복사한다(`docs/features/community/design.md`의 "부록 A. 통합 SQL 스크립트" 코드 블록 전체). ranking view의 `with (security_invoker = on)` 포함.
 
 - [ ] **Step 2: Commit**
 
@@ -1196,18 +1196,18 @@ git commit -m "feat(community): add ranking, user page and my licks"
 
 **Files:**
 - Modify: `README.md`, `CLAUDE.md`
-- Create: `docs/community-e2e-checklist.md`
+- Create: `docs/checklists/community-e2e-checklist.md`
 
 - [ ] **Step 1: `README.md`에 커뮤니티 섹션 추가** — 배포 절차(설계 §14): supabase 프로젝트 생성 → `supabase/schema.sql` 실행 → Google OAuth(또는 매직링크) + Site URL 등록 → 정적 배포(Vercel/CF Pages) + 환경 변수 2개 + SPA rewrite(`/(.*)→/index.html`). 게시 방법(편집기 공유 링크를 `/publish`에 붙여넣기).
 
 - [ ] **Step 2: `CLAUDE.md`에 커뮤니티 규칙 추가** — `src/community/`는 ui 동급(supabase·DOM·crypto 허용, core 순수 규칙 밖). 좋아요 대상은 항상 `canonical_id ?? id`. 라우팅은 경로 기반(hash는 곡 blob 점유). service_role key 금지.
 
-- [ ] **Step 3: `docs/community-e2e-checklist.md` 작성** — 로그인/게시/중복 판정/좋아요/목록/삭제·승계/재생 수동 체크리스트(설계 §5·§7·§8·§9 항목별).
+- [ ] **Step 3: `docs/checklists/community-e2e-checklist.md` 작성** — 로그인/게시/중복 판정/좋아요/목록/삭제·승계/재생 수동 체크리스트(설계 §5·§7·§8·§9 항목별).
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add README.md CLAUDE.md docs/community-e2e-checklist.md
+git add README.md CLAUDE.md docs/checklists/community-e2e-checklist.md
 git commit -m "docs: add community deploy guide, rules and e2e checklist"
 ```
 

@@ -9,9 +9,9 @@
 
 **Architecture:** 순수 CSS 변경. `.app`(100dvh flex 컬럼) 아래 `.pane-edit`→`.pad`→`.pad-scroll`로 flex-grow 체인을 만들어 고정 156px 패드를 유동화하고, 태블릿 구간은 미디어 쿼리 하나로 폭·스테퍼만 오버라이드한다. JS·컴포넌트 변경 없음.
 
-**Tech Stack:** CSS (src/styles/global.css), HTML meta (index.html), 문서 (docs/DESIGN.md)
+**Tech Stack:** CSS (src/styles/global.css), HTML meta (index.html), 문서 (docs/product/DESIGN.md)
 
-**Spec:** docs/superpowers/specs/2026-07-14-tablet-adaptive-layout-design.md
+**Spec:** docs/features/tablet-adaptive-layout/design.md
 
 ## Global Constraints
 
@@ -178,7 +178,7 @@ git commit -m "feat(layout): add tablet tier width and one-row steppers"
 ### Task 3: DESIGN.md §7 레이아웃 갱신
 
 **Files:**
-- Modify: `docs/DESIGN.md` §7 (≈103–107행)
+- Modify: `docs/product/DESIGN.md` §7 (≈103–107행)
 
 **Interfaces:**
 - Consumes: Task 1–2의 확정 동작
@@ -199,6 +199,6 @@ Run: `npm run typecheck && npm run lint && npm test && npm run check-smp`
 Expected: 전부 통과
 
 ```bash
-git add docs/DESIGN.md
+git add docs/product/DESIGN.md
 git commit -m "docs(design): document fluid pad and tablet tier in layout"
 ```

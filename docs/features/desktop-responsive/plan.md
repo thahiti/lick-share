@@ -651,8 +651,8 @@ git commit -m "feat(ui): 데스크톱 2패널 레이아웃·여백·호버 피�
 ### Task 5: 문서 갱신 (DESIGN §7, e2e 체크리스트)
 
 **Files:**
-- Modify: `docs/DESIGN.md` (§7)
-- Modify: `docs/e2e-checklist.md`
+- Modify: `docs/product/DESIGN.md` (§7)
+- Modify: `docs/checklists/e2e-checklist.md`
 
 **Interfaces:** 없음(문서만).
 
@@ -668,7 +668,7 @@ git commit -m "feat(ui): 데스크톱 2패널 레이아웃·여백·호버 피�
 
 - [ ] **Step 2: e2e 체크리스트에 데스크톱 항목 추가**
 
-`docs/e2e-checklist.md` 끝에 섹션 추가:
+`docs/checklists/e2e-checklist.md` 끝에 섹션 추가:
 
 ```markdown
 ## 데스크톱 반응형 (P11)
@@ -688,7 +688,7 @@ Run: `npm run check-smp`
 Expected: PASS.
 
 ```bash
-git add docs/DESIGN.md docs/e2e-checklist.md
+git add docs/product/DESIGN.md docs/checklists/e2e-checklist.md
 git commit -m "docs: 데스크톱 반응형 규격·e2e 체크리스트 반영"
 ```
 

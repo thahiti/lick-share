@@ -5,7 +5,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** 편집 화면에서 ● Rec → 예비박 1마디 → 피아노 건반 터치로 노트를 실시간 입력하는 레코딩 기능 (spec: docs/superpowers/specs/2026-07-16-piano-recording-design.md).
+**Goal:** 편집 화면에서 ● Rec → 예비박 1마디 → 피아노 건반 터치로 노트를 실시간 입력하는 레코딩 기능 (spec: docs/features/piano-recording/design.md).
 
 **Architecture:** 순수 상태 머신(`core/recording.ts`)이 keyDown/keyUp/tick 이벤트를 받아 양자화된 노트 커밋을 반환한다. `engine/schedule.ts`가 예비박+본편 사운드 이벤트를 만들고, `adapters/player.ts`의 record 세션이 클록을 돌린다. `ui/hooks/useRecording.ts`가 셋을 배선하고, 모바일은 `RecordingPiano` 신규 컴포넌트, 데스크톱은 기존 `PianoKeys`를 armed 모드로 확장한다.
 

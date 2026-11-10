@@ -7,7 +7,7 @@
 
 **Goal:** 배포(Publish) 시 자유 입력 해시태그를 정규화해 `licks.tags(text[])`에 저장하고, 카드(`LickCard`)·상세(`LickDetail`)·랭킹 카드에 칩으로 표시한다. 검색·필터·자동완성·태그 수정은 범위 제외.
 
-**설계 스펙:** `docs/superpowers/specs/2026-07-13-publish-tags-design.md` (승인됨).
+**설계 스펙:** `docs/features/publish-tags/design.md` (승인됨).
 
 ## Global Constraints
 
@@ -37,7 +37,7 @@
 
 - [ ] `licks` 테이블에 `tags text[] not null default '{}'` + CHECK(최대 3개) 추가
 - [ ] `ranking` 뷰 select 목록·group by에 `l.tags` 추가
-- [ ] `docs/superpowers/specs/2026-07-12-community-design.md` 부록 A DDL 사본 동일 갱신
+- [ ] `docs/features/community/design.md` 부록 A DDL 사본 동일 갱신
 - [ ] 게이트 → 커밋 `feat(community): add tags column to licks schema`
 
 ### T3. API — `src/community/api/licks.ts`

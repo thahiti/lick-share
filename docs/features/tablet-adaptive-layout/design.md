@@ -2,8 +2,8 @@
 
 - 작성일: 2026-07-14 (v2 — 시안 검토로 방향 확정: "패드 확장" 안 채택, 전 모바일 해상도 적용)
 - 상태: 승인됨 (시안 통과)
-- 관련: `2026-07-13-editor-workspace-design.md` (데스크톱 ≥1024px Workspace — 불변),
-  `2026-07-12-desktop-responsive-design.md` (브레이크포인트 1024px 통일),
+- 관련: `../editor-workspace/design.md` (데스크톱 ≥1024px Workspace — 불변),
+  `../desktop-responsive/design.md` (브레이크포인트 1024px 통일),
   DESIGN.md §7 (앱 셸 레이아웃 — "모바일(<1024px)은 원칙 그대로" 문장 갱신 대상)
 
 ## 1. 배경과 목표
