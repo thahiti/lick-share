@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "active": null,
+  "active": "seed-licks",
   "stages": [
     "intake",
     "plan",
@@ -233,12 +233,23 @@
       "deps": [
         "community"
       ],
-      "stage": "intake",
-      "approved": {},
+      "stage": "plan",
+      "approved": {
+        "plan": {
+          "date": "2026-11-10",
+          "note": ""
+        }
+      },
       "history": [
         {
           "date": "2026-11-10",
           "stage": "intake"
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "plan",
+          "model": "fable",
+          "note": ""
         }
       ]
     }
