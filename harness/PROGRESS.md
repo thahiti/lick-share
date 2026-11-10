@@ -7,8 +7,8 @@
 
 - 운영: https://lickshare.pages.dev (Cloudflare Pages 프로젝트 `lickshare`). 2026-11-10 배포본은 main `9d18db4`(adaptive bars per line 머지까지)의 빌드다. 번들은 앱, react, supabase 세 덩어리.
 - DB: Supabase 프로젝트 `tejndnivhbdxfstgybmm`. 2026-11-10 에 표시 이름 unique 인덱스, 길이 제약, 가입 trigger, 열 권한을 적용했다. 저장소 `supabase/schema.sql` 과 같은 상태. 같은 날 시드 계정 Lick Library(`public_id` JSztbE7e)로 릭 383건을 넣었다. 스키마 변경은 없다.
-- 테스트: 69 파일 663개 통과. 게이트는 `harness/check.sh`.
-- 진행 중 기능: `swipe-play` (implement, `feature/swipe-play`). `seed-licks` 는 하네스 파이프라인을 처음으로 끝까지(intake, plan, spec, implement, verify, done) 거친 기능이다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
+- 테스트: 71 파일 691개 통과. 게이트는 `harness/check.sh`.
+- 진행 중 기능: `swipe-play` (verify, `feature/swipe-play`). 미리보기 https://preview-swipe-play.lickshare.pages.dev (브랜치 배포, 운영본 아님). `seed-licks` 는 하네스 파이프라인을 처음으로 끝까지(intake, plan, spec, implement, verify, done) 거친 기능이다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
 - 기준 커밋: `d9c8f92` (swipe-play 명세 승인 커밋).
 
 ## 마지막 작업
@@ -16,16 +16,20 @@
 - 2026-11-09: Cloudflare API 토큰 배포 전환, 데스크톱 피드 한 열, 표시 이름 편집과 유일성(`feature/nickname-edit`).
 - 2026-11-10: 표시 이름 DB 마이그레이션 실행과 배포. 아바타 메뉴가 항목 선택 뒤 안 닫히던 버그 수정과 배포. 부채 정리(`.wrangler/` 무시, README 갱신, React 와 supabase-js 덩어리 분리). 문서를 성격별, 기능별 폴더로 재편하고 릭 모음을 `content/licks/` 로 분리해 커밋. 청음 훈련 기획 초안 커밋. whooing 방식 하네스 도입. 저장소 밖 잔재(handoff 폴더, 옛 프로토타입, lick_gen, lick_like, .superpowers, AGENTS.md, .agents)를 휴지통으로 이동. 하네스 머지본 배포.
 - 2026-11-10: 모바일 앱 바 좌우 여백 12px 추가와 돋보기 버튼 지름을 아바타와 같은 34px 로 통일(`fix/mobile-appbar-spacing`). 로고와 아바타가 카드 모서리에 정렬된다. main `2dd4391` 로 머지, 푸시, 배포 완료.
+- 2026-11-10: `swipe-play` 구현 T1~T8 (`feature/swipe-play`). 플레이어 간격 반복과 onGap, 카드 재생 버튼, 목록 위 오버레이(history 항목 하나, 현재 장 판정 120ms 유지, 멈춤과 재개, 미리 불러오기, 힌트, 카운트다운, 좋아요와 공유와 복제 편집, 키보드와 데스크톱, 긴 릭 스크롤). S1~S5, S8~S16 은 Playwright 로 통과하고 스크린샷을 남겼다. S6, S7 은 처음 한 번 로그로 확인했으나 그 뒤 기본 출력 장치(Duet USB)가 멈춘 듯 Web Audio 시계가 서서 스크린샷을 못 남겼다.
 - 2026-11-10: 악보 가독성 실측과 줄당 마디 수 적응(`fix/adaptive-bars-per-line`). Playwright 로 6개 뷰포트를 찍어 보니 줄당 4마디 고정 탓에 폰(악보 폭 340)은 인접 음표의 77% 가 겹쳤다. 폭과 밀도로 줄당 마디 수를 4, 2, 1 로 정하고(SPEC 3.2 절) 줄 경계 타이 조각을 넣었다. 시드 릭은 WJazzD 원본과 대조해 마디 압축이 없음을 확인했다. 템포는 원본과 같되 240 상한에 잘린 릭이 wjazzd 89건, omnibook 8건이고, 같은 스텝에 두 음이 시작하는 릭이 wjazzd 58건 있다.
 - 2026-11-10: `seed-licks`. 릭 모음 네 개의 유일 383건을 시드 계정 Lick Library(randylee82@gmail.com, `public_id` JSztbE7e)로 운영 DB 에 넣었다. `scripts/seed-licks.ts`(md 파싱, 해시 검증, melody_hash, 태그, 날짜 분산, SQL 생성)와 단위 테스트 10건, `scripts/sbquery.mjs`(Management API 도구), 기획과 명세, 증거와 PASS 판정. Hooktheory 는 보류. main `da09839` 로 머지, 푸시, 배포.
 
 ## 다음 행동
 
-1. 청음 훈련: `docs/product/ear-training-plan.md` 10절의 Q1~Q6 답을 받고 `/feature-intake` 로 기능 7개(`playlist-schema`, `playlist-build`, `playlist-play`, `quiz-grading`, `quiz-session`, `quiz-result`, `mobile-audio`)를 등록한다.
-2. 첫 기능을 `start` 하고 `/feature-plan`.
+1. `swipe-play` 검증 마무리. 오디오 출력 장치를 살리고(Duet USB 전원 또는 Mac mini Speakers 로 전환) 스크래치패드의 `sp-t5.mjs` 로 S6, S7 스크린샷을 받은 뒤 평가자를 돌린다. 휴대폰에서 미리보기를 확인하고 done, 머지, 배포.
+2. 명세 R6 재승인. 구현은 60% 판정이 120ms 유지될 때 현재 장을 바꾼다(E3, S8 을 위해). 승인되면 `approve swipe-play spec --note` 로 기록하고 03-spec.md R6 에 적는다.
+3. 청음 훈련: `docs/product/ear-training-plan.md` 10절의 Q1~Q6 답을 받고 `/feature-intake` 로 기능 7개(`playlist-schema`, `playlist-build`, `playlist-play`, `quiz-grading`, `quiz-session`, `quiz-result`, `mobile-audio`)를 등록한다.
+4. 첫 기능을 `start` 하고 `/feature-plan`.
 
 ## 막힌 것
 
+- 2026-11-10 저녁부터 이 기기의 Web Audio `currentTime` 이 거의 진행하지 않는다(헤드리스와 헤드 크롬 모두, 1.5초에 0.01초). 기본 출력 장치가 Duet USB 인데 꺼져 있거나 잠든 것으로 보인다. 재생 시나리오(S6, S7)는 이 상태에서 확인할 수 없다.
 - Claude Code 의 auto 모드 권한 분류기가 파일 삭제(휴지통 이동 포함)를 막는다. 삭제는 사용자가 직접 실행한다. 운영 DB 접근은 `node scripts/sbquery.mjs` 허용 규칙(`.claude/settings.local.json`)으로, 배포는 `.env.local` 의 CLOUDFLARE 변수를 export 한 뒤 `npm run build && npx wrangler pages deploy` 로 통과한다.
 - 세션을 리포 상위 폴더(`/Users/randy/claude_code`)에서 시작하면 `.claude/agents/` 의 planner, implementer, evaluator 가 Agent 도구에 안 뜬다. 2026-11-10 에는 `general-purpose` 에 agents/*.md 지시를 붙여 대신 썼다. 리포 루트에서 세션을 시작하면 되는지 확인할 것.
 
