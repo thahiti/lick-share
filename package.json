@@ -13,7 +13,8 @@
     "lint": "eslint src scripts",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"scripts/**/*.{js,ts}\"",
     "check-smp": "node scripts/check-no-smp.js",
-    "dump": "vite-node scripts/dump.ts"
+    "dump": "vite-node scripts/dump.ts",
+    "seed-licks": "vite-node scripts/seed-licks.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.2",

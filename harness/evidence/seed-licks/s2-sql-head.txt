@@ -1,0 +1,10 @@
+update profiles set display_name = 'Lick Library' where id = '4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf';
+
+insert into licks (author_id, title, blob, melody_hash, tags) values
+  ('4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf', 'Repeated-Root Call, Blues Descent', 'v2ggQCEVJvY2sgMTItQmFyIEJsdWVzAB8CAkMCAkMCAkMCAkMCAkMEAUgEAUUCA0sEAUgBAUYBAUMCAUgCBEgGAUgBAkoDAUgGAUYBAUQBAUgBAUUBAkMBAUIBAUEBAT8BAUEBAUIBAUABAT8BAjwCAj8CATwDAAFHBAFGBAFD', '7cfbadce4f463668932865e482d4b0eca6e3636cfa37923821da4b430bf44c6e', array['turnaround','blues','rock']),
+  ('4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf', 'b5 Bend to Major-Third Cli
+...
+values rows: 383
+timestamptz rows: 383
+on conflict: 1
+last timestamp: timestamptz '2026-05-31T12:30:00.000Z'

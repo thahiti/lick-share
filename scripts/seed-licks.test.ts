@@ -1,0 +1,216 @@
+/** seed-licks 명세(docs/features/seed-licks/03-spec.md)의 단위 기준 */
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+import {
+  buildSeed,
+  decodeLick,
+  dedupeByMelody,
+  lickTags,
+  parseLicks,
+  publishedAt,
+  seedSql,
+  type ParsedLick,
+  type SeedLick,
+} from './seed-licks-lib';
+
+const LINK = 'https://lickshare.pages.dev/?mode=view#';
+const DOT = ' \u00b7 ';
+
+const md = (...lines: string[]): string => lines.join('\n');
+
+const lick = (over: Partial<ParsedLick>): ParsedLick => ({
+  file: 'omnibook',
+  section: 'ii–V–I',
+  number: 1,
+  name: 'Line',
+  suffix: 'Tune',
+  meta: 'meta',
+  hash: 'v2abc',
+  ...over,
+});
+
+const seed = (over: Partial<SeedLick>): SeedLick => ({
+  ...lick(over),
+  melodyHash: 'aaa',
+  tags: [],
+  ...over,
+});
+
+describe('parseLicks', () => {
+  it('AC-1 섹션 키, 릭 이름, 접미, 메타 줄, 해시를 항목마다 뽑는다', () => {
+    const text = md(
+      '# Library',
+      '',
+      '## Major ii–V–I (Dm7 → G7 → C)',
+      '',
+      '(2개)',
+      '',
+      '### 1. Scale Climb to Soaring Sixth — Pepper Adams',
+      '',
+      `*Just One of Those Things*${DOT}bs${DOT}HARDBOP`,
+      '',
+      'description',
+      '',
+      `**[open](${LINK}v2ab_-9)**`,
+      '',
+      '### 2. Chromatic Climb, Enclosure Landing — Sonny Rollins',
+      `*I'll Remember April*${DOT}ts${DOT}HARDBOP`,
+      `**[open](${LINK}v2XYZ)** and [again](${LINK}v2other)`,
+    );
+
+    expect(parseLicks('wjazzd', text)).toEqual([
+      {
+        file: 'wjazzd',
+        section: 'ii–V–I',
+        number: 1,
+        name: 'Scale Climb to Soaring Sixth',
+        suffix: 'Pepper Adams',
+        meta: `*Just One of Those Things*${DOT}bs${DOT}HARDBOP`,
+        hash: 'v2ab_-9',
+      },
+      {
+        file: 'wjazzd',
+        section: 'ii–V–I',
+        number: 2,
+        name: 'Chromatic Climb, Enclosure Landing',
+        suffix: 'Sonny Rollins',
+        meta: `*I'll Remember April*${DOT}ts${DOT}HARDBOP`,
+        hash: 'v2XYZ',
+      },
+    ]);
+  });
+
+  it('AC-2 헤딩에 구분자가 두 번이면 마지막 구분자 앞까지가 릭 이름이다', () => {
+    const text = md(
+      '## Blues IV–I (F → C)',
+      '### 1. Call — Response Climb — Singer-Songwriter',
+      'meta',
+      `${LINK}v2abc`,
+    );
+
+    const [lick] = parseLicks('guitarset', text);
+    expect(lick?.section).toBe('IV–I');
+    expect(lick?.name).toBe('Call — Response Climb');
+    expect(lick?.suffix).toBe('Singer-Songwriter');
+  });
+
+  it('AC-3 다음 헤딩 전까지 링크가 없으면 파일명과 항목 번호를 담은 에러를 던진다', () => {
+    const text = md(
+      '## I–IV–V (C → F → G)',
+      '### 1. First Phrase — Tune A',
+      'meta',
+      `${LINK}v2abc`,
+      '### 2. Missing Link — Tune B',
+      'meta',
+      'description only',
+      '## I–IV–V–I (C → F → G → C)',
+      '### 1. Third Phrase — Tune C',
+      'meta',
+      `${LINK}v2def`,
+    );
+
+    expect(() => parseLicks('nottingham', text)).toThrow(/nottingham.* 2번 항목/);
+  });
+});
+
+describe('decodeLick', () => {
+  it('AC-4 디코딩되지 않는 해시는 파일명과 항목 번호를 담은 에러를 던진다', () => {
+    expect(() => decodeLick(lick({ number: 7, hash: 'v2zzzz' }))).toThrow(/omnibook.* 7번 항목/);
+  });
+});
+
+describe('lickTags', () => {
+  it('AC-5 섹션 키와 접미, 메타 스타일에서 진행, 장르, 스타일 태그를 만든다', () => {
+    const meta = `*Tune*${DOT}ts${DOT}HARDBOP${DOT}4 bars`;
+    expect(lickTags(lick({ file: 'wjazzd', section: 'ii–V–I', meta }))).toEqual([
+      'ii-v-i',
+      'jazz',
+      'hardbop',
+    ]);
+    expect(
+      lickTags(lick({ file: 'guitarset', section: 'IV–I', suffix: 'Singer-Songwriter' })),
+    ).toEqual(['iv-i', 'blues', 'songwriter']);
+    expect(lickTags(lick({ file: 'nottingham', section: 'I–IV–V', suffix: 'East Dene' }))).toEqual([
+      'i-iv-v',
+      'folk',
+      'traditional',
+    ]);
+  });
+
+  it('AC-6 매핑표에 없는 섹션 키는 파일명과 섹션 키를 담은 에러를 던진다', () => {
+    expect(() => lickTags(lick({ file: 'nottingham', section: 'ii–V–I' }))).toThrow(
+      /nottingham.*ii–V–I/,
+    );
+  });
+});
+
+describe('dedupeByMelody', () => {
+  it('AC-7 같은 melody_hash 가 다시 나오면 첫 항목만 남기고 뒤 항목을 제외 목록에 둔다', () => {
+    const first = seed({ file: 'nottingham', section: 'I–IV–V', name: 'Punch Bowl arch motif' });
+    const other = seed({ file: 'nottingham', name: 'Other Tune', melodyHash: 'bbb' });
+    const again = seed({ file: 'nottingham', section: 'I–IV–V–I', name: 'Arching Punch Bowl' });
+
+    const { unique, excluded } = dedupeByMelody([first, other, again]);
+
+    expect(unique).toEqual([first, other]);
+    expect(excluded.map(({ file, section, name }) => [file, section, name])).toEqual([
+      ['nottingham', 'I–IV–V–I', 'Arching Punch Bowl'],
+    ]);
+  });
+});
+
+describe('buildSeed', () => {
+  it('AC-10 실제 네 파일은 56, 59, 31, 240 건이고 nottingham 3건을 빼면 유일 383건이다', async () => {
+    const inputs = ['guitarset', 'nottingham', 'omnibook', 'wjazzd'].map((file) => ({
+      file,
+      text: readFileSync(`content/licks/${file}.md`, 'utf8'),
+    }));
+
+    const seed = await buildSeed(inputs);
+
+    expect(seed.counts).toEqual([
+      { file: 'guitarset', count: 56 },
+      { file: 'nottingham', count: 59 },
+      { file: 'omnibook', count: 31 },
+      { file: 'wjazzd', count: 240 },
+    ]);
+    expect(seed.excluded.map((l) => l.file)).toEqual(['nottingham', 'nottingham', 'nottingham']);
+    expect(seed.unique).toHaveLength(383);
+  });
+});
+
+describe('publishedAt', () => {
+  it('AC-8 i 번째 게시 시각은 2026-03-01 00:00 UTC 부터 345분 간격이다', () => {
+    expect(publishedAt(0)).toBe('2026-03-01T00:00:00.000Z');
+    expect(publishedAt(1)).toBe('2026-03-01T05:45:00.000Z');
+    expect(publishedAt(382)).toBe('2026-05-31T12:30:00.000Z');
+  });
+});
+
+describe('seedSql', () => {
+  it('AC-9 세 문장을 R7 순서로 쓰고 작은따옴표는 두 번 쓴다', () => {
+    const author = "'4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf'";
+    const sql = seedSql([
+      seed({
+        name: "Bird's Chromatic Climb and Turn",
+        hash: 'v2abc',
+        melodyHash: 'f00d',
+        tags: ['ii-v-i', 'jazz', 'bebop'],
+      }),
+    ]);
+
+    const order = [
+      `update profiles set display_name = 'Lick Library' where id = ${author};`,
+      'insert into licks (author_id, title, blob, melody_hash, tags) values',
+      'on conflict (author_id, melody_hash) do nothing;',
+      'update licks l set created_at = v.ts from (values',
+      `as v(h, ts) where l.author_id = ${author} and l.melody_hash = v.h;`,
+    ].map((s) => sql.indexOf(s));
+    expect(order[0]).toBe(0);
+    expect(order.every((at, i) => at > (order[i - 1] ?? -1))).toBe(true);
+    expect(sql).toContain(
+      `(${author}, 'Bird''s Chromatic Climb and Turn', 'v2abc', 'f00d', array['ii-v-i','jazz','bebop'])`,
+    );
+    expect(sql).toContain("('f00d', timestamptz '2026-03-01T00:00:00.000Z')");
+  });
+});

@@ -224,6 +224,62 @@
           "note": "하네스 이전 작업. 승인 기록과 증거 없음"
         }
       ]
+    },
+    {
+      "id": "seed-licks",
+      "title": "릭 모음을 전용 계정으로 커뮤니티 DB 에 시드",
+      "ref": "content/licks 네 모음, DECISIONS 2026-11-10",
+      "track": "light",
+      "deps": [
+        "community"
+      ],
+      "stage": "done",
+      "approved": {
+        "plan": {
+          "date": "2026-11-10",
+          "note": ""
+        },
+        "spec": {
+          "date": "2026-11-10",
+          "note": "S7 문구 수정: 게시물이 20건보다 적으면 목록이 같을 수 없어 기존 게시물이 맨 앞에 같은 순서로 남는 것으로 바꿈"
+        }
+      },
+      "history": [
+        {
+          "date": "2026-11-10",
+          "stage": "intake"
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "plan",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "spec",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "implement",
+          "model": "opus",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "verify",
+          "model": "opus",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "done",
+          "model": "opus",
+          "note": ""
+        }
+      ]
     }
   ]
 }

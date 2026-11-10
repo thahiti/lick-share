@@ -26,5 +26,6 @@
   - 하네스 이전에 끝난 기능 12개는 레지스트리에 done 으로 등록하되 승인 기록과 증거는 없다.
 - 디렉터리 책임을 나눈다. `src/` 구현체, `docs/product` 제품 명세와 기획, `docs/architecture` 구조, `docs/ops` 운영, `docs/checklists` 수동 점검, `docs/features/<id>` 기능별 문서, `content/licks` 릭 모음 콘텐츠, `harness/` 작업 상태, `.claude/` 절차. 릭 모음은 앱 구현과 무관한 산출물이라 `docs/` 밖으로 뺐다.
 - 릭 모음 다섯 개를 모두 커밋한다. Hooktheory 파생본은 출처(Sheet Sage, CC BY-NC-SA 3.0)를 문서가 밝히고 있다. 다만 커뮤니티 DB 에 시드로 올릴지는 저작권 검토 뒤 따로 정한다.
+- 저작권 검토 뒤 네 모음(GuitarSet, Nottingham, WJazzD, Omnibook)의 유일 383건을 시드 계정 "Lick Library"(randylee82@gmail.com, `profiles.public_id = JSztbE7e`, `auth.users.id = 4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf`)로 운영 DB 에 넣었다(`seed-licks`). Hooktheory 는 CC BY-NC-SA 에 현역 팝 멜로디라 보류한다. 태그는 진행, 장르, 스타일 세 개, 게시 시각은 2026-03-01 부터 345분 간격으로 분산해 Latest 피드를 덮지 않는다. 시드 SQL 은 `npm run seed-licks -- --out` 으로 다시 만들 수 있고 재실행은 멱등이다. 롤백: `delete from licks where author_id = '4335250f-c7f6-4fc5-bf1d-d0d4a58e9baf';`
 - `AGENTS.md` 와 `.agents/` 는 지운다. 7/19 에 다른 도구가 만든 CLAUDE.md 사본이라 둘 다 유지하면 어긋난다. 하네스는 `.claude/` 에만 둔다.
 - 번들 분할은 React 와 supabase-js 를 별도 덩어리로 나누는 데서 멈춘다. 화면 단위 지연 로딩이 효과는 더 크지만 라우팅 코드 변경이 커서 보류한다.
