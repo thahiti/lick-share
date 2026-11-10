@@ -32,6 +32,28 @@ export const measOf = (song: BarSpec, step: Step): BarIndex =>
       : Math.floor(step / SPM),
   );
 
+/**
+ * 컨테이너 폭과 음표 밀도로 줄당 마디 수를 정한다: 4, 2, 1 중 하나.
+ * 반씩 줄여야 4마디 릭이 2+2 로 고르게 나뉜다 (3+1 을 피한다).
+ * 못갖춘마디의 0.7 폭은 첫 줄만 좁히므로 계산에 넣지 않는다.
+ */
+export const barsPerLine = (song: Pick<Song, 'meas' | 'pickup' | 'notes'>, width: number): number => {
+  const usable = width - LAYOUT.PAD_X * 2 - LAYOUT.CLEF_W;
+  const perBar: Record<number, number> = {};
+  for (const n of song.notes) {
+    const m = measOf(song, n.s);
+    perBar[m] = (perBar[m] ?? 0) + 1;
+  }
+  const densest = Math.max(0, ...Object.values(perBar));
+  const need = Math.max(
+    LAYOUT.MIN_BAR_W,
+    densest * LAYOUT.NOTE_W + LAYOUT.INSET_MAX + LAYOUT.EDGE_GAP,
+  );
+  let mpl: number = LAYOUT.MPL;
+  while (mpl > 1 && usable / mpl < need) mpl /= 2;
+  return mpl;
+};
+
 /** 마디가 속한 줄 (mpl = 줄당 마디 수) */
 export const lineOf = (song: BarSpec, m: BarIndex, mpl: number): number =>
   song.pickup ? (m === 0 ? 0 : Math.floor((m - 1) / mpl)) : Math.floor(m / mpl);

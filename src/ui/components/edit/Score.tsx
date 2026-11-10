@@ -6,6 +6,7 @@
 import type { JSX } from 'react';
 import { LAYOUT } from '../../../core/constants';
 import {
+  barsPerLine,
   computeMw,
   lineOf,
   measCountAll,
@@ -169,7 +170,7 @@ export const Score = ({
   onMeasureTap,
   onNoteTap,
 }: ScoreProps): JSX.Element => {
-  const mpl = LAYOUT.MPL;
+  const mpl = barsPerLine(song, width);
   const mw = computeMw(song, width, mpl);
   const single = mode === 'edit';
   const allCnt = measCountAll(song);

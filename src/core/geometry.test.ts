@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest';
+import { demoSong } from './demo-song';
 import { asBar, asMidi, asStep } from './types';
 import {
+  barsPerLine,
   computeMw,
   lineOf,
   measCountAll,
@@ -112,6 +114,37 @@ describe('geometry: 가로 배치 (W=384 기준)', () => {
     const x0 = measX(withPickup, mw, asBar(0), MPL);
     expect(measX(withPickup, mw, asBar(1), MPL)).toBeCloseTo(x0 + mw * 0.7);
     expect(measX(withPickup, mw, asBar(5), MPL)).toBeCloseTo(x0); // 둘째 줄 첫 마디
+  });
+});
+
+describe('barsPerLine: 폭과 밀도로 줄당 마디 수 결정 (SPEC §3.2)', () => {
+  const sparse = { ...noPickup, notes: demoSong.notes };
+  /** 마디 1 에 16분음표 16개 */
+  const dense = {
+    ...noPickup,
+    notes: Array.from({ length: 16 }, (_, i) => ({ id: i + 1, s: asStep(16 + i), d: 1, p: asMidi(67) })),
+  };
+
+  test('폰 폭 384: 마디 폭 85 는 하한 120 미만 → 2마디', () => {
+    expect(barsPerLine(sparse, 384)).toBe(2);
+  });
+  test('데스크톱 폭 658: 마디 폭 154 → 4마디', () => {
+    expect(barsPerLine(sparse, 658)).toBe(4);
+  });
+  test('16음 마디는 12px x 16 + 여백 = 207 필요 → 658 에서 2마디', () => {
+    expect(barsPerLine(dense, 658)).toBe(2);
+  });
+  test('16음 마디, 폭 340 → 1마디', () => {
+    expect(barsPerLine(dense, 340)).toBe(1);
+  });
+  test('빈 곡은 폭만 본다', () => {
+    expect(barsPerLine({ ...noPickup, notes: [] }, 658)).toBe(4);
+  });
+  test('lineOf, measX 가 줄당 2마디를 따른다', () => {
+    expect(lineOf(noPickup, asBar(2), 2)).toBe(1);
+    const mw = computeMw(noPickup, 384, 2);
+    expect(measX(noPickup, mw, asBar(2), 2)).toBeCloseTo(measX(noPickup, mw, asBar(0), 2));
+    expect(lineOf(withPickup, asBar(3), 2)).toBe(1); // pickup 뒤 1, 2 가 첫 줄
   });
 });
 

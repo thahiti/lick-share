@@ -39,8 +39,12 @@ export const pShort = (p: number): string => `${NOTE_EN[p % 12]}${Math.floor(p /
 
 /** 조판 상수 — 전부 여기서만 정의 */
 export const LAYOUT = {
-  /** 줄당 마디 수 */
+  /** 줄당 최대 마디 수. 폭과 밀도에 따라 반으로 줄어든다 (barsPerLine) */
   MPL: 4,
+  /** 이 폭보다 좁은 마디가 나오면 줄당 마디 수를 줄인다 */
+  MIN_BAR_W: 120,
+  /** 가장 빽빽한 마디의 음표 하나에 필요한 폭 (머리 10.4 + 틈) */
+  NOTE_W: 12,
   /** 줄 높이 */
   LH: 118,
   /** 보표 선 간격 */
