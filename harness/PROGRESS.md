@@ -8,8 +8,8 @@
 - 운영: https://lickshare.pages.dev (Cloudflare Pages 프로젝트 `lickshare`). 2026-11-10 배포본은 main `9d18db4`(adaptive bars per line 머지까지)의 빌드다. 번들은 앱, react, supabase 세 덩어리.
 - DB: Supabase 프로젝트 `tejndnivhbdxfstgybmm`. 2026-11-10 에 표시 이름 unique 인덱스, 길이 제약, 가입 trigger, 열 권한을 적용했다. 저장소 `supabase/schema.sql` 과 같은 상태. 같은 날 시드 계정 Lick Library(`public_id` JSztbE7e)로 릭 383건을 넣었다. 스키마 변경은 없다.
 - 테스트: 69 파일 663개 통과. 게이트는 `harness/check.sh`.
-- 진행 중 기능: 없음. `seed-licks` 는 하네스 파이프라인을 처음으로 끝까지(intake, plan, spec, implement, verify, done) 거친 기능이다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
-- 기준 커밋: 없음.
+- 진행 중 기능: `swipe-play` (implement, `feature/swipe-play`). `seed-licks` 는 하네스 파이프라인을 처음으로 끝까지(intake, plan, spec, implement, verify, done) 거친 기능이다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
+- 기준 커밋: `d9c8f92` (swipe-play 명세 승인 커밋).
 
 ## 마지막 작업
 
