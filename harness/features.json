@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "active": null,
+  "active": "swipe-play",
   "stages": [
     "intake",
     "plan",
@@ -277,6 +277,29 @@
           "date": "2026-11-10",
           "stage": "done",
           "model": "opus",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "id": "swipe-play",
+      "title": "카드 재생 버튼으로 여는 전체 화면 넘기기 재생",
+      "ref": "docs/features/swipe-play/01-plan.md",
+      "track": "full",
+      "deps": [
+        "community"
+      ],
+      "stage": "plan",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-11-10",
+          "stage": "intake"
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "plan",
+          "model": "fable",
           "note": ""
         }
       ]
