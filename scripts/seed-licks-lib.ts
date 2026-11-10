@@ -3,6 +3,7 @@
  * 규칙 번호는 docs/features/seed-licks/03-spec.md 의 R1 ~ R8 이다.
  * 파일과 프로세스는 만지지 않는다. 입력은 (파일명, 문자열) 쌍이다.
  */
+import { melodyHash } from '../src/community/melody-hash';
 import { normalizeTags } from '../src/community/tags';
 import { decodeSong } from '../src/core/codec';
 import type { Song } from '../src/core/types';
@@ -158,4 +159,32 @@ export const dedupeByMelody = (
   const isFirst = (lick: SeedLick, i: number): boolean =>
     licks.findIndex((l) => l.melodyHash === lick.melodyHash) === i;
   return { unique: licks.filter(isFirst), excluded: licks.filter((l, i) => !isFirst(l, i)) };
+};
+
+export interface SeedInput {
+  file: string;
+  text: string;
+}
+
+export interface Seed {
+  counts: { file: string; count: number }[];
+  unique: SeedLick[];
+  excluded: SeedLick[];
+}
+
+// R3: 앱의 게시 흐름과 같은 함수로 melody_hash 를 만들어야 사용자 릭과 중복 판정이 맞는다
+const toSeedLick = async (lick: ParsedLick): Promise<SeedLick> => ({
+  ...lick,
+  melodyHash: await melodyHash(decodeLick(lick).notes),
+  tags: lickTags(lick),
+});
+
+/** R1 ~ R5 를 차례로 적용한다. 입력 순서가 곧 시드 순서라 호출자가 파일을 알파벳 순으로 넘긴다 */
+export const buildSeed = async (inputs: readonly SeedInput[]): Promise<Seed> => {
+  const files = inputs.map(({ file, text }) => ({ file, licks: parseLicks(file, text) }));
+  const licks = await Promise.all(files.flatMap((f) => f.licks).map(toSeedLick));
+  return {
+    counts: files.map((f) => ({ file: f.file, count: f.licks.length })),
+    ...dedupeByMelody(licks),
+  };
 };

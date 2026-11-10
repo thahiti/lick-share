@@ -1,6 +1,8 @@
 /** seed-licks 명세(docs/features/seed-licks/03-spec.md)의 단위 기준 */
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
+  buildSeed,
   decodeLick,
   dedupeByMelody,
   lickTags,
@@ -151,5 +153,25 @@ describe('dedupeByMelody', () => {
     expect(excluded.map(({ file, section, name }) => [file, section, name])).toEqual([
       ['nottingham', 'I–IV–V–I', 'Arching Punch Bowl'],
     ]);
+  });
+});
+
+describe('buildSeed', () => {
+  it('AC-10 실제 네 파일은 56, 59, 31, 240 건이고 nottingham 3건을 빼면 유일 383건이다', async () => {
+    const inputs = ['guitarset', 'nottingham', 'omnibook', 'wjazzd'].map((file) => ({
+      file,
+      text: readFileSync(`content/licks/${file}.md`, 'utf8'),
+    }));
+
+    const seed = await buildSeed(inputs);
+
+    expect(seed.counts).toEqual([
+      { file: 'guitarset', count: 56 },
+      { file: 'nottingham', count: 59 },
+      { file: 'omnibook', count: 31 },
+      { file: 'wjazzd', count: 240 },
+    ]);
+    expect(seed.excluded.map((l) => l.file)).toEqual(['nottingham', 'nottingham', 'nottingham']);
+    expect(seed.unique).toHaveLength(383);
   });
 });
