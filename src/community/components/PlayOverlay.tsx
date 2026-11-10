@@ -215,6 +215,8 @@ export const PlayOverlay = ({
   const [liked, setLiked] = useState<ReadonlySet<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
   const likeBusy = useRef(new Set<string>());
+  /* 간격(카운트다운) 중인지. 간격 중 멈추면 재개는 0 부터다 (R7) */
+  const gapRef = useRef(false);
   const popRef = useRef<() => void>(() => {});
   const hintRef = useRef(hint);
   const indexRef = useRef(startIndex);
@@ -385,7 +387,13 @@ export const PlayOverlay = ({
   /* R7: 멈춤과 재개 */
   const toggle = (): void => {
     if (playingRef.current) {
+      // stop 이 onGap(null) 을 부르므로 그 전에 읽는다
+      const inGap = gapRef.current;
       player.stop();
+      if (inGap) {
+        const song = songsRef.current[index];
+        lastEl.current = song ? total(song) : 0;
+      }
       playingRef.current = false;
       setPlaying(false);
       return;
@@ -403,13 +411,26 @@ export const PlayOverlay = ({
       lastEl.current = el;
       setPlayheadStep(el);
     });
-    const unsubGap = player.onGap((n) => setCountdown(n));
+    const unsubGap = player.onGap((n) => {
+      gapRef.current = n !== null;
+      setCountdown(n);
+    });
     return () => {
       unsubTick();
       unsubGap();
       player.stop();
     };
   }, [player]);
+
+  /* E4: 열려 있는 동안 목록이 줄면 마지막 장으로, 비면 닫는다 */
+  useEffect(() => {
+    if (licks.length === 0) {
+      player.stop();
+      onCloseRef.current();
+      return;
+    }
+    if (indexRef.current >= licks.length) goTo(licks.length - 1);
+  }, [licks.length, goTo, player]);
 
   /* R9: 뒤에서 두 번째 장에 이르면 다음 페이지를 미리 받는다. 진행 중에는 다시 부르지 않는다 */
   useEffect(() => {

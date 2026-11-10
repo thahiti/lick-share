@@ -258,6 +258,8 @@ describe('PlayOverlay: 카운트다운 (swipe-play R8)', () => {
 
   test('R7 카운트다운 중 탭하면 멈추고 재개는 0 부터', () => {
     mount();
+    time.t = EPOCH + 50 * SPS + 0.01; // 스텝 50 을 지나는 tick (50 부터 재개하면 첫 음이 83)
+    act(() => clock.frame());
     time.t = EPOCH + 64 * SPS + 0.01;
     act(() => clock.frame());
     const frame = document.querySelectorAll('.c-play-frame')[1];
@@ -373,11 +375,15 @@ describe('PlayOverlay: 키보드와 데스크톱 (swipe-play R4, R13)', () => {
     mount();
     fireEvent.keyDown(root(), { key: 'Escape' });
     expect(back).toHaveBeenCalledTimes(1);
+    const pager = document.querySelector('.c-play-pager');
+    if (!pager) throw new Error('페이저 없음');
+    Object.defineProperty(pager, 'clientHeight', { value: 500 });
     fireEvent.keyDown(root(), { key: 'ArrowDown' });
     expect(scrollBy).toHaveBeenCalledTimes(1);
-    expect(scrollBy.mock.calls[0]?.[0]).toEqual(expect.objectContaining({ behavior: 'smooth' }));
+    expect(scrollBy.mock.calls[0]?.[0]).toEqual({ top: 500, behavior: 'smooth' });
     fireEvent.keyDown(root(), { key: 'ArrowUp' });
     expect(scrollBy).toHaveBeenCalledTimes(2);
+    expect(scrollBy.mock.calls[1]?.[0]).toEqual({ top: -500, behavior: 'smooth' });
     fireEvent.keyDown(root(), { key: ' ' });
     expect(player.isPlaying()).toBe(false);
     fireEvent.keyDown(root(), { key: ' ' });
@@ -397,5 +403,30 @@ describe('PlayOverlay: 키보드와 데스크톱 (swipe-play R4, R13)', () => {
     if (!panel) throw new Error('패널 없음');
     fireEvent.click(panel);
     expect(back).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('PlayOverlay: 목록 변화 (swipe-play E4)', () => {
+  test('E4 열려 있는 동안 목록이 줄어 현재 인덱스가 길이 이상이면 마지막 장, 비면 닫는다', () => {
+    const onClose = vi.fn();
+    const base = {
+      counts: new Map<string, number>(),
+      hasMore: false,
+      loadError: false,
+      loadMore: async () => false,
+      source: 'Latest',
+      player,
+      user: null,
+      onClose,
+      onCount: () => {},
+    };
+    const { rerender } = render(<PlayOverlay {...base} licks={rows} startIndex={2} />);
+    expect(screen.getByText('3 / 3')).toBeTruthy();
+    rerender(<PlayOverlay {...base} licks={rows.slice(0, 2)} startIndex={2} />);
+    expect(screen.getByText('2 / 2')).toBeTruthy();
+    expect(onClose).not.toHaveBeenCalled();
+    rerender(<PlayOverlay {...base} licks={[]} startIndex={2} />);
+    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(player.isPlaying()).toBe(false);
   });
 });
