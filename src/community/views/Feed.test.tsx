@@ -1,8 +1,16 @@
 /** 최신 피드 — 첫 페이지 마운트 로드, 좋아요 수는 원본 기준, 유사릭 배지 (설계 §8.2, §7). */
 import { StrictMode } from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createFakeAudioSink } from '../../adapters/fakes/fake-audio-sink';
+import { createFakeClock } from '../../adapters/fakes/fake-clock';
+import { createPlayer } from '../../adapters/player';
+import { encodeSong } from '../../core/codec';
+import { demoSong } from '../../core/demo-song';
 import type { LickRow } from '../api/licks';
+
+// 오버레이가 실제로 재생하므로 가짜 싱크와 시계로 만든 진짜 player 를 쓴다
+const fakePlayer = createPlayer({ sink: createFakeAudioSink(), clock: createFakeClock() });
 
 const lick = (over: Partial<LickRow> & Pick<LickRow, 'id' | 'title'>): LickRow => ({
   blob: 'invalid-blob',
@@ -55,7 +63,7 @@ describe('Feed 최신 피드', () => {
   });
 
   it('마운트 시 첫 페이지를 로드해 카드 2개 · 원본 기준 좋아요 수 · 유사릭 배지를 보여준다', async () => {
-    render(<Feed />);
+    render(<Feed player={fakePlayer} user={null} />);
 
     expect(await screen.findByText('Original lick')).toBeTruthy();
     expect(screen.getByText('Similar lick')).toBeTruthy();
@@ -74,7 +82,7 @@ describe('Feed 최신 피드', () => {
     const tagged = lick({ id: 'tag-1', title: 'Tagged lick', tags: ['jazz', 'blues'] });
     fetchFeedPage.mockResolvedValue([tagged, original]);
 
-    render(<Feed />);
+    render(<Feed player={fakePlayer} user={null} />);
 
     expect(await screen.findByText('#jazz')).toBeTruthy();
     expect(screen.getByText('#blues')).toBeTruthy();
@@ -83,7 +91,7 @@ describe('Feed 최신 피드', () => {
   });
 
   it('정렬 pill(Latest/Popular)이 없다 — Ranking은 내비 메뉴 전용', async () => {
-    render(<Feed />);
+    render(<Feed player={fakePlayer} user={null} />);
     await screen.findByText('Original lick');
     expect(screen.queryByRole('tab')).toBeNull();
     expect(screen.queryByText('Popular')).toBeNull();
@@ -92,7 +100,7 @@ describe('Feed 최신 피드', () => {
   it('StrictMode 이중 이펙트에서도 첫 페이지 요청은 정확히 1회', async () => {
     render(
       <StrictMode>
-        <Feed />
+        <Feed player={fakePlayer} user={null} />
       </StrictMode>,
     );
 
@@ -108,10 +116,10 @@ describe('Feed 최신 피드', () => {
       filter?.authorId === 'a2' ? [a2Lick] : [a1Lick],
     );
 
-    const { rerender } = render(<Feed authorId="a1" />);
+    const { rerender } = render(<Feed player={fakePlayer} user={null} authorId="a1" />);
     expect(await screen.findByText("A1's lick")).toBeTruthy();
 
-    rerender(<Feed authorId="a2" />);
+    rerender(<Feed player={fakePlayer} user={null} authorId="a2" />);
     expect(await screen.findByText("A2's lick")).toBeTruthy();
 
     // 이전 작성자 목록에 append되지 않고 완전히 교체됨
@@ -125,7 +133,7 @@ describe('Feed 최신 피드', () => {
     fetchFeedPage.mockResolvedValue([original]);
     countLicks.mockResolvedValue(3);
 
-    render(<Feed tag="bebop" />);
+    render(<Feed player={fakePlayer} user={null} tag="bebop" />);
 
     expect(await screen.findByRole('heading', { name: '#bebop' })).toBeTruthy();
     expect(await screen.findByText('3 licks')).toBeTruthy();
@@ -137,7 +145,7 @@ describe('Feed 최신 피드', () => {
     fetchFeedPage.mockResolvedValue([original]);
     countLicks.mockRejectedValue(new Error('down'));
 
-    render(<Feed tag="bebop" />);
+    render(<Feed player={fakePlayer} user={null} tag="bebop" />);
 
     expect(await screen.findByRole('heading', { name: '#bebop' })).toBeTruthy();
     await screen.findByText('Original lick');
@@ -145,7 +153,7 @@ describe('Feed 최신 피드', () => {
   });
 
   it('tag prop이 없으면 태그 헤더도 개수 조회도 없다', async () => {
-    render(<Feed />);
+    render(<Feed player={fakePlayer} user={null} />);
     await screen.findByText('Original lick');
     expect(countLicks).not.toHaveBeenCalled();
     expect(document.querySelector('.c-tagfeed')).toBeNull();
@@ -153,7 +161,7 @@ describe('Feed 최신 피드', () => {
 
   it('deletable: 빨간 Delete 버튼 대신 오버플로(⋯) 메뉴로 삭제 진입한다', async () => {
     fetchFeedPage.mockResolvedValue([original]);
-    render(<Feed authorId="author-1" deletable />);
+    render(<Feed player={fakePlayer} user={null} authorId="author-1" deletable />);
     await screen.findByText('Original lick');
 
     // 인라인 Delete 버튼은 없다 — 상세 페이지와 동일한 ⋯ 패턴
@@ -164,7 +172,7 @@ describe('Feed 최신 피드', () => {
 
   it('deletable: Delete lick → 확인 다이얼로그 → Delete 확정 시 삭제·카드 제거', async () => {
     fetchFeedPage.mockResolvedValue([original]);
-    render(<Feed authorId="author-1" deletable />);
+    render(<Feed player={fakePlayer} user={null} authorId="author-1" deletable />);
     await screen.findByText('Original lick');
 
     fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
@@ -180,7 +188,7 @@ describe('Feed 최신 피드', () => {
 
   it('deletable: 다이얼로그 Cancel은 삭제하지 않고 닫는다', async () => {
     fetchFeedPage.mockResolvedValue([original]);
-    render(<Feed authorId="author-1" deletable />);
+    render(<Feed player={fakePlayer} user={null} authorId="author-1" deletable />);
     await screen.findByText('Original lick');
 
     fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
@@ -194,7 +202,7 @@ describe('Feed 최신 피드', () => {
   it('첫 페이지 로드 실패 시 에러 안내와 재시도 버튼을 보여주고, 재시도 성공 시 카드가 렌더된다', async () => {
     fetchFeedPage.mockRejectedValueOnce(new Error('network down'));
 
-    render(<Feed />);
+    render(<Feed player={fakePlayer} user={null} />);
 
     expect(await screen.findByText("Couldn't load the list")).toBeTruthy();
     const retry = screen.getByRole('button', { name: 'Retry' });
@@ -204,5 +212,37 @@ describe('Feed 최신 피드', () => {
 
     expect(await screen.findByText('Original lick')).toBeTruthy();
     expect(screen.queryByText("Couldn't load the list")).toBeNull();
+  });
+});
+
+describe('Feed: 넘기기 재생 오버레이 (swipe-play R4)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fetchLikeCounts.mockResolvedValue(new Map());
+  });
+
+  it('AC-19 카드 재생 버튼을 누르면 오버레이가 그 카드로 열리고 닫으면 목록 DOM 이 그대로다', async () => {
+    const playable = lick({
+      id: 'p-1',
+      title: 'Playable lick',
+      blob: encodeSong(demoSong).replace(/^#/, ''),
+    });
+    fetchFeedPage.mockResolvedValue([original, playable]);
+    render(<Feed player={fakePlayer} user={null} />);
+    await screen.findByText('Playable lick');
+    const cardBefore = document.querySelector('.c-card');
+
+    // 읽을 수 없는 blob(original)에는 버튼이 없어 Play 는 하나뿐
+    fireEvent.click(screen.getByLabelText('Play'));
+    expect(document.querySelector('.c-play')).not.toBeNull();
+    expect(screen.getByText('2 / 2')).toBeTruthy();
+    expect(fakePlayer.isPlaying()).toBe(true);
+
+    act(() => {
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    expect(document.querySelector('.c-play')).toBeNull();
+    expect(fakePlayer.isPlaying()).toBe(false);
+    expect(document.querySelector('.c-card')).toBe(cardBefore);
   });
 });
