@@ -46,15 +46,19 @@ describe('Score: edit 모드 (SPEC §3.2)', () => {
     const { container } = render(
       <Score song={demoSong} mode="edit" curM={asBar(0)} onMeasureTap={onTap} />,
     );
-    const hit = container.querySelector('[data-m="2"]');
+    const hit = container.querySelector('[data-m="1"]');
     if (!hit) throw new Error('마디 히트영역 없음');
     fireEvent.click(hit);
-    expect(onTap).toHaveBeenCalledWith(2);
+    expect(onTap).toHaveBeenCalledWith(1);
     expect(container.querySelectorAll('[data-note]')).toHaveLength(0);
   });
 
-  test('pickup 곡: 첫 줄 히트영역 5개, pickup 폭 = 0.7×일반', () => {
-    const { container } = render(<Score song={pickupSong} mode="edit" curM={asBar(0)} />);
+  test('pickup 곡: 폭 700 이면 첫 줄 히트영역 5개, 폭 384 면 3개, pickup 폭 = 0.7×일반', () => {
+    const narrow = render(<Score song={pickupSong} mode="edit" curM={asBar(0)} />);
+    expect(narrow.container.querySelectorAll('[data-m]')).toHaveLength(3);
+    const { container } = render(
+      <Score song={pickupSong} mode="edit" curM={asBar(0)} width={700} />,
+    );
     const hits = [...container.querySelectorAll('[data-m]')];
     expect(hits).toHaveLength(5);
     const w0 = Number(hits[0]?.getAttribute('width'));
@@ -69,10 +73,17 @@ describe('Score: edit 모드 (SPEC §3.2)', () => {
 });
 
 describe('Score: view 모드 (SPEC §4)', () => {
-  test('전체 라인 렌더: 5마디 곡 → 높이 2줄(244), 마디 히트영역 없음', () => {
-    const { container } = render(<Score song={fiveMeas} mode="view" />);
-    expect(container.querySelector('svg')?.getAttribute('viewBox')).toBe('0 0 384 244');
+  test('전체 라인 렌더: 5마디 곡, 폭 700 → 4+1 로 2줄(244), 마디 히트영역 없음', () => {
+    const { container } = render(<Score song={fiveMeas} mode="view" width={700} />);
+    expect(container.querySelector('svg')?.getAttribute('viewBox')).toBe('0 0 700 244');
     expect(container.querySelectorAll('[data-m]')).toHaveLength(0);
+  });
+
+  test('폰 폭 384 에서는 줄당 2마디: 4마디 곡 2줄(244), 5마디 곡 3줄(362)', () => {
+    const four = render(<Score song={demoSong} mode="view" />);
+    expect(four.container.querySelector('svg')?.getAttribute('viewBox')).toBe('0 0 384 244');
+    const five = render(<Score song={fiveMeas} mode="view" />);
+    expect(five.container.querySelector('svg')?.getAttribute('viewBox')).toBe('0 0 384 362');
   });
 
   test('음표 탭 → onNoteTap(id)', () => {
@@ -111,6 +122,21 @@ describe('Score: 덧줄 (SPEC §3.2)', () => {
     const { container } = render(<Score song={song} mode="view" />);
     expect(container.querySelectorAll('[data-note="1"]')).toHaveLength(2); // 분할 렌더
     expect(container.querySelectorAll('[data-tie]')).toHaveLength(1);
+  });
+
+  test('줄 경계를 넘는 음: 아치 대신 줄 끝과 다음 줄 시작에 타이 조각', () => {
+    const song: Song = {
+      ...demoSong,
+      meas: 2,
+      chords: {},
+      notes: [note(1, 12, 8, 64)],
+    };
+    // 폭 200 은 사용 폭 158 이라 줄당 1마디: 마디 0 과 1 이 다른 줄
+    const { container } = render(<Score song={song} mode="view" width={200} />);
+    expect(container.querySelectorAll('[data-note="1"]')).toHaveLength(2);
+    expect(container.querySelectorAll('[data-tie=""]')).toHaveLength(0);
+    expect(container.querySelectorAll('[data-tie="out"]')).toHaveLength(1);
+    expect(container.querySelectorAll('[data-tie="in"]')).toHaveLength(1);
   });
 });
 

@@ -96,9 +96,11 @@ describe('App 통합 (IMPLEMENTATION_PLAN P7 DoD)', () => {
 
   test('마디 탭 → 이동 + 첫 노트 선택 + 프리뷰', () => {
     const { container, sink } = setup();
-    click(container, '[data-m="2"]');
-    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('Bar 3 / 4');
-    expect(container.querySelector('[data-p="65"][data-st="0"]')?.className).toContain('sel');
+    // jsdom 폭 384 는 줄당 2마디라 첫 줄에는 마디 0, 1 만 있다
+    click(container, '[data-m="1"]');
+    expect(container.querySelector('[data-mlabel]')?.textContent).toBe('Bar 2 / 4');
+    // 마디 1 에 걸친 음 중 s 최소 = [12,18) p69 (SPEC §3.2)
+    expect(container.querySelector('[data-p="69"][data-st="0"]')?.className).toContain('sel');
     expect(sink.events.some((e) => e.kind === 'melody' && e.vol === 0.22)).toBe(true);
   });
 

@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'vitest';
+import { demoSong } from './demo-song';
 import { asBar, asMidi, asStep } from './types';
 import {
+  barsPerLine,
   computeMw,
   lineOf,
   measCountAll,
@@ -14,6 +16,9 @@ import {
   posX,
   total,
 } from './geometry';
+
+/** 줄당 마디 수 (LAYOUT.MPL 과 같은 값을 명시해 기대값의 근거를 드러낸다) */
+const MPL = 4;
 
 /** DoD 검증용 마디 스펙 (IMPLEMENTATION_PLAN P1) */
 const noPickup = { meas: 4, pickup: 0 as const };
@@ -37,8 +42,8 @@ describe('geometry: pickup=0', () => {
     expect(measLen(noPickup, asBar(3))).toBe(16);
   });
   test('lineOf: floor(m/4)', () => {
-    expect(lineOf(noPickup, asBar(3))).toBe(0);
-    expect(lineOf(noPickup, asBar(4))).toBe(1);
+    expect(lineOf(noPickup, asBar(3), MPL)).toBe(0);
+    expect(lineOf(noPickup, asBar(4), MPL)).toBe(1);
   });
   test('measLabel: 1-기반 표기', () => {
     expect(measLabel(noPickup, asBar(0))).toBe('Bar 1');
@@ -60,8 +65,8 @@ describe('geometry: pickup=8', () => {
     expect(measOf(withPickup, asStep(8))).toBe(1);
   });
   test('lineOf(4)=0, lineOf(5)=1', () => {
-    expect(lineOf(withPickup, asBar(4))).toBe(0);
-    expect(lineOf(withPickup, asBar(5))).toBe(1);
+    expect(lineOf(withPickup, asBar(4), MPL)).toBe(0);
+    expect(lineOf(withPickup, asBar(5), MPL)).toBe(1);
   });
   test('measCountAll = meas+1', () => {
     expect(measCountAll(withPickup)).toBe(9);
@@ -79,36 +84,67 @@ describe('geometry: 가로 배치 (W=384 기준)', () => {
   const W = 384;
 
   test('measW(pickup 마디) = 0.7 × mw', () => {
-    const mw = computeMw(withPickup, W);
+    const mw = computeMw(withPickup, W, MPL);
     expect(measW(withPickup, mw, asBar(0))).toBeCloseTo(mw * 0.7);
     expect(measW(withPickup, mw, asBar(1))).toBeCloseTo(mw);
   });
 
   test('posX(m, 15/16)는 모든 마디에서 우측 마디선을 넘지 않음', () => {
     for (const spec of [noPickup, withPickup]) {
-      const mw = computeMw(spec, W);
+      const mw = computeMw(spec, W, MPL);
       const cnt = measCountAll(spec);
       for (let m = 0; m < cnt; m++) {
         const bar = asBar(m);
-        expect(posX(spec, mw, bar, 15 / 16)).toBeLessThan(
-          measX(spec, mw, bar) + measW(spec, mw, bar) - 4,
+        expect(posX(spec, mw, bar, 15 / 16, MPL)).toBeLessThan(
+          measX(spec, mw, bar, MPL) + measW(spec, mw, bar) - 4,
         );
       }
     }
   });
 
   test('measX: 같은 줄에서 mw 간격, 줄 바뀌면 x0으로 복귀', () => {
-    const mw = computeMw(noPickup, W);
-    const x0 = measX(noPickup, mw, asBar(0));
-    expect(measX(noPickup, mw, asBar(1))).toBeCloseTo(x0 + mw);
-    expect(measX(noPickup, mw, asBar(4))).toBeCloseTo(x0); // 다음 줄 첫 마디
+    const mw = computeMw(noPickup, W, MPL);
+    const x0 = measX(noPickup, mw, asBar(0), MPL);
+    expect(measX(noPickup, mw, asBar(1), MPL)).toBeCloseTo(x0 + mw);
+    expect(measX(noPickup, mw, asBar(4), MPL)).toBeCloseTo(x0); // 다음 줄 첫 마디
   });
 
-  test('measX(pickup): 첫 줄만 pickup 폭만큼 밀림', () => {
-    const mw = computeMw(withPickup, W);
-    const x0 = measX(withPickup, mw, asBar(0));
-    expect(measX(withPickup, mw, asBar(1))).toBeCloseTo(x0 + mw * 0.7);
-    expect(measX(withPickup, mw, asBar(5))).toBeCloseTo(x0); // 둘째 줄 첫 마디
+  test('measX(pickup, MPL): 첫 줄만 pickup 폭만큼 밀림', () => {
+    const mw = computeMw(withPickup, W, MPL);
+    const x0 = measX(withPickup, mw, asBar(0), MPL);
+    expect(measX(withPickup, mw, asBar(1), MPL)).toBeCloseTo(x0 + mw * 0.7);
+    expect(measX(withPickup, mw, asBar(5), MPL)).toBeCloseTo(x0); // 둘째 줄 첫 마디
+  });
+});
+
+describe('barsPerLine: 폭과 밀도로 줄당 마디 수 결정 (SPEC §3.2)', () => {
+  const sparse = { ...noPickup, notes: demoSong.notes };
+  /** 마디 1 에 16분음표 16개 */
+  const dense = {
+    ...noPickup,
+    notes: Array.from({ length: 16 }, (_, i) => ({ id: i + 1, s: asStep(16 + i), d: 1, p: asMidi(67) })),
+  };
+
+  test('폰 폭 384: 마디 폭 85 는 하한 120 미만 → 2마디', () => {
+    expect(barsPerLine(sparse, 384)).toBe(2);
+  });
+  test('데스크톱 폭 658: 마디 폭 154 → 4마디', () => {
+    expect(barsPerLine(sparse, 658)).toBe(4);
+  });
+  test('16음 마디는 12px x 16 + 여백 = 207 필요 → 658 에서 2마디', () => {
+    expect(barsPerLine(dense, 658)).toBe(2);
+  });
+  test('16음 마디, 폭 340 → 1마디', () => {
+    expect(barsPerLine(dense, 340)).toBe(1);
+  });
+  test('빈 곡은 폭만 본다', () => {
+    expect(barsPerLine({ ...noPickup, notes: [] }, 658)).toBe(4);
+  });
+  test('lineOf, measX 가 줄당 2마디를 따른다', () => {
+    expect(lineOf(noPickup, asBar(2), 2)).toBe(1);
+    const mw = computeMw(noPickup, 384, 2);
+    expect(measX(noPickup, mw, asBar(2), 2)).toBeCloseTo(measX(noPickup, mw, asBar(0), 2));
+    expect(lineOf(withPickup, asBar(3), 2)).toBe(1); // pickup 뒤 1, 2 가 첫 줄
   });
 });
 

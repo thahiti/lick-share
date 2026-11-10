@@ -32,27 +32,49 @@ export const measOf = (song: BarSpec, step: Step): BarIndex =>
       : Math.floor(step / SPM),
   );
 
-/** 마디가 속한 줄 (MPL=4) */
-export const lineOf = (song: BarSpec, m: BarIndex): number =>
-  song.pickup ? (m === 0 ? 0 : Math.floor((m - 1) / LAYOUT.MPL)) : Math.floor(m / LAYOUT.MPL);
+/**
+ * 컨테이너 폭과 음표 밀도로 줄당 마디 수를 정한다: 4, 2, 1 중 하나.
+ * 반씩 줄여야 4마디 릭이 2+2 로 고르게 나뉜다 (3+1 을 피한다).
+ * 못갖춘마디의 0.7 폭은 첫 줄만 좁히므로 계산에 넣지 않는다.
+ */
+export const barsPerLine = (song: Pick<Song, 'meas' | 'pickup' | 'notes'>, width: number): number => {
+  const usable = width - LAYOUT.PAD_X * 2 - LAYOUT.CLEF_W;
+  const perBar: Record<number, number> = {};
+  for (const n of song.notes) {
+    const m = measOf(song, n.s);
+    perBar[m] = (perBar[m] ?? 0) + 1;
+  }
+  const densest = Math.max(0, ...Object.values(perBar));
+  const need = Math.max(
+    LAYOUT.MIN_BAR_W,
+    densest * LAYOUT.NOTE_W + LAYOUT.INSET_MAX + LAYOUT.EDGE_GAP,
+  );
+  let mpl: number = LAYOUT.MPL;
+  while (mpl > 1 && usable / mpl < need) mpl /= 2;
+  return mpl;
+};
+
+/** 마디가 속한 줄 (mpl = 줄당 마디 수) */
+export const lineOf = (song: BarSpec, m: BarIndex, mpl: number): number =>
+  song.pickup ? (m === 0 ? 0 : Math.floor((m - 1) / mpl)) : Math.floor(m / mpl);
 
 /** 마디 표기 라벨 */
 export const measLabel = (song: BarSpec, m: BarIndex): string =>
   song.pickup && m === 0 ? 'Pickup' : `Bar ${song.pickup ? m : m + 1}`;
 
 /** 컨테이너 폭 → 일반 마디 폭 */
-export const computeMw = (song: BarSpec, width: number): number =>
-  (width - LAYOUT.PAD_X * 2 - LAYOUT.CLEF_W) / (LAYOUT.MPL + (song.pickup ? LAYOUT.PICKW : 0));
+export const computeMw = (song: BarSpec, width: number, mpl: number): number =>
+  (width - LAYOUT.PAD_X * 2 - LAYOUT.CLEF_W) / (mpl + (song.pickup ? LAYOUT.PICKW : 0));
 
 /** 마디 좌측 x */
-export const measX = (song: BarSpec, mw: number, m: BarIndex): number => {
+export const measX = (song: BarSpec, mw: number, m: BarIndex, mpl: number): number => {
   const x0 = LAYOUT.PAD_X + LAYOUT.CLEF_W;
   if (song.pickup) {
     if (m === 0) return x0;
-    const li = Math.floor((m - 1) / LAYOUT.MPL);
-    return x0 + (li === 0 ? mw * LAYOUT.PICKW : 0) + ((m - 1) % LAYOUT.MPL) * mw;
+    const li = Math.floor((m - 1) / mpl);
+    return x0 + (li === 0 ? mw * LAYOUT.PICKW : 0) + ((m - 1) % mpl) * mw;
   }
-  return x0 + (m % LAYOUT.MPL) * mw;
+  return x0 + (m % mpl) * mw;
 };
 
 /** 마디 폭 */
@@ -77,8 +99,14 @@ export const pitchDia = (p: Midi): PitchDia => {
 };
 
 /** 마디 내부 콘텐츠 x — 좌우 여백 제외 영역에 비례 배치 (마디선 넘침 방지) */
-export const posX = (song: BarSpec, mw: number, m: BarIndex, frac: number): number => {
+export const posX = (
+  song: BarSpec,
+  mw: number,
+  m: BarIndex,
+  frac: number,
+  mpl: number,
+): number => {
   const w = measW(song, mw, m);
   const inset = Math.min(LAYOUT.INSET_MAX, w * LAYOUT.INSET_RATIO);
-  return measX(song, mw, m) + inset + frac * (w - inset - LAYOUT.EDGE_GAP);
+  return measX(song, mw, m, mpl) + inset + frac * (w - inset - LAYOUT.EDGE_GAP);
 };
