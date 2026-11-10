@@ -1638,3 +1638,18 @@ a.c-tag:hover {
     display: none;
   }
 }
+/* 긴 릭 (R15): 본문이 넘치면 프레임 아래 그늘과 스크롤 캡션. 끝까지 내리면 사라진다 */
+.c-play-body--more .c-play-frame {
+  box-shadow: inset 0 -24px 24px -24px var(--scroll-shade);
+}
+.c-play-scrollcue {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding: 10px 0 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--mut2);
+  background: linear-gradient(to bottom, transparent, var(--paper) 60%);
+  pointer-events: none;
+}

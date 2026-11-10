@@ -99,9 +99,24 @@ const Page = ({
   onDuplicate,
 }: PageProps): JSX.Element => {
   const [boxRef, width] = useElementWidth(358);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  /* R15: 본문이 넘치고 아직 끝까지 안 내렸을 때만 그늘과 캡션 */
+  const [more, setMore] = useState(false);
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const update = (): void => setMore(el.scrollHeight - el.clientHeight - el.scrollTop > 2);
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    el.addEventListener('scroll', update, { passive: true });
+    return () => {
+      ro.disconnect();
+      el.removeEventListener('scroll', update);
+    };
+  }, []);
   return (
     <section className="c-play-page" data-index={index}>
-      <div className="c-play-body">
+      <div className={more ? 'c-play-body c-play-body--more' : 'c-play-body'} ref={bodyRef}>
         {/* R7: 악보 탭은 멈춤과 재개. 음표 탭 핸들러를 주지 않아 클릭이 여기로 올라온다 */}
         <div
           className={countdown !== null ? 'c-play-frame c-play-frame--dim' : 'c-play-frame'}
@@ -161,6 +176,7 @@ const Page = ({
             </button>
           </p>
         )}
+        {more && <div className="c-play-scrollcue">Scroll for the rest of the score</div>}
       </div>
       {/* R11, R16: 액션 행은 장 하단에 고정. 순서는 상세와 같다 */}
       <div className="c-play-actions">
