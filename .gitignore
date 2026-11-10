@@ -5,3 +5,6 @@ dist/
 
 # git worktrees (subagent 격리 작업공간)
 .claude/worktrees/
+
+# wrangler 로컬 캐시
+.wrangler/
