@@ -1,7 +1,7 @@
 # ScoreLink
 
 악보를 URL 해시에 담아 서버 없이 공유하는 모바일 웹앱.
-크로매틱 드럼 패드로 멜로디를 입력하고, 코드 반주·메트로놈과 함께 재생하고,
+크로매틱 드럼 패드로 멜로디를 입력하고, 코드 반주, 메트로놈과 함께 재생하고,
 링크 하나로 열람 화면을 공유한다. 백엔드 없음 — 곡 전체가 URL에 인코딩된다.
 
 프로토타입(`docs/prototype-reference.html`)으로 검증된 동작을
@@ -29,10 +29,10 @@ npm run dump -- "#v1.…" [--metro] [--no-acc] [--from=N]              # 이벤�
 ## 구조 (의존 화살표는 항상 안쪽)
 
 ```
-core     완전 순수: 곡 모델·편집·쉼표 파생·지오메트리·undo·URL 코덱
+core     완전 순수: 곡 모델, 편집, 쉼표 파생, 지오메트리, undo, URL 코덱
 engine   schedule(song, opts, from, to) → SoundEvent[]  (재생의 심장부, 순수)
 ports    AudioSink / Clock / HashStore 인터페이스
-adapters WebAudioSink·RafClock·LocationHashStore·player + 테스트용 fakes
+adapters WebAudioSink, RafClock, LocationHashStore, player + 테스트용 fakes
 ui       React 컴포넌트 + Zustand 스토어(core 순수 함수 래핑만)
 ```
 
@@ -45,13 +45,13 @@ ui       React 컴포넌트 + Zustand 스토어(core 순수 함수 래핑만)
 정적 호스팅이면 충분하다 (GitHub Pages, Netlify, Cloudflare Pages 등).
 `dist/`를 그대로 올리면 된다. 서버 상태 없음 — 공유 링크의 해시가 데이터 전부다.
 
-운영 배포는 Cloudflare Pages를 사용한다. 빌드·배포 명령, 필수 설정(SPA rewrite,
-환경 변수), 캐시·롤백 절차는 `docs/DEPLOY.md` 참조.
+운영 배포는 Cloudflare Pages를 사용한다. 빌드, 배포 명령, 필수 설정(SPA rewrite,
+환경 변수), 캐시, 롤백 절차는 `docs/DEPLOY.md` 참조.
 
 ## 커뮤니티
 
-로그인한 사용자가 편집을 마친 릭을 게시하고, 좋아요·랭킹·게시판으로 서로 공유하는 기능.
-동일 판정은 멜로디(음정 델타 + 리듬) 기준이라 조옮김·템포·코드가 달라도 같은 멜로디면
+로그인한 사용자가 편집을 마친 릭을 게시하고, 좋아요, 랭킹, 게시판으로 서로 공유하는 기능.
+동일 판정은 멜로디(음정 델타 + 리듬) 기준이라 조옮김, 템포, 코드가 달라도 같은 멜로디면
 게시는 되지만(유사릭) 좋아요는 항상 최초 게시(원본)에 귀속된다. 원본이 삭제되면 가장
 오래된 유사릭이 원본 지위와 좋아요를 승계한다. 백엔드는 Supabase(Postgres + RLS) 하나뿐,
 자체 서버는 없다.
@@ -67,7 +67,7 @@ npm run dev
 ### 배포
 
 1. Supabase 프로젝트 생성
-2. SQL Editor에서 `supabase/schema.sql` 실행 — profiles·licks·likes, RLS, 랭킹 view,
+2. SQL Editor에서 `supabase/schema.sql` 실행 — profiles, licks, likes, RLS, 랭킹 view,
    원본 승계 trigger를 한 번에 만든다
 3. Authentication에서 Google OAuth(또는 이메일 매직링크) 활성화 + Site URL 등록
 4. 정적 호스팅(Vercel, Cloudflare Pages 등)에 배포 — 환경 변수
