@@ -1,5 +1,8 @@
 # Unified Nav + Share Screen Implementation Plan
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 두 장치(모바일/데스크톱)의 상단 메뉴를 단일 NAV 모델로 통일하고, 편집자용 View 모드를 재생 가능한 Share 화면(/publish)으로 통합한다.

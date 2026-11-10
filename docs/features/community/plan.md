@@ -1,5 +1,8 @@
 # ScoreLink 커뮤니티 기능 구현 계획 (React 통합본)
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax. TDD 필수.
 
 **Goal:** 커뮤니티 설계 v1.1(게시·계정·좋아요·랭킹·유사릭·원본 승계)을 기존 scorelink React 앱 안에 구현한다. codec·Score·Viewer·player는 재사용하고, Supabase 연동과 커뮤니티 화면만 새로 만든다.

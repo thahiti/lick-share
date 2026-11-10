@@ -1,5 +1,8 @@
 # 모바일 유동 패드 + 태블릿 티어 Implementation Plan
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 모바일 편집 화면에서 남는 세로 공간을 피아노롤이 흡수하게 하고(전 모바일 폭), 640–1023px 태블릿 티어에 컨테이너 680px + 스테퍼 1줄을 추가한다.

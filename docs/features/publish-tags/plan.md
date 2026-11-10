@@ -1,5 +1,8 @@
 # 배포 시 해시태그 추가 구현 계획
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** Steps use checkbox (`- [ ]`) syntax. TDD 필수 — 테스트 먼저(RED) → 구현(GREEN) → 게이트 → 커밋.
 
 **Goal:** 배포(Publish) 시 자유 입력 해시태그를 정규화해 `licks.tags(text[])`에 저장하고, 카드(`LickCard`)·상세(`LickDetail`)·랭킹 카드에 칩으로 표시한다. 검색·필터·자동완성·태그 수정은 범위 제외.
