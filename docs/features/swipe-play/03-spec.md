@@ -1,6 +1,6 @@
 # swipe-play: 카드 재생 버튼으로 여는 전체 화면 넘기기 재생 명세
 
-작성일: 2026-11-10. 모델: fable. 상태: 승인됨.
+작성일: 2026-11-10. 모델: fable. 상태: 승인됨. 재승인 2026-11-11: R3, R6, R15 (평가자 발견 반영).
 이 문서가 구현과 검증의 유일한 기준이다. 기획서 `01-plan.md` 와 디자인 `02-design.md` 는 참고 자료다.
 
 ## 입력과 출력
@@ -43,6 +43,7 @@ R2. 간격 진행 알림 (player).
 R3. 카드 재생 버튼.
     `LickCard` 는 `onPlay?: () => void` 를 받는다. 있으면 `.c-cardhit` 버튼의 형제로 `<button type="button" class="c-card-play" aria-label="Play">` 를 그린다. 없으면 그리지 않는다.
     버튼은 44px 원형, 배경 `--brand-primary`, 아이콘 `play`, 악보 영역 오른쪽 아래에 겹친다. 누르면 `onPlay` 만 부르고 상세로 가지 않는다.
+    blob 을 읽을 수 없는 카드에는 `onPlay` 가 있어도 그리지 않는다. 열어도 재생할 것이 없다 (재승인 2026-11-11).
 R4. 열기와 닫기.
     FeedList 는 `playAt: number | null` 을 둔다. 카드의 `onPlay` 는 그 카드의 인덱스로 연다. 이미 열려 있으면 무시한다.
     오버레이는 마운트 때 `history.pushState({ swipePlay: true }, '')` 를 한 번 하고 `popstate` 를 구독한다. popstate 가 오면 닫는다.
@@ -53,7 +54,8 @@ R5. 즉시 재생.
     재생 의도 `playing` 은 열릴 때 true 다.
 R6. 페이저와 현재 장.
     페이저는 세로 `scroll-snap-type: y mandatory` 컨테이너이고 장마다 `scroll-snap-align: start`, 높이는 컨테이너와 같다.
-    현재 인덱스는 IntersectionObserver(임계값 0.6)로 60% 이상 보이는 장으로 정한다. 현재 인덱스가 바뀌면:
+    현재 인덱스는 IntersectionObserver(임계값 0.6)로 60% 이상 보인 상태가 120ms 유지된 장으로 정한다.
+    한 번에 두 장을 넘길 때 지나가는 중간 장이 잠깐 재생되지 않게 하기 위해서다 (재승인 2026-11-11). 현재 인덱스가 바뀌면:
     - `playing` 이 true 면 그 곡을 0 스텝부터 R5 처럼 재생한다(앞 곡은 새 play 가 멈춘다).
     - `playing` 이 false 면 재생하지 않고 멈춤 표시를 보인다.
     보였다가 60% 전에 지나간 장은 현재가 되지 않으므로 재생되지 않는다.
@@ -87,7 +89,7 @@ R14. 출처 라벨.
     Latest 는 "Latest", 태그 피드는 "#" 과 태그, 작성자 피드(유저 페이지, 내 릭)는 첫 행의 `profiles.display_name`, 없으면 "Licks".
 R15. 긴 릭.
     장의 본문(`.c-play-body`)은 `overflow-y: auto` 다. 악보 프레임이 본문보다 길면 본문 안에서 스크롤되고 액션 행은 장 하단에 남는다.
-    본문이 넘칠 때만 프레임 아래쪽 그늘과 "Scroll for the rest of the score" 캡션을 보인다(`scrollHeight > clientHeight` 로 판정).
+    본문이 넘치고 아직 끝까지 내리지 않았을 때만 프레임 아래쪽 그늘과 "Scroll for the rest of the score" 캡션을 보인다(`scrollHeight - clientHeight - scrollTop > 2` 로 판정). 끝까지 내리면 지운다 (재승인 2026-11-11).
 R16. 장의 구성.
     위에서 아래로 악보 프레임(Score, mode view, 폭은 실측), 제목(17px 600), 작성자와 날짜(11px mut2), 태그 칩, (R9 의 끝 캡션), 액션 행(Duplicate and edit, 좋아요 수, Share).
     상단 바는 페이저 밖에 하나다: 닫기 버튼(34px 원형), "{현재 인덱스 + 1} / {licks.length}" 카운터, 출처 라벨.
@@ -180,8 +182,8 @@ AC-19. When 카드의 재생 버튼을 누른다. Then `.c-play` 가 마운트�
 | S1~S16 | 시나리오 | Playwright 스크립트(스크래치패드), 증거 `harness/evidence/swipe-play/s*.png` |
 | AC-1~AC-4 | 단위 | `src/adapters/player.test.ts` |
 | AC-5, AC-6 | 단위 | `src/community/components/LickCard.test.tsx` |
-| AC-7~AC-18 | 단위 | `src/community/components/PlayOverlay.test.tsx` |
-| AC-19 | 단위 | `src/community/views/Feed.test.tsx` |
+| AC-7~AC-16, AC-18 | 단위 | `src/community/components/PlayOverlay.test.tsx` |
+| AC-17, AC-19 | 단위 | `src/community/views/Feed.test.tsx` |
 
 ## 검증 증거
 
