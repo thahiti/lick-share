@@ -3,6 +3,20 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  build: {
+    rolldownOptions: {
+      output: {
+        // 앱 코드와 바뀌지 않는 라이브러리를 나눈다. 한 덩어리면 500KB를 넘어
+        // 경고가 나고, 앱만 고쳐도 사용자가 React와 supabase-js를 다시 받는다.
+        codeSplitting: {
+          groups: [
+            { name: 'react', test: /node_modules\/(react|react-dom|scheduler)\// },
+            { name: 'supabase', test: /node_modules\/@supabase\// },
+          ],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
