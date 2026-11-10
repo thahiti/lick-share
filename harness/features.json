@@ -224,6 +224,23 @@
           "note": "하네스 이전 작업. 승인 기록과 증거 없음"
         }
       ]
+    },
+    {
+      "id": "seed-licks",
+      "title": "릭 모음을 전용 계정으로 커뮤니티 DB 에 시드",
+      "ref": "content/licks 네 모음, DECISIONS 2026-11-10",
+      "track": "light",
+      "deps": [
+        "community"
+      ],
+      "stage": "intake",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-11-10",
+          "stage": "intake"
+        }
+      ]
     }
   ]
 }
