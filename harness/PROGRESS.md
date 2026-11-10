@@ -7,25 +7,24 @@
 
 - 운영: https://lickshare.pages.dev (Cloudflare Pages 프로젝트 `lickshare`). 2026-11-10 배포본은 main `9d18db4`(adaptive bars per line 머지까지)의 빌드다. 번들은 앱, react, supabase 세 덩어리.
 - DB: Supabase 프로젝트 `tejndnivhbdxfstgybmm`. 2026-11-10 에 표시 이름 unique 인덱스, 길이 제약, 가입 trigger, 열 권한을 적용했다. 저장소 `supabase/schema.sql` 과 같은 상태. 같은 날 시드 계정 Lick Library(`public_id` JSztbE7e)로 릭 383건을 넣었다. 스키마 변경은 없다.
-- 테스트: 71 파일 691개 통과. 게이트는 `harness/check.sh`.
-- 진행 중 기능: `swipe-play` (verify, `feature/swipe-play`). 미리보기 https://preview-swipe-play.lickshare.pages.dev (브랜치 배포, 운영본 아님). `seed-licks` 는 하네스 파이프라인을 처음으로 끝까지(intake, plan, spec, implement, verify, done) 거친 기능이다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
-- 기준 커밋: `d9c8f92` (swipe-play 명세 승인 커밋).
+- 테스트: 71 파일 692개 통과. 게이트는 `harness/check.sh`.
+- 진행 중 기능: 없음. `seed-licks`(light)와 `swipe-play`(full)가 하네스 파이프라인을 끝까지(intake, plan, design, spec, implement, verify, done) 거쳤다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
+- 기준 커밋: 없음.
 
 ## 마지막 작업
 
 - 2026-11-09: Cloudflare API 토큰 배포 전환, 데스크톱 피드 한 열, 표시 이름 편집과 유일성(`feature/nickname-edit`).
 - 2026-11-10: 표시 이름 DB 마이그레이션 실행과 배포. 아바타 메뉴가 항목 선택 뒤 안 닫히던 버그 수정과 배포. 부채 정리(`.wrangler/` 무시, README 갱신, React 와 supabase-js 덩어리 분리). 문서를 성격별, 기능별 폴더로 재편하고 릭 모음을 `content/licks/` 로 분리해 커밋. 청음 훈련 기획 초안 커밋. whooing 방식 하네스 도입. 저장소 밖 잔재(handoff 폴더, 옛 프로토타입, lick_gen, lick_like, .superpowers, AGENTS.md, .agents)를 휴지통으로 이동. 하네스 머지본 배포.
 - 2026-11-10: 모바일 앱 바 좌우 여백 12px 추가와 돋보기 버튼 지름을 아바타와 같은 34px 로 통일(`fix/mobile-appbar-spacing`). 로고와 아바타가 카드 모서리에 정렬된다. main `2dd4391` 로 머지, 푸시, 배포 완료.
+- 2026-11-11: `swipe-play` 검증. 평가자 1차 NEEDS_WORK(카운트다운 중 멈춘 뒤 재개가 0 부터가 아님, 카드 버튼 그림자 하드코딩)를 고쳐 2차 PASS(`harness/evidence/swipe-play/verdict.md`). 명세 R3, R6, R15 를 평가자 발견대로 재승인. 휴대폰 확인 뒤 done.
 - 2026-11-10: `swipe-play` 구현 T1~T8 (`feature/swipe-play`). 플레이어 간격 반복과 onGap, 카드 재생 버튼, 목록 위 오버레이(history 항목 하나, 현재 장 판정 120ms 유지, 멈춤과 재개, 미리 불러오기, 힌트, 카운트다운, 좋아요와 공유와 복제 편집, 키보드와 데스크톱, 긴 릭 스크롤). S1~S5, S8~S16 은 Playwright 로 통과하고 스크린샷을 남겼다. S6, S7 은 기본 출력 장치(Duet USB)가 잠들어 Web Audio 시계가 서는 바람에 장치를 살린 뒤에야 스크린샷을 받았다(교훈은 메모리와 verify 스킬 참고).
 - 2026-11-10: 악보 가독성 실측과 줄당 마디 수 적응(`fix/adaptive-bars-per-line`). Playwright 로 6개 뷰포트를 찍어 보니 줄당 4마디 고정 탓에 폰(악보 폭 340)은 인접 음표의 77% 가 겹쳤다. 폭과 밀도로 줄당 마디 수를 4, 2, 1 로 정하고(SPEC 3.2 절) 줄 경계 타이 조각을 넣었다. 시드 릭은 WJazzD 원본과 대조해 마디 압축이 없음을 확인했다. 템포는 원본과 같되 240 상한에 잘린 릭이 wjazzd 89건, omnibook 8건이고, 같은 스텝에 두 음이 시작하는 릭이 wjazzd 58건 있다.
 - 2026-11-10: `seed-licks`. 릭 모음 네 개의 유일 383건을 시드 계정 Lick Library(randylee82@gmail.com, `public_id` JSztbE7e)로 운영 DB 에 넣었다. `scripts/seed-licks.ts`(md 파싱, 해시 검증, melody_hash, 태그, 날짜 분산, SQL 생성)와 단위 테스트 10건, `scripts/sbquery.mjs`(Management API 도구), 기획과 명세, 증거와 PASS 판정. Hooktheory 는 보류. main `da09839` 로 머지, 푸시, 배포.
 
 ## 다음 행동
 
-1. `swipe-play` 검증 마무리. 평가자 판정, 휴대폰에서 미리보기 확인, done, 머지, 배포.
-2. 명세 R6 재승인. 구현은 60% 판정이 120ms 유지될 때 현재 장을 바꾼다(E3, S8 을 위해). 승인되면 `approve swipe-play spec --note` 로 기록하고 03-spec.md R6 에 적는다.
-3. 청음 훈련: `docs/product/ear-training-plan.md` 10절의 Q1~Q6 답을 받고 `/feature-intake` 로 기능 7개(`playlist-schema`, `playlist-build`, `playlist-play`, `quiz-grading`, `quiz-session`, `quiz-result`, `mobile-audio`)를 등록한다.
-4. 첫 기능을 `start` 하고 `/feature-plan`.
+1. 청음 훈련: `docs/product/ear-training-plan.md` 10절의 Q1~Q6 답을 받고 `/feature-intake` 로 기능 7개(`playlist-schema`, `playlist-build`, `playlist-play`, `quiz-grading`, `quiz-session`, `quiz-result`, `mobile-audio`)를 등록한다.
+2. 첫 기능을 `start` 하고 `/feature-plan`.
 
 ## 막힌 것
 
@@ -50,6 +49,8 @@
 - 계획 문서 8개의 체크박스는 항목별로 검증하지 않고 머리글로 완료를 표시했다. 필요하면 항목별로 확인한다.
 - `seed-licks` 평가자 발견(차단 아님): `scripts/seed-licks-lib.ts` 가 접미 없는 헤딩과 매핑표에 없는 스타일 값을 에러로 처리하는데 명세와 테스트에 없다. 다음에 명세를 손댈 때 엣지케이스와 AC 로 올린다.
 - 악보 가독성 후속 후보(2026-11-10 실측 순): 한 박 안의 8분, 16분 음표를 빔으로 묶기. 임시표를 직전 음표와의 거리에 따라 놓기. 1024px 이상에서 악보 1.2배 확대. 시드 데이터의 같은 스텝 충돌 58건 정리와 240 상한에 잘린 97건의 원곡 템포 표기.
+- `swipe-play` 평가자 발견(차단 아님): Feed 가 startIndex 를 `Math.min(playAt, licks.length - 1)` 로 넘겨, 열린 채 목록이 줄면 R5 효과가 다시 돌아 멈춘 상태여도 마지막 장이 0 부터 재생된다. UI 로는 도달하기 어렵다. startIndex 를 고정하고 E4 효과에 맡기면 된다.
+- `swipe-play` 다음 기능 후보: 오버레이 안 태그와 작성자 링크(태그로 이어 듣기), 검색 결과 카드의 재생 버튼, 연습 장면(클릭 예비박, 템포 조절).
 - 열람 카드에서 한 마디에 코드가 둘이면(예 2마디 턴어라운드의 `Cmaj7 A7`) 코드 라벨이 겹쳐 그려진다. 시드 릭 확인 중 발견. 코드 라벨 간격 조정 후보.
 
 ## 새 세션이 읽을 순서
