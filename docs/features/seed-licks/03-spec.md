@@ -97,7 +97,8 @@ S3. Given S2 파일. When `node scripts/sbquery.mjs < 파일` 을 두 번 실행
 S4. Given S3. When `select min(created_at), max(created_at), count(distinct created_at) from licks where author_id = '<시드 id>'`. Then `2026-03-01 00:00:00+00`, `2026-05-31 12:30:00+00`, 383 이다. `select display_name from profiles where id = '<시드 id>'` 는 `Lick Library` 다. 증거: `s4-dates.txt`.
 S5. Given S3. When 휴대폰 폭 390px 에서 `/user/JSztbE7e` 를 연다. Then 표시 이름 `Lick Library` 와 릭 카드가 보인다. When 첫 카드를 누른다. Then `/lick/:id` 에서 악보가 그려지고 재생 버튼을 누르면 재생 상태로 바뀐다. 증거: `s5-user.png`, `s5-lick.png`.
 S6. Given S3. When 검색에 `ii-v-i` 를 넣고 Enter. Then 결과에 태그 `#ii-v-i` 가 붙은 시드 릭이 있다. When 검색에 `Donna Lee` 를 넣고 Enter. Then 제목 `Donna Lee ii-V-I Bebop Line` 이 있다. 증거: `s6-search-tag.png`, `s6-search-title.png`.
-S7. Given 시드 전에 Latest 첫 페이지 카드 제목 목록을 `s7-latest-before.txt` 에 기록했다. When 시드 뒤 `/` 를 연다. Then 첫 페이지 카드 제목 목록이 같다. 증거: `s7-latest-before.txt`, `s7-latest-after.txt`, `s7-latest.png`.
+S7. Given 시드 전에 Latest 첫 페이지 카드 제목 목록을 `s7-latest-before.txt` 에 기록했다. When 시드 뒤 `/` 를 연다. Then 시드 전 목록이 시드 후 첫 페이지의 맨 앞에 같은 순서로 있고, 시드 릭은 그 뒤에만 온다. 증거: `s7-latest-before.txt`, `s7-latest-after.txt`, `s7-latest.png`.
+    (2026-11-10 재승인. 처음 문구 "목록이 같다" 는 게시물이 한 페이지 20건보다 적을 때 성립할 수 없어 고쳤다. 시드 전 게시물은 4건이었다.)
 
 ## 단위 기준 (AC-n)
 
