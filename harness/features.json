@@ -289,7 +289,7 @@
       "deps": [
         "community"
       ],
-      "stage": "verify",
+      "stage": "implement",
       "approved": {
         "plan": {
           "date": "2026-11-10",
@@ -338,6 +338,12 @@
           "stage": "verify",
           "model": "fable",
           "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "implement",
+          "model": null,
+          "note": "NEEDS_WORK: R7 카운트다운 중 멈춤 뒤 재개가 0 부터가 아님, .c-card-play 그림자 색 하드코딩"
         }
       ]
     }
