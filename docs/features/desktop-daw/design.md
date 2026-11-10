@@ -1,7 +1,7 @@
 # ScoreLink 데스크톱 DAW 편집 화면 설계 (P11 v2)
 
 작성일: 2026-07-12
-대체: `2026-07-12-desktop-responsive-design.md`의 레이아웃 부분(§4·§5·§7).
+대체: `../desktop-responsive/design.md`의 레이아웃 부분(§4·§5·§7).
 키보드 단축키(동 문서 §6)는 그대로 유지·재사용한다.
 
 ## 1. 배경과 목표
@@ -130,8 +130,8 @@ core 변경 없음 — ctx의 curM만 바꿔 기존 순수 함수를 그대로 �
 | `src/styles/tokens.css` | `.daw` 토큰 블록 |
 | `src/styles/daw.css` | 신규 — DAW 구조 스타일 |
 | `src/styles/global.css` | 기존 ≥900px 2패널 그리드 블록 제거 |
-| `docs/DESIGN.md` §7 | 데스크톱 규격을 DAW로 교체 |
-| `docs/e2e-checklist.md` | 데스크톱 섹션 교체 |
+| `docs/product/DESIGN.md` §7 | 데스크톱 규격을 DAW로 교체 |
+| `docs/checklists/e2e-checklist.md` | 데스크톱 섹션 교체 |
 
 ## 8. 테스트 전략
 

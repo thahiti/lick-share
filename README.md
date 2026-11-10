@@ -6,7 +6,7 @@
 곡 전체가 URL에 인코딩되기 때문이다.
 로그인한 사용자가 릭을 게시하고 좋아요를 주고받는 커뮤니티만 Supabase를 쓴다.
 
-프로토타입(`docs/prototype-reference.html`)으로 검증된 동작을
+프로토타입(`docs/product/prototype-reference.html`)으로 검증된 동작을
 TypeScript + React로 재작성한 프로젝트다. URL 해시는 `v2` 형식만 지원한다.
 구버전 `v1.` 해시의 하위 호환은 2026-07-15에 폐기했다.
 
@@ -40,8 +40,8 @@ ui       React 컴포넌트 + Zustand 스토어(core 순수 함수 래핑만)
 ```
 
 순수 레이어는 전용 tsconfig(lib에서 DOM 제거)와 ESLint 제한으로 강제된다.
-자세한 규칙은 `CLAUDE.md`, 명세는 `docs/SPEC.md`, 설계는
-`docs/superpowers/specs/2026-07-12-ts-react-rewrite-design.md` 참조.
+자세한 규칙은 `CLAUDE.md`, 명세는 `docs/product/SPEC.md`, 설계는
+`docs/features/rewrite/design.md` 참조.
 
 ## 배포
 
@@ -50,7 +50,7 @@ ui       React 컴포넌트 + Zustand 스토어(core 순수 함수 래핑만)
 데이터 전부다. 커뮤니티 기능은 아래 "커뮤니티" 절의 Supabase 설정이 필요하다.
 
 운영 배포는 Cloudflare Pages를 사용한다. 빌드, 배포 명령, 필수 설정(SPA rewrite,
-환경 변수), 캐시, 롤백 절차는 `docs/DEPLOY.md` 참조.
+환경 변수), 캐시, 롤백 절차는 `docs/ops/DEPLOY.md` 참조.
 
 ## 커뮤니티
 
@@ -88,6 +88,6 @@ npm run dev
 
 ## 수동 점검
 
-릴리스 전 `docs/e2e-checklist.md`의 시나리오를 실기기에서 확인한다
-(iOS 해시 길이 실측 항목 포함). 커뮤니티 기능은 `docs/community-e2e-checklist.md`를
+릴리스 전 `docs/checklists/e2e-checklist.md`의 시나리오를 실기기에서 확인한다
+(iOS 해시 길이 실측 항목 포함). 커뮤니티 기능은 `docs/checklists/community-e2e-checklist.md`를
 별도로 확인한다.

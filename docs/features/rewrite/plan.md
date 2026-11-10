@@ -1,5 +1,8 @@
 # ScoreLink 구현 계획 — Claude Code 자율 실행용
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 각 Phase는 독립 커밋 단위. **완료 기준(DoD)을 전부 만족해야 다음 Phase로 진행한다.** 모든 Phase에서 공통 게이트: `npm run typecheck` 무오류, `npm test` 전체 통과(이전 Phase 테스트 포함), `node scripts/check-no-smp.js` 통과. 사양 근거는 SPEC.md(§ 표기), 스타일은 DESIGN.md, 구조는 ARCHITECTURE.md, 동작 레퍼런스는 prototype-reference.html.
 
 ---

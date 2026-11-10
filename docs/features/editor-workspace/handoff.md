@@ -1,9 +1,12 @@
 # 에디터 워크스페이스 UI 레이어 — 구현 핸드오프
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 - 작성일: 2026-07-13
 - 대상 브랜치: `feat/editor-workspace-ui` (main에서 분기)
 - 상태: **UI 레이어 미착수. 로직 기반은 main에 병합·배포 완료.**
-- 설계 원본: `docs/superpowers/specs/2026-07-13-editor-workspace-design.md` (승인됨) — **이 문서와 함께 반드시 정독**
+- 설계 원본: `docs/features/editor-workspace/design.md` (승인됨) — **이 문서와 함께 반드시 정독**
 - 목적: 새 세션에서 이 문서만 보고 UI 레이어를 이어서 구현할 수 있도록 현상태·API·구현 지침·함정을 모두 정리
 
 ---
@@ -186,7 +189,7 @@ setTitle(title): void                  // 제목 갱신 (undo 미적용 — 메�
 - **PropertyPanel**: 제목 입력 → `onSetTitle`, 음길이 세그먼트 클릭 → `onSetLen(step)`·선택 표시, 쉼표 → `onDelete`, 스테퍼(pitch/pos/len) 디스패치·미선택 비활성, 반주 선택.
 - **Workspace/App**: matchMedia 데스크톱 목 → `.ws` 렌더, 코드 슬롯 클릭 → 피커 → Esc 닫힘. 모바일(<1024) → 기존 트리 회귀 없음.
 - **골든 스냅샷(FakeAudioSink)·오디오 경로 불변** — UI만 바꾸므로 스냅샷 변경 금지. `src/core/timeline.ts` 등 순수 로직은 이미 테스트됨.
-- CSS 시각 항목(스크롤 동기·sticky 거터·줌·드래그 커서)은 `docs/e2e-checklist.md`에 항목 추가 후 **브라우저 수동 확인**.
+- CSS 시각 항목(스크롤 동기·sticky 거터·줌·드래그 커서)은 `docs/checklists/e2e-checklist.md`에 항목 추가 후 **브라우저 수동 확인**.
 
 ---
 
@@ -214,7 +217,7 @@ setTitle(title): void                  // 제목 갱신 (undo 미적용 — 메�
 7. **Workspace** 조립 (+test) + `ws.css`.
 8. **App 배선**: useMediaQuery 1024, DawEdit→Workspace, 신규 핸들러.
 9. **제거**: daw/ 트리·daw.css·.daw 토큰. grep로 참조 없음 확인.
-10. `docs/DESIGN.md` §7·`docs/e2e-checklist.md` 데스크톱 섹션 갱신.
+10. `docs/product/DESIGN.md` §7·`docs/checklists/e2e-checklist.md` 데스크톱 섹션 갱신.
 
 각 단계: 테스트 먼저(RED)→구현(GREEN)→게이트 4종(`npm run typecheck && npm run lint && npm test && npm run check-smp`, **exit code 확인**)→커밋(`feat(editor): …`). 브라우저(`npm run dev`, ≥1024px)로 시각 확인.
 

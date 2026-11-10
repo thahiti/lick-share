@@ -1,10 +1,13 @@
 # Unified Nav + Share Screen Implementation Plan
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 두 장치(모바일/데스크톱)의 상단 메뉴를 단일 NAV 모델로 통일하고, 편집자용 View 모드를 재생 가능한 Share 화면(/publish)으로 통합한다.
 
-**Architecture:** 메뉴 항목을 `src/community/nav-items.ts` 한 곳에 정의하고 렌더러(AppBar·Sidebar·TabBar·MobileAppBar)가 공유한다. `/edit`는 몰입형을 유지하되 좌상단 ←Back(마지막 커뮤니티 라우트 복귀)과 Share 단일 버튼으로 정리한다. `/publish`는 미리보기+재생+Copy link+게시가 모인 Share 화면이 된다. 스펙: `docs/superpowers/specs/2026-07-14-unified-nav-share-design.md`.
+**Architecture:** 메뉴 항목을 `src/community/nav-items.ts` 한 곳에 정의하고 렌더러(AppBar·Sidebar·TabBar·MobileAppBar)가 공유한다. `/edit`는 몰입형을 유지하되 좌상단 ←Back(마지막 커뮤니티 라우트 복귀)과 Share 단일 버튼으로 정리한다. `/publish`는 미리보기+재생+Copy link+게시가 모인 Share 화면이 된다. 스펙: `docs/features/unified-nav-share/design.md`.
 
 **Tech Stack:** React 19 + TypeScript(strict), zustand, vitest + @testing-library/react. 라우팅은 자체 `src/community/routing.ts`(경로 기반).
 

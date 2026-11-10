@@ -1,7 +1,7 @@
 # 쉽게 읽는 ScoreLink 구조 이야기
 
 > 초등학생도 읽을 수 있게 쓴 설계 설명서예요.
-> 정확한 어른용 설명은 `ARCHITECTURE.md`와 `superpowers/specs/`를 보세요.
+> 정확한 어른용 설명은 `ARCHITECTURE.md`와 `features/`를 보세요.
 
 ## 1. 이 앱은 뭘 하는 앱이야?
 

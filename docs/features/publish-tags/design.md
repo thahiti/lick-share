@@ -2,7 +2,7 @@
 
 - 작성일: 2026-07-13
 - 상태: 승인됨 (구현 대기)
-- 관련: `docs/superpowers/specs/2026-07-12-community-design.md` (§범위 제외에서 태그·검색을 성장 후로 유보한 결정을 이 스펙이 부분 해제 — 단, **태그 저장·표시까지만**, 검색·브라우즈는 여전히 유보)
+- 관련: `docs/features/community/design.md` (§범위 제외에서 태그·검색을 성장 후로 유보한 결정을 이 스펙이 부분 해제 — 단, **태그 저장·표시까지만**, 검색·브라우즈는 여전히 유보)
 
 ## 1. 목적과 범위
 
@@ -37,7 +37,7 @@ tags text[] not null default '{}'
 - **`melody_hash`에는 태그를 절대 포함하지 않는다** (CLAUDE.md 규칙: melody_hash 직렬화 대상은 피치 델타·시작 오프셋·길이 삼중항뿐). 태그는 곡 동일성과 무관하므로 중복 판정에 영향을 주지 않는다.
 - **`ranking` 뷰**(현재 line 93-105)의 select 목록에도 `tags`를 추가한다 — 랭킹 화면 카드도 동일하게 칩을 표시하기 위함.
 
-`docs/superpowers/specs/2026-07-12-community-design.md` Appendix A의 DDL 사본도 동일하게 갱신한다(문서 정합성).
+`docs/features/community/design.md` Appendix A의 DDL 사본도 동일하게 갱신한다(문서 정합성).
 
 ## 3. 정규화 — 신규 순수 함수 `src/community/tags.ts`
 

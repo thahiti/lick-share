@@ -2,9 +2,9 @@
 
 ## 프로젝트 컨텍스트
 
-프로토타입(docs/prototype-reference.html)으로 검증 완료된 악보 공유 앱을 제품 코드로 재작성한다.
-문서 우선순위: docs/superpowers/specs/2026-07-12-ts-react-rewrite-design.md(구조) > docs/SPEC.md(기능·알고리즘) > docs/DESIGN.md(스타일) > 프로토타입(동작 참고).
-진행은 설계 문서 §4의 Phase(P0~P10) 순서를 따르고, 각 Phase의 DoD(docs/IMPLEMENTATION_PLAN.md 수치)를 전부 만족한 뒤 다음으로 넘어간다.
+프로토타입(docs/product/prototype-reference.html)으로 검증 완료된 악보 공유 앱을 제품 코드로 재작성한다.
+문서 우선순위: docs/features/rewrite/design.md(구조) > docs/product/SPEC.md(기능·알고리즘) > docs/product/DESIGN.md(스타일) > 프로토타입(동작 참고).
+진행은 설계 문서 §4의 Phase(P0~P10) 순서를 따르고, 각 Phase의 DoD(docs/features/rewrite/plan.md 수치)를 전부 만족한 뒤 다음으로 넘어간다.
 
 ## 레이어 규칙 (컴파일러·린터로 강제됨)
 
@@ -32,7 +32,7 @@
   점유하고 있으므로 해시 기반 라우팅 금지.
 - `service_role` key는 코드·환경 변수 어디에도 절대 넣지 않는다. 프론트는 `anon` key + RLS로만 권한을 통제한다.
 - `melody_hash` 직렬화 대상은 노트의 피치 델타·시작 오프셋·길이 삼중항뿐이다. 템포·코드·조성·제목은
-  절대 포함하지 않는다(docs/superpowers/specs/2026-07-12-community-design.md의 melody_hash 알고리즘 절 참조).
+  절대 포함하지 않는다(docs/features/community/design.md의 melody_hash 알고리즘 절 참조).
 
 ## 작업 방식
 

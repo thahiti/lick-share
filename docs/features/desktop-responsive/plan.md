@@ -1,5 +1,8 @@
 # 데스크톱 반응형 (P11) Implementation Plan
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** ScoreLink를 모바일 회귀 없이 데스크톱에서 좌우 2패널 편집·풀 키보드 단축키·여백/호버 피드백으로 원활히 쓰도록 한다.
@@ -648,8 +651,8 @@ git commit -m "feat(ui): 데스크톱 2패널 레이아웃·여백·호버 피�
 ### Task 5: 문서 갱신 (DESIGN §7, e2e 체크리스트)
 
 **Files:**
-- Modify: `docs/DESIGN.md` (§7)
-- Modify: `docs/e2e-checklist.md`
+- Modify: `docs/product/DESIGN.md` (§7)
+- Modify: `docs/checklists/e2e-checklist.md`
 
 **Interfaces:** 없음(문서만).
 
@@ -665,7 +668,7 @@ git commit -m "feat(ui): 데스크톱 2패널 레이아웃·여백·호버 피�
 
 - [ ] **Step 2: e2e 체크리스트에 데스크톱 항목 추가**
 
-`docs/e2e-checklist.md` 끝에 섹션 추가:
+`docs/checklists/e2e-checklist.md` 끝에 섹션 추가:
 
 ```markdown
 ## 데스크톱 반응형 (P11)
@@ -685,7 +688,7 @@ Run: `npm run check-smp`
 Expected: PASS.
 
 ```bash
-git add docs/DESIGN.md docs/e2e-checklist.md
+git add docs/product/DESIGN.md docs/checklists/e2e-checklist.md
 git commit -m "docs: 데스크톱 반응형 규격·e2e 체크리스트 반영"
 ```
 

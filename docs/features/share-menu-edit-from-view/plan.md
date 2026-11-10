@@ -1,5 +1,8 @@
 # Share Menu + Edit-from-View Implementation Plan
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 편집기 Share 버튼을 Publish/Copy link 팝오버로 확장하고, 커뮤니티 릭 상세에 "Duplicate & edit" 편집 진입을 추가한다.

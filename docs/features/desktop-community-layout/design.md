@@ -2,8 +2,8 @@
 
 - 작성일: 2026-07-13
 - 상태: 승인됨 (구현 대기)
-- 관련: `2026-07-12-community-design.md`(커뮤니티 기능·데이터), `2026-07-13-publish-tags-design.md`(tags 컬럼 — 병렬 진행 중),
-  `2026-07-13-editor-workspace-design.md`(에디터 측 개편 — 본 문서의 토큰을 공유)
+- 관련: `../community/design.md`(커뮤니티 기능·데이터), `../publish-tags/design.md`(tags 컬럼 — 병렬 진행 중),
+  `../editor-workspace/design.md`(에디터 측 개편 — 본 문서의 토큰을 공유)
 
 ## 1. 배경과 목표
 
@@ -36,7 +36,7 @@ Swiss 모노(잉크+레드 포인트) 팔레트는 에디터 프로토타입에�
 - 색상은 tokens.css 변수만 사용(하드코딩 금지). SMP 유니코드 음악 기호 금지 — 아이콘 전부 SVG 패스.
 - 골든 스냅샷(FakeAudioSink) 불변 — 오디오 경로 무변경.
 - **Publish는 사이드바·AppBar에 넣지 않는다** — 게시 진입은 에디터 Share 경유만
-  (`2026-07-13-share-menu-edit-from-view-design.md` 결정 유지).
+  (`../share-menu-edit-from-view/design.md` 결정 유지).
 - 게이트 4종(`typecheck / lint / test / check-smp`) 통과.
 
 ## 4. 토큰 (tokens.css :root에 추가 — 전역 적용)

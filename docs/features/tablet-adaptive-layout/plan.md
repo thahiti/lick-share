@@ -1,14 +1,17 @@
 # 모바일 유동 패드 + 태블릿 티어 Implementation Plan
 
+> 상태: 구현 완료. 하네스 도입(2026-11-10) 전 superpowers 형식으로 쓴 문서라
+> 체크박스는 구현 당시 갱신하지 않았다. 완료 근거는 git log 와 테스트다.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** 모바일 편집 화면에서 남는 세로 공간을 피아노롤이 흡수하게 하고(전 모바일 폭), 640–1023px 태블릿 티어에 컨테이너 680px + 스테퍼 1줄을 추가한다.
 
 **Architecture:** 순수 CSS 변경. `.app`(100dvh flex 컬럼) 아래 `.pane-edit`→`.pad`→`.pad-scroll`로 flex-grow 체인을 만들어 고정 156px 패드를 유동화하고, 태블릿 구간은 미디어 쿼리 하나로 폭·스테퍼만 오버라이드한다. JS·컴포넌트 변경 없음.
 
-**Tech Stack:** CSS (src/styles/global.css), HTML meta (index.html), 문서 (docs/DESIGN.md)
+**Tech Stack:** CSS (src/styles/global.css), HTML meta (index.html), 문서 (docs/product/DESIGN.md)
 
-**Spec:** docs/superpowers/specs/2026-07-14-tablet-adaptive-layout-design.md
+**Spec:** docs/features/tablet-adaptive-layout/design.md
 
 ## Global Constraints
 
@@ -175,7 +178,7 @@ git commit -m "feat(layout): add tablet tier width and one-row steppers"
 ### Task 3: DESIGN.md §7 레이아웃 갱신
 
 **Files:**
-- Modify: `docs/DESIGN.md` §7 (≈103–107행)
+- Modify: `docs/product/DESIGN.md` §7 (≈103–107행)
 
 **Interfaces:**
 - Consumes: Task 1–2의 확정 동작
@@ -196,6 +199,6 @@ Run: `npm run typecheck && npm run lint && npm test && npm run check-smp`
 Expected: 전부 통과
 
 ```bash
-git add docs/DESIGN.md
+git add docs/product/DESIGN.md
 git commit -m "docs(design): document fluid pad and tablet tier in layout"
 ```

@@ -2,11 +2,11 @@
 
 - 작성일: 2026-07-13
 - 상태: 승인됨 (구현 대기)
-- **대체: `2026-07-12-desktop-daw-design.md`의 레이아웃 전부** — 다크 DAW(트랜스포트 바 /
+- **대체: `../desktop-daw/design.md`의 레이아웃 전부** — 다크 DAW(트랜스포트 바 /
   코드 레일 / 피아노롤 / 인스펙터)를 라이트 워크스페이스로 전면 교체한다.
   동 문서의 편집 의미론(피아노롤 클릭 = padTap 경로)과 `padTapAt` 스토어 액션은 유지·재사용.
-- 관련: `2026-07-13-desktop-community-layout-design.md` (브랜드 토큰을 공유),
-  `2026-07-12-desktop-responsive-design.md` §6 (키보드 단축키 — 유지 + A~G 확장)
+- 관련: `../desktop-community-layout/design.md` (브랜드 토큰을 공유),
+  `../desktop-responsive/design.md` §6 (키보드 단축키 — 유지 + A~G 확장)
 
 ## 1. 배경과 목표
 
@@ -137,7 +137,7 @@ Workspace (구 DawEdit 대체, .ws 스코프)
 - Workspace 구조 테스트 (기존 daw 테스트를 새 구조로 이전·교체 — DawTopBar/Inspector/
   PianoRoll 테스트 대체).
 - 골든 스냅샷·모바일(<1024px) 기존 테스트 전부 그대로 통과.
-- CSS 시각 항목(스크롤 동기·sticky 거터·줌)은 `docs/e2e-checklist.md` 갱신 후 수동 확인.
+- CSS 시각 항목(스크롤 동기·sticky 거터·줌)은 `docs/checklists/e2e-checklist.md` 갱신 후 수동 확인.
 
 ## 9. 완료 정의 (DoD)
 

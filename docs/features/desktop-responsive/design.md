@@ -156,7 +156,7 @@ ScoreLink는 모바일 우선으로 설계되어 `.app`이 `max-width:420px` 고
 | `src/ui/components/App.tsx` | pane 래핑, ref 이전(ResizeObserver), 키보드 훅 연결, `.app--view` 클래스 |
 | `src/ui/hooks/useKeyboardShortcuts.ts` | 신규 — 전역 keydown 등록/해제 + 매핑 |
 | `src/styles/global.css` | `.pane-*` 레이아웃, 데스크톱 미디어쿼리, 호버/포커스 |
-| `docs/DESIGN.md` | §7에 데스크톱 브레이크포인트·2패널 규격 추가 |
+| `docs/product/DESIGN.md` | §7에 데스크톱 브레이크포인트·2패널 규격 추가 |
 
 core/engine/ports/adapters 및 오디오·조판 코드는 **불변**.
 
