@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "active": "seed-licks",
+  "active": null,
   "stages": [
     "intake",
     "plan",
@@ -233,7 +233,7 @@
       "deps": [
         "community"
       ],
-      "stage": "verify",
+      "stage": "done",
       "approved": {
         "plan": {
           "date": "2026-11-10",
@@ -270,6 +270,12 @@
         {
           "date": "2026-11-10",
           "stage": "verify",
+          "model": "opus",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "done",
           "model": "opus",
           "note": ""
         }
