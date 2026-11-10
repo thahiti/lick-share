@@ -32,6 +32,8 @@ describe('AppBar', () => {
     fireEvent.click(avatar);
     fireEvent.click(screen.getByRole('menuitem', { name: 'My licks' }));
     expect(navigate).toHaveBeenCalledWith('/me');
+    // 항목을 고르면 메뉴가 닫히므로 다시 연다
+    fireEvent.click(avatar);
     fireEvent.click(screen.getByRole('menuitem', { name: 'Sign out' }));
     expect(onSignOut).toHaveBeenCalled();
   });
