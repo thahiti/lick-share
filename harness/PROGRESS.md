@@ -5,7 +5,7 @@
 
 ## 현재 상태
 
-- 운영: https://lickshare.pages.dev (Cloudflare Pages 프로젝트 `lickshare`). 2026-11-10 배포본은 main `e394af8`(아바타 메뉴 수정까지)의 빌드다. 그 뒤 main 에 들어간 번들 분할, 문서 재편, 하네스는 아직 배포하지 않았다. 화면은 같고 번들 구성만 달라진다.
+- 운영: https://lickshare.pages.dev (Cloudflare Pages 프로젝트 `lickshare`). 2026-11-10 배포본은 main `97fb682`(하네스 머지까지)의 빌드다. 번들은 앱, react, supabase 세 덩어리.
 - DB: Supabase 프로젝트 `tejndnivhbdxfstgybmm`. 2026-11-10 에 표시 이름 unique 인덱스, 길이 제약, 가입 trigger, 열 권한을 적용했다. 저장소 `supabase/schema.sql` 과 같은 상태.
 - 테스트: 68 파일 645개 통과. 게이트는 `harness/check.sh`.
 - 진행 중 기능: 없음. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
@@ -14,17 +14,12 @@
 ## 마지막 작업
 
 - 2026-11-09: Cloudflare API 토큰 배포 전환, 데스크톱 피드 한 열, 표시 이름 편집과 유일성(`feature/nickname-edit`).
-- 2026-11-10: 표시 이름 DB 마이그레이션 실행과 배포. 아바타 메뉴가 항목 선택 뒤 안 닫히던 버그 수정과 배포. 부채 정리(`.wrangler/` 무시, README 갱신, React 와 supabase-js 덩어리 분리). 문서를 성격별, 기능별 폴더로 재편하고 릭 모음을 `content/licks/` 로 분리해 커밋. 청음 훈련 기획 초안 커밋. whooing 방식 하네스 도입.
+- 2026-11-10: 표시 이름 DB 마이그레이션 실행과 배포. 아바타 메뉴가 항목 선택 뒤 안 닫히던 버그 수정과 배포. 부채 정리(`.wrangler/` 무시, README 갱신, React 와 supabase-js 덩어리 분리). 문서를 성격별, 기능별 폴더로 재편하고 릭 모음을 `content/licks/` 로 분리해 커밋. 청음 훈련 기획 초안 커밋. whooing 방식 하네스 도입. 저장소 밖 잔재(handoff 폴더, 옛 프로토타입, lick_gen, lick_like, .superpowers, AGENTS.md, .agents)를 휴지통으로 이동. 하네스 머지본 배포.
 
 ## 다음 행동
 
-1. 저장소 밖 정리는 사용자가 직접 실행한다(권한 분류기가 막음). 휴지통 이동이라 되돌릴 수 있다.
-   ```
-   for p in /Users/randy/claude_code/lick_share/scorelink-handoff /Users/randy/claude_code/lick_share/score-link-prototype_1.html /Users/randy/claude_code/lick_share/harness.md /Users/randy/claude_code/lick_share/history_modi /Users/randy/claude_code/lick_share/node_modules /Users/randy/claude_code/lick_share/.claude /Users/randy/claude_code/lick_share/.DS_Store /Users/randy/claude_code/lick_gen /Users/randy/claude_code/lick_like /Users/randy/claude_code/lick_share/scorelink/.superpowers /Users/randy/claude_code/lick_share/scorelink/AGENTS.md /Users/randy/claude_code/lick_share/scorelink/.agents /Users/randy/claude_code/lick_share/scorelink/.env.local.swp; do [ -e "$p" ] && /usr/bin/trash "$p"; done
-   ```
-2. `npm run build && npx wrangler pages deploy` 로 번들 분할본을 배포한다(사용자 확인 뒤).
-3. 청음 훈련: `docs/product/ear-training-plan.md` 10절의 Q1~Q6 답을 받고 `/feature-intake` 로 기능 7개(`playlist-schema`, `playlist-build`, `playlist-play`, `quiz-grading`, `quiz-session`, `quiz-result`, `mobile-audio`)를 등록한다.
-4. 첫 기능을 `start` 하고 `/feature-plan`.
+1. 청음 훈련: `docs/product/ear-training-plan.md` 10절의 Q1~Q6 답을 받고 `/feature-intake` 로 기능 7개(`playlist-schema`, `playlist-build`, `playlist-play`, `quiz-grading`, `quiz-session`, `quiz-result`, `mobile-audio`)를 등록한다.
+2. 첫 기능을 `start` 하고 `/feature-plan`.
 
 ## 막힌 것
 
