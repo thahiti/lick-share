@@ -44,6 +44,37 @@ const row = (id: string, song: Song, over: Partial<LickRow> = {}): LickRow => ({
 });
 const rows = [row('a', shifted(0)), row('b', shifted(12)), row('c', shifted(-12))];
 
+type IoCb = (entries: IntersectionObserverEntry[]) => void;
+const observers: { cb: IoCb }[] = [];
+class IoMock {
+  constructor(public cb: IoCb) {
+    observers.push(this);
+  }
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+}
+globalThis.IntersectionObserver = IoMock as unknown as typeof IntersectionObserver;
+
+/** i 번째 장이 60% 이상 보이게 됐다고 알린다 (R6) */
+const settle = (i: number): void => {
+  const page = document.querySelectorAll('.c-play-page')[i];
+  if (!page) throw new Error(`장 ${i} 없음`);
+  act(() => {
+    for (const o of observers)
+      o.cb([{ target: page, isIntersecting: true, intersectionRatio: 0.8 } as IntersectionObserverEntry]);
+  });
+  act(() => {
+    vi.advanceTimersByTime(200); // SETTLE_MS 를 넘긴다
+  });
+};
+
+const SPS = 60 / demoSong.tempo / 4;
+const EPOCH = 0.06;
+
 let time: { t: number };
 let sink: FakeAudioSink;
 let clock: FakeClock;
@@ -58,6 +89,8 @@ beforeEach(() => {
   player = createPlayer({ sink, clock });
   pushState = vi.spyOn(window.history, 'pushState');
   back = vi.spyOn(window.history, 'back').mockImplementation(() => {});
+  observers.length = 0;
+  vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
   addLike.mockClear();
   removeLike.mockClear();
   fetchMyLikedSet.mockClear();
@@ -68,6 +101,7 @@ beforeEach(() => {
   }
 });
 afterEach(() => {
+  vi.useRealTimers();
   pushState.mockRestore();
   back.mockRestore();
 });
@@ -87,6 +121,7 @@ const mount = (over: Partial<Parameters<typeof PlayOverlay>[0]> = {}) => {
       counts={new Map([['a', 3]])}
       startIndex={1}
       hasMore={false}
+      loadError={false}
       loadMore={loadMore}
       source="Latest"
       player={player}
@@ -120,5 +155,83 @@ describe('PlayOverlay: 열기와 닫기 (swipe-play R4, R5)', () => {
     });
     expect(onClose).toHaveBeenCalledTimes(1);
     expect(player.isPlaying()).toBe(false);
+  });
+});
+
+describe('PlayOverlay: 현재 장과 재생 (swipe-play R6 ~ R10)', () => {
+  test('AC-8 악보 탭은 멈춤, 다시 탭하면 마지막 tick 의 스텝부터 재개', () => {
+    mount();
+    time.t = EPOCH + 4 * SPS + 0.01; // 스텝 4 를 지나는 중
+    act(() => clock.frame());
+    const frame = document.querySelectorAll('.c-play-frame')[1];
+    if (!frame) throw new Error('프레임 없음');
+    fireEvent.click(frame);
+    expect(player.isPlaying()).toBe(false);
+    expect(document.querySelector('.c-play-paused')).not.toBeNull();
+    fireEvent.click(frame);
+    expect(player.isPlaying()).toBe(true);
+    // 둘째 곡(+12)의 스텝 4 음은 69+12 이고 세션 시작(t=0)에 온다
+    expect(firstMelodyMidi()).toBe(81);
+    expect(sink.events.find((e) => e.kind === 'melody')?.t).toBe(0);
+    expect(document.querySelector('.c-play-paused')).toBeNull();
+  });
+
+  test('AC-9 현재 장이 바뀌면 재생 중일 때만 그 곡을 0 부터 재생', () => {
+    mount();
+    settle(2);
+    expect(screen.getByText('3 / 3')).toBeTruthy();
+    expect(firstMelodyMidi()).toBe(64 - 12);
+    const frame = document.querySelectorAll('.c-play-frame')[2];
+    if (!frame) throw new Error('프레임 없음');
+    fireEvent.click(frame); // 멈춤
+    settle(0);
+    expect(screen.getByText('1 / 3')).toBeTruthy();
+    expect(player.isPlaying()).toBe(false);
+    expect(sink.events).toHaveLength(0);
+  });
+
+  test('AC-10 뒤에서 두 번째 장에 이르면 loadMore 한 번, 진행 중에는 다시 부르지 않음', () => {
+    let resolve: ((v: boolean) => void) | null = null;
+    const loadMore = vi.fn(() => new Promise<boolean>((r) => (resolve = r)));
+    mount({ startIndex: 0, hasMore: true, loadMore });
+    expect(loadMore).not.toHaveBeenCalled();
+    settle(1);
+    expect(loadMore).toHaveBeenCalledTimes(1);
+    settle(2);
+    expect(loadMore).toHaveBeenCalledTimes(1);
+    expect(resolve).not.toBeNull();
+  });
+
+  test('E2 불러오기 실패는 마지막 장에 Couldn\'t load more 와 Retry', () => {
+    const { loadMore } = mount({ startIndex: 2, hasMore: true, loadError: true });
+    expect(screen.getByText("Couldn't load more")).toBeTruthy();
+    const calls = loadMore.mock.calls.length;
+    fireEvent.click(screen.getByText('Retry'));
+    expect(loadMore.mock.calls.length).toBe(calls + 1);
+  });
+
+  test('R9 hasMore 가 false 인 마지막 장에는 끝 캡션', () => {
+    mount({ startIndex: 2 });
+    expect(screen.getByText('This is the last lick in Latest')).toBeTruthy();
+  });
+
+  test('AC-13 힌트는 처음 한 번, 장이 바뀌면 사라지고 기록된다', () => {
+    const first = mount();
+    expect(screen.getByText('Swipe up for the next lick')).toBeTruthy();
+    settle(2);
+    expect(screen.queryByText('Swipe up for the next lick')).toBeNull();
+    expect(localStorage.getItem('swipe-play-hint')).toBe('1');
+    first.unmount();
+    mount();
+    expect(screen.queryByText('Swipe up for the next lick')).toBeNull();
+  });
+
+  test('AC-18 읽을 수 없는 blob 의 장은 안내문을 보이고 재생하지 않는다', () => {
+    const broken = rows.map((r, i) => (i === 1 ? row('x', shifted(0), { blob: 'not-a-blob' }) : r));
+    mount({ licks: broken, startIndex: 0 });
+    settle(1);
+    expect(screen.getByText("Couldn't read this score")).toBeTruthy();
+    expect(player.isPlaying()).toBe(false);
+    expect(sink.events).toHaveLength(0);
   });
 });

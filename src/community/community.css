@@ -1491,3 +1491,49 @@ a.c-tag:hover {
     padding-top: 10px;
   }
 }
+.c-play-frame {
+  cursor: pointer;
+}
+/* 멈춤 표시 (R7): 악보 가운데 반투명 원과 재생 삼각형 */
+.c-play-paused {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+.c-play-paused span {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.8;
+  display: grid;
+  place-items: center;
+}
+.c-play-end {
+  margin: 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--mut2);
+}
+/* 처음 한 번 힌트 (R10): 장 아래쪽 가운데 알약 */
+.c-play-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.c-play-panel {
+  position: relative;
+}

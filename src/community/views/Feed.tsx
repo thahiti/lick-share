@@ -121,6 +121,7 @@ const FeedList = ({ authorId, deletable, tag, player, user }: ListProps): JSX.El
           counts={counts}
           startIndex={Math.min(playAt, licks.length - 1)}
           hasMore={!done}
+          loadError={error}
           loadMore={loadMore}
           source={tag ? '#' + tag : authorId ? (licks[0]?.profiles?.display_name ?? 'Licks') : 'Latest'}
           player={player}
