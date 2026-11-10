@@ -169,14 +169,15 @@ export const Score = ({
   onMeasureTap,
   onNoteTap,
 }: ScoreProps): JSX.Element => {
-  const mw = computeMw(song, width);
+  const mpl = LAYOUT.MPL;
+  const mw = computeMw(song, width, mpl);
   const single = mode === 'edit';
   const allCnt = measCountAll(song);
-  const editLine = single && curM !== undefined ? lineOf(song, curM) : 0;
-  const lineCount = single ? 1 : lineOf(song, asBar(allCnt - 1)) + 1;
+  const editLine = single && curM !== undefined ? lineOf(song, curM, mpl) : 0;
+  const lineCount = single ? 1 : lineOf(song, asBar(allCnt - 1), mpl) + 1;
   const height = lineCount * LH + 8;
-  const topFor = (m: BarIndex): number => (single ? 0 : lineOf(song, m)) * LH + 42;
-  const inLine = (m: BarIndex): boolean => !single || lineOf(song, m) === editLine;
+  const topFor = (m: BarIndex): number => (single ? 0 : lineOf(song, m, mpl)) * LH + 42;
+  const inLine = (m: BarIndex): boolean => !single || lineOf(song, m, mpl) === editLine;
 
   const linesToDraw = single ? [editLine] : Array.from({ length: lineCount }, (_, i) => i);
 
@@ -184,18 +185,18 @@ export const Score = ({
     const top = (single ? 0 : li) * LH + 42;
     const measures: BarIndex[] = [];
     for (let m = 0; m < allCnt; m++) {
-      if (lineOf(song, asBar(m)) === li) measures.push(asBar(m));
+      if (lineOf(song, asBar(m), mpl) === li) measures.push(asBar(m));
     }
     if (measures.length === 0) return null;
-    const right = Math.max(...measures.map((m) => measX(song, mw, m) + measW(song, mw, m)));
-    const shade = single && curM !== undefined && lineOf(song, curM) === li ? curM : null;
+    const right = Math.max(...measures.map((m) => measX(song, mw, m, mpl) + measW(song, mw, m)));
+    const shade = single && curM !== undefined && lineOf(song, curM, mpl) === li ? curM : null;
 
     return (
       <g key={`line-${li}`}>
         {shade !== null && (
           <g data-shade={shade}>
             <rect
-              x={measX(song, mw, shade)}
+              x={measX(song, mw, shade, mpl)}
               y={top - 34}
               width={measW(song, mw, shade)}
               height={98}
@@ -203,18 +204,18 @@ export const Score = ({
               opacity={0.055}
             />
             <line
-              x1={measX(song, mw, shade)}
+              x1={measX(song, mw, shade, mpl)}
               y1={top - 34}
-              x2={measX(song, mw, shade)}
+              x2={measX(song, mw, shade, mpl)}
               y2={top + 64}
               stroke="var(--brand-outline)"
               strokeWidth={1.5}
               opacity={0.75}
             />
             <line
-              x1={measX(song, mw, shade) + measW(song, mw, shade)}
+              x1={measX(song, mw, shade, mpl) + measW(song, mw, shade)}
               y1={top - 34}
-              x2={measX(song, mw, shade) + measW(song, mw, shade)}
+              x2={measX(song, mw, shade, mpl) + measW(song, mw, shade)}
               y2={top + 64}
               stroke="var(--brand-outline)"
               strokeWidth={1.5}
@@ -234,7 +235,7 @@ export const Score = ({
         ))}
         <line x1={PAD_X} y1={top} x2={PAD_X} y2={top + 4 * LINEGAP} stroke="var(--staff)" />
         {measures.map((m) => {
-          const bx = measX(song, mw, m) + measW(song, mw, m);
+          const bx = measX(song, mw, m, mpl) + measW(song, mw, m);
           return (
             <line
               key={`bar-${m}`}
@@ -256,7 +257,7 @@ export const Score = ({
             return (
               <text
                 key={`chord-${m}-${b}`}
-                x={posX(song, mw, m, b / beats) - 5}
+                x={posX(song, mw, m, b / beats, mpl) - 5}
                 y={top - 24}
                 fontSize={10.5}
                 fontStyle="italic"
@@ -273,7 +274,7 @@ export const Score = ({
             <rect
               key={`mhit-${m}`}
               data-m={m}
-              x={measX(song, mw, m)}
+              x={measX(song, mw, m, mpl)}
               y={top - 34}
               width={measW(song, mw, m)}
               height={98}
@@ -299,7 +300,7 @@ export const Score = ({
         const segLen = Math.min(rem, measStart(song, m) + measLen(song, m) - s0);
         if (inLine(m)) {
           const top = topFor(m);
-          const x = posX(song, mw, m, (s0 - measStart(song, m)) / measLen(song, m));
+          const x = posX(song, mw, m, (s0 - measStart(song, m)) / measLen(song, m), mpl);
           const pd = pitchDia(n.p);
           const yy = top + 4 * LINEGAP - pd.step * (LINEGAP / 2);
           const selected = single && n.id === sel;
@@ -359,7 +360,7 @@ export const Score = ({
                 /* SPEC §3.2: edit에서 음표 개별 탭 불가 — 마디 히트영역이 탭을 받도록 통과 */
                 <g style={{ pointerEvents: 'none' }}>{glyph}</g>
               )}
-              {prevEnd !== null && prevEnd.line === lineOf(song, m) && (
+              {prevEnd !== null && prevEnd.line === lineOf(song, m, mpl) && (
                 <path
                   data-tie=""
                   d={`M ${prevEnd.x + 6} ${prevEnd.y + 7} Q ${(prevEnd.x + x) / 2} ${prevEnd.y + 14} ${x - 5} ${yy + 7}`}
@@ -370,7 +371,7 @@ export const Score = ({
               )}
             </g>,
           );
-          prevEnd = { x, y: yy, line: lineOf(song, m) };
+          prevEnd = { x, y: yy, line: lineOf(song, m, mpl) };
         } else {
           prevEnd = null;
         }
@@ -388,7 +389,7 @@ export const Score = ({
       return (
         <RestGlyph
           key={`rest-${i}`}
-          x={posX(song, mw, r.m, r.at / len)}
+          x={posX(song, mw, r.m, r.at / len, mpl)}
           top={topFor(r.m)}
           take={r.take === 16 && len < 16 ? 8 : r.take}
         />
@@ -400,7 +401,7 @@ export const Score = ({
     const m = measOf(song, asStep(Math.min(playheadStep, total(song) - 0.001)));
     if (!inLine(m)) return null;
     const top = topFor(m);
-    const x = posX(song, mw, m, (playheadStep - measStart(song, m)) / measLen(song, m));
+    const x = posX(song, mw, m, (playheadStep - measStart(song, m)) / measLen(song, m), mpl);
     return (
       <g data-playhead="">
         <line x1={x} y1={top - 34} x2={x} y2={top + 64} stroke="var(--playhead)" strokeWidth={2} />
