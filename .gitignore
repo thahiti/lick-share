@@ -8,3 +8,6 @@ dist/
 
 # wrangler 로컬 캐시
 .wrangler/
+
+# 하네스 검증 캐시 (check.sh 가 쓴다)
+harness/.last-check
