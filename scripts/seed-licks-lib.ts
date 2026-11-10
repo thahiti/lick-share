@@ -35,13 +35,16 @@ export const parseLicks = (file: string, text: string): ParsedLick[] => {
     const heading = HEADING.exec(line);
     if (!heading) return;
     const number = Number(heading[1]);
+    const where = `${file} ${section} ${number}번 항목`;
     // 릭 이름 안에도 ' — ' 가 올 수 있어 탐욕 매칭으로 마지막 구분자에서 나눈다
     const title = /^(.*) — (.*)$/.exec(heading[2] ?? '');
-    if (!title) throw new Error(`${file} ${section} ${number}번 항목: 헤딩에 ' — ' 접미가 없다`);
+    if (!title) throw new Error(`${where}: 헤딩에 ' — ' 접미가 없다`);
     const [, name = '', suffix = ''] = title;
     const rest = lines.slice(i + 1);
     const end = rest.findIndex(isBoundary);
     const body = end < 0 ? rest : rest.slice(0, end);
+    const hash = LINK.exec(body.join('\n'))?.[1];
+    if (!hash) throw new Error(`${where}: 다음 헤딩 전까지 악보 링크가 없다`);
     licks.push({
       file,
       section,
@@ -49,7 +52,7 @@ export const parseLicks = (file: string, text: string): ParsedLick[] => {
       name,
       suffix,
       meta: body.find((l) => l.trim() !== '') ?? '',
-      hash: LINK.exec(body.join('\n'))?.[1] ?? '',
+      hash,
     });
   });
   return licks;

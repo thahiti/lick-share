@@ -64,4 +64,22 @@ describe('parseLicks', () => {
     expect(lick?.name).toBe('Call — Response Climb');
     expect(lick?.suffix).toBe('Singer-Songwriter');
   });
+
+  it('AC-3 다음 헤딩 전까지 링크가 없으면 파일명과 항목 번호를 담은 에러를 던진다', () => {
+    const text = md(
+      '## I–IV–V (C → F → G)',
+      '### 1. First Phrase — Tune A',
+      'meta',
+      `${LINK}v2abc`,
+      '### 2. Missing Link — Tune B',
+      'meta',
+      'description only',
+      '## I–IV–V–I (C → F → G → C)',
+      '### 1. Third Phrase — Tune C',
+      'meta',
+      `${LINK}v2def`,
+    );
+
+    expect(() => parseLicks('nottingham', text)).toThrow(/nottingham.* 2번 항목/);
+  });
 });
