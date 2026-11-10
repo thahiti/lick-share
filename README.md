@@ -1,11 +1,14 @@
-# ScoreLink
+# Lick Share (코드명 ScoreLink)
 
-악보를 URL 해시에 담아 서버 없이 공유하는 모바일 웹앱.
+짧은 악보(릭)를 URL 해시에 담아 공유하는 모바일 웹앱.
 크로매틱 드럼 패드로 멜로디를 입력하고, 코드 반주, 메트로놈과 함께 재생하고,
-링크 하나로 열람 화면을 공유한다. 백엔드 없음 — 곡 전체가 URL에 인코딩된다.
+링크 하나로 열람 화면을 공유한다. 편집과 열람은 서버 없이 동작한다.
+곡 전체가 URL에 인코딩되기 때문이다.
+로그인한 사용자가 릭을 게시하고 좋아요를 주고받는 커뮤니티만 Supabase를 쓴다.
 
 프로토타입(`docs/prototype-reference.html`)으로 검증된 동작을
-TypeScript + React로 재작성한 프로젝트다. 구버전 프로토타입 URL 해시와 하위 호환된다.
+TypeScript + React로 재작성한 프로젝트다. URL 해시는 `v2` 형식만 지원한다.
+구버전 `v1.` 해시의 하위 호환은 2026-07-15에 폐기했다.
 
 ## 실행
 
@@ -20,7 +23,7 @@ npx vite preview   # dist 로컬 서브
 
 ```bash
 npm run typecheck && npm run lint && npm test && npm run check-smp   # 공통 게이트
-npm run dump -- "#v1.…" [--metro] [--no-acc] [--from=N]              # 이벤트 테이블 + ASCII 피아노롤
+npm run dump -- "#v2…" [--metro] [--no-acc] [--from=N]               # 이벤트 테이블 + ASCII 피아노롤
 ```
 
 `npm run dump`는 귀 없이도 재생 결과를 눈으로 검증하는 계기판이다.
@@ -43,7 +46,8 @@ ui       React 컴포넌트 + Zustand 스토어(core 순수 함수 래핑만)
 ## 배포
 
 정적 호스팅이면 충분하다 (GitHub Pages, Netlify, Cloudflare Pages 등).
-`dist/`를 그대로 올리면 된다. 서버 상태 없음 — 공유 링크의 해시가 데이터 전부다.
+`dist/`를 그대로 올리면 된다. 편집과 열람은 서버 상태가 없고 공유 링크의 해시가
+데이터 전부다. 커뮤니티 기능은 아래 "커뮤니티" 절의 Supabase 설정이 필요하다.
 
 운영 배포는 Cloudflare Pages를 사용한다. 빌드, 배포 명령, 필수 설정(SPA rewrite,
 환경 변수), 캐시, 롤백 절차는 `docs/DEPLOY.md` 참조.
@@ -78,8 +82,8 @@ npm run dev
 
 ### 게시 방법
 
-편집기 공유 버튼으로 얻은 링크(`?mode=view#v1.…`)에서 해시를 복사해 `/publish`에
-붙여넣거나, `/publish#v1.…`로 바로 접속한다. 멜로디 해시로 중복을 판정하므로 본인이
+편집기 공유 버튼으로 얻은 링크(`?mode=view#v2…`)에서 해시를 복사해 `/publish`에
+붙여넣거나, `/publish#v2…`로 바로 접속한다. 멜로디 해시로 중복을 판정하므로 본인이
 같은 릭을 다시 게시하면 차단되고, 음표가 없는 링크는 게시할 수 없다.
 
 ## 수동 점검
