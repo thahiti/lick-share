@@ -1,6 +1,6 @@
 /** seed-licks 명세(docs/features/seed-licks/03-spec.md)의 단위 기준 */
 import { describe, expect, it } from 'vitest';
-import { decodeLick, parseLicks, type ParsedLick } from './seed-licks-lib';
+import { decodeLick, lickTags, parseLicks, type ParsedLick } from './seed-licks-lib';
 
 const LINK = 'https://lickshare.pages.dev/?mode=view#';
 const DOT = ' \u00b7 ';
@@ -98,5 +98,30 @@ describe('parseLicks', () => {
 describe('decodeLick', () => {
   it('AC-4 디코딩되지 않는 해시는 파일명과 항목 번호를 담은 에러를 던진다', () => {
     expect(() => decodeLick(lick({ number: 7, hash: 'v2zzzz' }))).toThrow(/omnibook.* 7번 항목/);
+  });
+});
+
+describe('lickTags', () => {
+  it('AC-5 섹션 키와 접미, 메타 스타일에서 진행, 장르, 스타일 태그를 만든다', () => {
+    const meta = `*Tune*${DOT}ts${DOT}HARDBOP${DOT}4 bars`;
+    expect(lickTags(lick({ file: 'wjazzd', section: 'ii–V–I', meta }))).toEqual([
+      'ii-v-i',
+      'jazz',
+      'hardbop',
+    ]);
+    expect(
+      lickTags(lick({ file: 'guitarset', section: 'IV–I', suffix: 'Singer-Songwriter' })),
+    ).toEqual(['iv-i', 'blues', 'songwriter']);
+    expect(lickTags(lick({ file: 'nottingham', section: 'I–IV–V', suffix: 'East Dene' }))).toEqual([
+      'i-iv-v',
+      'folk',
+      'traditional',
+    ]);
+  });
+
+  it('AC-6 매핑표에 없는 섹션 키는 파일명과 섹션 키를 담은 에러를 던진다', () => {
+    expect(() => lickTags(lick({ file: 'nottingham', section: 'ii–V–I' }))).toThrow(
+      /nottingham.*ii–V–I/,
+    );
   });
 });

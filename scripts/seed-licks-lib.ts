@@ -3,6 +3,7 @@
  * 규칙 번호는 docs/features/seed-licks/03-spec.md 의 R1 ~ R8 이다.
  * 파일과 프로세스는 만지지 않는다. 입력은 (파일명, 문자열) 쌍이다.
  */
+import { normalizeTags } from '../src/community/tags';
 import { decodeSong } from '../src/core/codec';
 import type { Song } from '../src/core/types';
 
@@ -70,4 +71,77 @@ export const decodeLick = (lick: ParsedLick): Song => {
   const song = decodeSong(lick.hash);
   if (!song) throw new Error(`${where(lick)}: 해시를 디코딩하지 못했다 (${lick.hash})`);
   return song;
+};
+
+interface TagRule {
+  sections: Record<string, readonly [progression: string, genre: string]>;
+  style: (lick: ParsedLick) => string;
+}
+
+const GUITARSET_STYLES: Record<string, string> = {
+  Rock: 'rock',
+  Funk: 'funk',
+  Jazz: 'jazz',
+  'Bossa Nova': 'bossa-nova',
+  // singer-songwriter 는 17자라 태그 상한 15자에 걸려 줄인다
+  'Singer-Songwriter': 'songwriter',
+};
+
+const WJAZZD_STYLES: Record<string, string> = {
+  HARDBOP: 'hardbop',
+  POSTBOP: 'postbop',
+  BEBOP: 'bebop',
+  COOL: 'cool',
+  SWING: 'swing',
+  TRADITIONAL: 'traditional',
+};
+
+// wjazzd 메타 줄은 곡명, 악기, 스타일 순이고 구분자는 양쪽 공백을 낀 U+00B7 이다
+const META_SEP = ' \u00b7 ';
+
+const JAZZ_SECTIONS: TagRule['sections'] = {
+  'ii–V–I': ['ii-v-i', 'jazz'],
+  'ii–V–i': ['minor-ii-v-i', 'jazz'],
+  'I–VI–ii–V': ['turnaround', 'jazz'],
+};
+
+const mappedStyle = (table: Record<string, string>, value: string, lick: ParsedLick): string => {
+  const style = table[value];
+  if (style === undefined) throw new Error(`${where(lick)}: 매핑표에 없는 스타일 ${value}`);
+  return style;
+};
+
+const TAG_RULES: Record<string, TagRule> = {
+  guitarset: {
+    sections: {
+      'V–IV–I': ['turnaround', 'blues'],
+      'IV–I': ['iv-i', 'blues'],
+      'I–V–vi–iii': ['i-v-vi-iii', 'rock'],
+      'iii–IV–I': ['iii-iv-i', 'rock'],
+      'IV–I–IV–V': ['iv-i-iv-v', 'rock'],
+    },
+    style: (lick) => mappedStyle(GUITARSET_STYLES, lick.suffix, lick),
+  },
+  nottingham: {
+    sections: {
+      'I–IV–V': ['i-iv-v', 'folk'],
+      'I–IV–V–I': ['i-iv-v-i', 'folk'],
+      'I–IV–I–V': ['i-iv-i-v', 'folk'],
+      'I–vi–IV–V': ['i-vi-iv-v', 'folk'],
+    },
+    style: () => 'traditional',
+  },
+  omnibook: { sections: JAZZ_SECTIONS, style: () => 'bebop' },
+  wjazzd: {
+    sections: JAZZ_SECTIONS,
+    style: (lick) => mappedStyle(WJAZZD_STYLES, lick.meta.split(META_SEP)[2] ?? '', lick),
+  },
+};
+
+/** R4: [진행, 장르, 스타일] 을 앱의 태그 정규화에 넘긴다. 장르와 스타일이 같으면 둘만 남는다 */
+export const lickTags = (lick: ParsedLick): string[] => {
+  const rule = TAG_RULES[lick.file];
+  const pair = rule?.sections[lick.section];
+  if (!rule || !pair) throw new Error(`${where(lick)}: 매핑표에 없는 섹션 키 ${lick.section}`);
+  return normalizeTags([...pair, rule.style(lick)]);
 };
