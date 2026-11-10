@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "active": null,
+  "stages": [
+    "intake",
+    "plan",
+    "design",
+    "spec",
+    "implement",
+    "verify",
+    "done"
+  ],
+  "features": [
+    {
+      "id": "rewrite",
+      "title": "프로토타입을 TypeScript + React 로 재작성 (P0~P10)",
+      "ref": "docs/features/rewrite/design.md",
+      "track": "full",
+      "deps": [],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-12",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "community",
+      "title": "커뮤니티: 게시, 좋아요, 랭킹, 유저 페이지",
+      "ref": "docs/features/community/design.md",
+      "track": "full",
+      "deps": [
+        "rewrite"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-13",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "desktop-responsive",
+      "title": "데스크톱 반응형 (P11)",
+      "ref": "docs/features/desktop-responsive/design.md",
+      "track": "full",
+      "deps": [
+        "rewrite"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-12",
+          "stage": "done",
+          "note": "하네스 이전 작업. 레이아웃 부분은 desktop-daw 가 대체"
+        }
+      ]
+    },
+    {
+      "id": "desktop-daw",
+      "title": "데스크톱 DAW 편집 화면 (P11 v2)",
+      "ref": "docs/features/desktop-daw/design.md",
+      "track": "full",
+      "deps": [
+        "desktop-responsive"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-12",
+          "stage": "done",
+          "note": "하네스 이전 작업. 설계만 있고 구현은 editor-workspace 로 이어짐"
+        }
+      ]
+    },
+    {
+      "id": "desktop-community-layout",
+      "title": "토큰 리브랜드 + 커뮤니티 데스크톱 레이아웃",
+      "ref": "docs/features/desktop-community-layout/design.md",
+      "track": "full",
+      "deps": [
+        "community"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-13",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "editor-workspace",
+      "title": "데스크톱 에디터 워크스페이스 (피아노롤)",
+      "ref": "docs/features/editor-workspace/design.md",
+      "track": "full",
+      "deps": [
+        "desktop-daw"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-13",
+          "stage": "done",
+          "note": "하네스 이전 작업. handoff.md 의 '미착수' 는 작성 시점 상태"
+        }
+      ]
+    },
+    {
+      "id": "publish-tags",
+      "title": "게시 시 해시태그",
+      "ref": "docs/features/publish-tags/design.md",
+      "track": "full",
+      "deps": [
+        "community"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-13",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "share-menu-edit-from-view",
+      "title": "공유 메뉴 + 열람 화면에서 편집 이동",
+      "ref": "docs/features/share-menu-edit-from-view/design.md",
+      "track": "full",
+      "deps": [
+        "rewrite"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-13",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "tablet-adaptive-layout",
+      "title": "모바일 유동 패드 + 태블릿 티어",
+      "ref": "docs/features/tablet-adaptive-layout/design.md",
+      "track": "full",
+      "deps": [
+        "rewrite"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-14",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "unified-nav-share",
+      "title": "통합 네비게이션 + Share 화면 통합",
+      "ref": "docs/features/unified-nav-share/design.md",
+      "track": "full",
+      "deps": [
+        "community"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-14",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "tag-search",
+      "title": "태그 필터와 검색",
+      "ref": "docs/features/tag-search/design.md",
+      "track": "full",
+      "deps": [
+        "publish-tags"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-15",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    },
+    {
+      "id": "piano-recording",
+      "title": "피아노 레코딩 입력",
+      "ref": "docs/features/piano-recording/design.md",
+      "track": "full",
+      "deps": [
+        "rewrite"
+      ],
+      "stage": "done",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-07-17",
+          "stage": "done",
+          "note": "하네스 이전 작업. 승인 기록과 증거 없음"
+        }
+      ]
+    }
+  ]
+}
