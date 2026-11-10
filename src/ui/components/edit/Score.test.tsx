@@ -123,6 +123,21 @@ describe('Score: 덧줄 (SPEC §3.2)', () => {
     expect(container.querySelectorAll('[data-note="1"]')).toHaveLength(2); // 분할 렌더
     expect(container.querySelectorAll('[data-tie]')).toHaveLength(1);
   });
+
+  test('줄 경계를 넘는 음: 아치 대신 줄 끝과 다음 줄 시작에 타이 조각', () => {
+    const song: Song = {
+      ...demoSong,
+      meas: 2,
+      chords: {},
+      notes: [note(1, 12, 8, 64)],
+    };
+    // 폭 200 은 사용 폭 158 이라 줄당 1마디: 마디 0 과 1 이 다른 줄
+    const { container } = render(<Score song={song} mode="view" width={200} />);
+    expect(container.querySelectorAll('[data-note="1"]')).toHaveLength(2);
+    expect(container.querySelectorAll('[data-tie=""]')).toHaveLength(0);
+    expect(container.querySelectorAll('[data-tie="out"]')).toHaveLength(1);
+    expect(container.querySelectorAll('[data-tie="in"]')).toHaveLength(1);
+  });
 });
 
 describe('Score: 플레이헤드 (SPEC §3.2, DESIGN §4)', () => {

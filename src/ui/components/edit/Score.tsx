@@ -299,6 +299,9 @@ export const Score = ({
       while (rem > 0) {
         const m = measOf(song, asStep(s0));
         const segLen = Math.min(rem, measStart(song, m) + measLen(song, m) - s0);
+        const line = lineOf(song, m, mpl);
+        const nextLine =
+          rem - segLen > 0 ? lineOf(song, measOf(song, asStep(s0 + segLen)), mpl) : line;
         if (inLine(m)) {
           const top = topFor(m);
           const x = posX(song, mw, m, (s0 - measStart(song, m)) / measLen(song, m), mpl);
@@ -361,10 +364,29 @@ export const Score = ({
                 /* SPEC §3.2: edit에서 음표 개별 탭 불가 — 마디 히트영역이 탭을 받도록 통과 */
                 <g style={{ pointerEvents: 'none' }}>{glyph}</g>
               )}
-              {prevEnd !== null && prevEnd.line === lineOf(song, m, mpl) && (
+              {segIdx > 0 &&
+                (prevEnd !== null && prevEnd.line === line ? (
+                  <path
+                    data-tie=""
+                    d={`M ${prevEnd.x + 6} ${prevEnd.y + 7} Q ${(prevEnd.x + x) / 2} ${prevEnd.y + 14} ${x - 5} ${yy + 7}`}
+                    fill="none"
+                    stroke="var(--ink)"
+                    strokeWidth={1.1}
+                  />
+                ) : (
+                  /* 앞 토막이 윗줄(또는 edit 에서 안 보이는 줄)에 있다: 들어오는 조각 */
+                  <path
+                    data-tie="in"
+                    d={`M ${x - 20} ${yy + 8} Q ${x - 13} ${yy + 14} ${x - 5} ${yy + 7}`}
+                    fill="none"
+                    stroke="var(--ink)"
+                    strokeWidth={1.1}
+                  />
+                ))}
+              {nextLine !== line && (
                 <path
-                  data-tie=""
-                  d={`M ${prevEnd.x + 6} ${prevEnd.y + 7} Q ${(prevEnd.x + x) / 2} ${prevEnd.y + 14} ${x - 5} ${yy + 7}`}
+                  data-tie="out"
+                  d={`M ${x + 6} ${yy + 7} Q ${x + 13} ${yy + 14} ${x + 20} ${yy + 8}`}
                   fill="none"
                   stroke="var(--ink)"
                   strokeWidth={1.1}
@@ -372,7 +394,7 @@ export const Score = ({
               )}
             </g>,
           );
-          prevEnd = { x, y: yy, line: lineOf(song, m, mpl) };
+          prevEnd = { x, y: yy, line };
         } else {
           prevEnd = null;
         }
