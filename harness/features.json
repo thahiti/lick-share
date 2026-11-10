@@ -233,9 +233,13 @@
       "deps": [
         "community"
       ],
-      "stage": "plan",
+      "stage": "spec",
       "approved": {
         "plan": {
+          "date": "2026-11-10",
+          "note": ""
+        },
+        "spec": {
           "date": "2026-11-10",
           "note": ""
         }
@@ -248,6 +252,12 @@
         {
           "date": "2026-11-10",
           "stage": "plan",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-10",
+          "stage": "spec",
           "model": "fable",
           "note": ""
         }
