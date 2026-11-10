@@ -6,7 +6,7 @@
  */
 import { readFileSync } from 'node:fs';
 import process from 'node:process';
-import { decodeLick, parseLicks } from './seed-licks-lib';
+import { buildSeed } from './seed-licks-lib';
 
 // 시드 순서는 파일 알파벳 순이다 (R5)
 const FILES = ['guitarset', 'nottingham', 'omnibook', 'wjazzd'];
@@ -17,10 +17,17 @@ if (!process.argv.slice(2).includes('--dry-run')) {
   process.exit(1);
 }
 
-// 모든 파일을 검증한 뒤에 출력해 중간에 실패하면 아무것도 남기지 않는다
-const counts = FILES.map((file) => {
-  const licks = parseLicks(file, readFileSync(`content/licks/${file}.md`, 'utf8'));
-  licks.forEach(decodeLick);
-  return `${file} ${licks.length}`;
-});
-console.log(counts.join('\n'));
+const seed = await buildSeed(
+  FILES.map((file) => ({ file, text: readFileSync(`content/licks/${file}.md`, 'utf8') })),
+);
+
+// R8: 파일별 건수, 제외 목록, 유일 건수, 태그별 건수(태그 이름 순)
+const tags = seed.unique.flatMap((l) => l.tags);
+console.log(
+  [
+    ...seed.counts.map((c) => `${c.file} ${c.count}`),
+    ...seed.excluded.map((l) => `excluded ${l.file} ${l.section} ${l.name}`),
+    `unique ${seed.unique.length}`,
+    ...[...new Set(tags)].sort().map((t) => `tag ${t} ${tags.filter((x) => x === t).length}`),
+  ].join('\n'),
+);
