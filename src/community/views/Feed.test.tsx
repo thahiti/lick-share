@@ -426,6 +426,22 @@ describe('Feed: 목록 복원 (feed-cache)', () => {
     expect(screen.queryByText("Couldn't load the list")).toBeNull();
   });
 
+  it('AC-15 deletable 목록에서 삭제가 끝나면 저장소에서도 그 릭을 뺀다', async () => {
+    const remove = vi.spyOn(feedStore, 'remove');
+    fetchFeedPage.mockResolvedValue([original]);
+    navKind.mockReturnValue('navigate');
+    render(<Feed player={fakePlayer} user={null} authorId="author-1" deletable />);
+    await screen.findByText('Original lick');
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Delete lick' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    await vi.waitFor(() => expect(deleteLick).toHaveBeenCalledWith('orig-1'));
+    await vi.waitFor(() => expect(remove).toHaveBeenCalledWith('orig-1'));
+    remove.mockRestore();
+  });
+
   it('AC-13 떠날 때 진행 중이던 다음 페이지는 버리고 복원 뒤 센티널이 같은 커서로 다시 받는다', async () => {
     // 센티널 관찰자의 콜백을 꺼내 수동으로 부른다 (PlayOverlay.test.tsx 와 같은 방식)
     type IoCb = (entries: IntersectionObserverEntry[]) => void;

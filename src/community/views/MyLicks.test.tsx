@@ -1,10 +1,11 @@
 /** 내 릭 — 표시 이름 머리글 + 내 피드. 이름을 바꾸면 카드의 작성자 이름도 맞도록 피드를 다시 불러온다. */
 import { StrictMode, useEffect } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { User } from '@supabase/supabase-js';
 import type { Player } from '../../adapters/player';
 import type { Profile, RenameResult } from '../api/profiles';
+import { feedStore } from '../feed-store';
 
 const fetchProfileById = vi.fn<(id: string) => Promise<Profile | null>>();
 const updateDisplayName = vi.fn<(id: string, name: string) => Promise<RenameResult>>();
@@ -90,5 +91,45 @@ describe('MyLicks', () => {
     fireEvent.click(screen.getByText('Cancel'));
     expect(screen.getByText('Old Name')).toBeTruthy();
     expect(feedMounts).toBe(mountsBefore);
+  });
+});
+
+describe('MyLicks: 목록 스냅샷 비우기 (feed-cache R12)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fetchProfileById.mockResolvedValue(profile);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const rename = async (next: string): Promise<void> => {
+    await screen.findByText('Old Name');
+    fireEvent.click(screen.getByText('Edit'));
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: next } });
+    fireEvent.click(screen.getByText('Save'));
+  };
+
+  it('AC-19 이름 저장이 ok 면 내 작성자 피드의 키를 비운다', async () => {
+    const invalidate = vi.spyOn(feedStore, 'invalidate');
+    updateDisplayName.mockResolvedValue({ ok: true });
+    render(<MyLicks user={fakeUser} player={fakePlayer} />);
+
+    await rename('New Name');
+
+    expect(await screen.findByText('New Name')).toBeTruthy();
+    expect(invalidate).toHaveBeenCalledWith('user-1|');
+  });
+
+  it('AC-19 이름 저장이 거절되면 비우지 않는다', async () => {
+    const invalidate = vi.spyOn(feedStore, 'invalidate');
+    updateDisplayName.mockResolvedValue({ ok: false, reason: 'taken' });
+    render(<MyLicks user={fakeUser} player={fakePlayer} />);
+
+    await rename('Dup');
+
+    expect(await screen.findByText('Already taken')).toBeTruthy();
+    expect(invalidate).not.toHaveBeenCalled();
   });
 });

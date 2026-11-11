@@ -144,6 +144,8 @@ const FeedList = ({ authorId, deletable, tag, player, user }: ListProps): JSX.El
     try {
       await deleteLick(pendingDelete.id);
       setLicks((prev) => prev.filter((x) => x.id !== pendingDelete.id));
+      // 다른 키(Latest, 태그 피드)의 스냅샷에서도 빠지게 한다 (R10)
+      feedStore.remove(pendingDelete.id);
       setPendingDelete(null);
     } catch {
       setDeleteErr('Delete failed. Please try again.');
