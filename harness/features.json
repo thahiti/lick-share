@@ -358,6 +358,42 @@
           "note": ""
         }
       ]
+    },
+    {
+      "id": "feed-cache",
+      "title": "목록 상태를 라우트 전환 뒤에도 유지",
+      "ref": "docs/features/INTAKE.md 개정 3",
+      "track": "light",
+      "deps": [
+        "community"
+      ],
+      "stage": "intake",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-11-11",
+          "stage": "intake"
+        }
+      ]
+    },
+    {
+      "id": "lick-page",
+      "title": "릭 상세와 넘기기 플레이어를 /lick/:id 한 화면으로 통합",
+      "ref": "docs/features/INTAKE.md 개정 3",
+      "track": "full",
+      "deps": [
+        "community",
+        "swipe-play",
+        "feed-cache"
+      ],
+      "stage": "intake",
+      "approved": {},
+      "history": [
+        {
+          "date": "2026-11-11",
+          "stage": "intake"
+        }
+      ]
     }
   ]
 }
