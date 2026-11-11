@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type JSX } from 'react';
 import type { User } from '@supabase/supabase-js';
 import type { Player } from '../../adapters/player';
 import { PAGE_SIZE, countLicks, deleteLick, fetchFeedPage, type LickRow } from '../api/licks';
@@ -6,7 +6,9 @@ import { canonicalIds, fetchLikeCounts, likeTargetId } from '../api/likes';
 import { DeleteLickDialog } from '../components/DeleteLickDialog';
 import { LickCard } from '../components/LickCard';
 import { PlayOverlay } from '../components/PlayOverlay';
+import { feedKey, feedStore, type FeedSnapshot } from '../feed-store';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import { lastNavKind } from '../routing';
 
 interface Props {
   readonly authorId?: string;
@@ -26,13 +28,21 @@ interface ListProps {
 
 /** 한 (authorId, tag)에 대한 목록 인스턴스 — 필터 전환은 바깥 Feed의 key 리마운트가 처리한다. */
 const FeedList = ({ authorId, deletable, tag, player, user }: ListProps): JSX.Element => {
-  const [licks, setLicks] = useState<LickRow[]>([]);
-  const [counts, setCounts] = useState<Map<string, number>>(new Map());
-  const [done, setDone] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+  const key = feedKey(authorId, tag);
+  // 뒤로 가기와 앞으로 가기로 돌아왔고 행이 있는 스냅샷이 있으면 복원 마운트다 (feed-cache R5).
+  // 첫 렌더에 행이 있어야 하므로 이펙트가 아니라 초기값에서 꺼낸다
+  const [snapshot] = useState<FeedSnapshot | undefined>(() => {
+    const s = feedStore.get(key);
+    return lastNavKind() === 'history' && s && s.rows.length > 0 ? s : undefined;
+  });
+  const [licks, setLicks] = useState<readonly LickRow[]>(snapshot?.rows ?? []);
+  const [counts, setCounts] = useState<ReadonlyMap<string, number>>(snapshot?.counts ?? new Map());
+  const [done, setDone] = useState(snapshot?.done ?? false);
+  const [loaded, setLoaded] = useState(snapshot !== undefined);
   const [error, setError] = useState(false);
-  const cursor = useRef<string | null>(null);
-  const started = useRef(false);
+  const cursor = useRef<string | null>(snapshot?.cursor ?? null);
+  // 복원 마운트는 첫 페이지를 받지 않는다
+  const started = useRef(snapshot !== undefined);
   // 삭제 확인 다이얼로그 — 상세 페이지(LickDetail)와 동일한 확인 흐름
   const [pendingDelete, setPendingDelete] = useState<LickRow | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -41,9 +51,9 @@ const FeedList = ({ authorId, deletable, tag, player, user }: ListProps): JSX.El
   const [playAt, setPlayAt] = useState<number | null>(null);
 
   // 태그 피드 헤더의 총 개수 — 실패하면 조용히 생략 (헤더의 #tag는 유지)
-  const [total, setTotal] = useState<number | null>(null);
+  const [total, setTotal] = useState<number | null>(snapshot?.total ?? null);
   useEffect(() => {
-    if (!tag) return;
+    if (!tag || snapshot) return;
     let alive = true;
     void countLicks({ tag })
       .then((n) => {
@@ -53,7 +63,41 @@ const FeedList = ({ authorId, deletable, tag, player, user }: ListProps): JSX.El
     return () => {
       alive = false;
     };
-  }, [tag]);
+  }, [tag, snapshot]);
+
+  // 두 번째 scrollTo 는 카드 악보 폭이 실측으로 다시 그려져 높이가 바뀐 뒤의 보정이다 (R7, E1)
+  useLayoutEffect(() => {
+    if (!snapshot) return;
+    window.scrollTo(0, snapshot.scrollY);
+    requestAnimationFrame(() => window.scrollTo(0, snapshot.scrollY));
+  }, [snapshot]);
+
+  // 언마운트 때 되쓸 최신 상태. 렌더 중에는 ref 를 쓰지 않으므로 커밋마다 옮긴다
+  const latest = useRef({ licks, counts, done, total });
+  useLayoutEffect(() => {
+    latest.current = { licks, counts, done, total };
+  });
+  // 떠나는 뷰의 레이아웃 정리는 새 뷰의 DOM 이 들어가기 전에 불려
+  // 이때의 scrollY 가 떠나는 순간의 값이다 (R6, R8)
+  useLayoutEffect(
+    () => () => {
+      const { licks: rows, counts: c, done: d, total: t } = latest.current;
+      if (rows.length === 0) {
+        // 첫 페이지가 실패했거나 빈 목록이면 옛 스냅샷이 뒤에 복원되지 않게 지운다
+        feedStore.invalidate(key);
+        return;
+      }
+      feedStore.set(key, {
+        rows,
+        counts: c,
+        cursor: cursor.current,
+        done: d,
+        total: t,
+        scrollY: Math.round(window.scrollY),
+      });
+    },
+    [key],
+  );
 
   const loadMore = useCallback(async (): Promise<boolean> => {
     try {
