@@ -100,4 +100,10 @@ describe('Root 라우팅', () => {
     renderAt('/');
     expect(screen.queryByText('Publish')).toBeNull();
   });
+
+  it('AC-20 마운트하면 브라우저 자동 스크롤 복원을 끈다', () => {
+    window.history.scrollRestoration = 'auto';
+    renderAt('/');
+    expect(window.history.scrollRestoration).toBe('manual');
+  });
 });
