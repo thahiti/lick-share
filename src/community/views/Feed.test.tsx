@@ -336,6 +336,7 @@ describe('Feed: 목록 복원 (feed-cache)', () => {
   afterEach(() => {
     scrollTo.mockRestore();
     raf.mockRestore();
+    vi.unstubAllGlobals();
   });
 
   it('AC-8 history 전환에 스냅샷이 있으면 첫 렌더에 행을 그리고 요청 없이 스크롤을 되살린다', () => {
@@ -423,5 +424,68 @@ describe('Feed: 목록 복원 (feed-cache)', () => {
 
     expect(document.querySelector('.c-sentinel')).not.toBeNull();
     expect(screen.queryByText("Couldn't load the list")).toBeNull();
+  });
+
+  it('AC-13 떠날 때 진행 중이던 다음 페이지는 버리고 복원 뒤 센티널이 같은 커서로 다시 받는다', async () => {
+    // 센티널 관찰자의 콜백을 꺼내 수동으로 부른다 (PlayOverlay.test.tsx 와 같은 방식)
+    type IoCb = (entries: IntersectionObserverEntry[]) => void;
+    const observers: IoCb[] = [];
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(cb: IoCb) {
+          observers.push(cb);
+        }
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+        takeRecords(): IntersectionObserverEntry[] {
+          return [];
+        }
+      },
+    );
+    const sentinelSeen = async (): Promise<void> => {
+      await act(async () => {
+        observers.at(-1)?.([{ isIntersecting: true } as IntersectionObserverEntry]);
+      });
+    };
+    const at = (sec: number): string => `2026-01-01T00:00:${String(sec).padStart(2, '0')}.000Z`;
+    const page1 = Array.from({ length: 20 }, (_, i) =>
+      lick({ id: 'p1-' + i, title: 'First ' + i, created_at: at(59 - i) }),
+    );
+    const page2 = Array.from({ length: 20 }, (_, i) =>
+      lick({ id: 'p2-' + i, title: 'Second ' + i, created_at: at(39 - i) }),
+    );
+    const cursorAfterPage1 = page1[19]?.created_at;
+    let resolveSecond: (rows: LickRow[]) => void = () => {};
+    fetchFeedPage
+      .mockResolvedValueOnce(page1)
+      .mockReturnValueOnce(new Promise((resolve) => (resolveSecond = resolve)));
+    fetchLikeCounts.mockResolvedValue(new Map());
+    navKind.mockReturnValue('navigate');
+
+    const first = render(<Feed player={fakePlayer} user={null} />);
+    await screen.findByText('First 19');
+    await vi.waitFor(() => expect(document.querySelector('.c-sentinel')).not.toBeNull());
+    await sentinelSeen();
+    expect(fetchFeedPage).toHaveBeenCalledTimes(2);
+
+    first.unmount();
+    await act(async () => resolveSecond(page2));
+
+    const snap = feedStore.get('|');
+    expect(snap?.rows).toHaveLength(20);
+    expect(snap?.cursor).toBe(cursorAfterPage1);
+
+    navKind.mockReturnValue('history');
+    fetchFeedPage.mockResolvedValueOnce(page2);
+    render(<Feed player={fakePlayer} user={null} />);
+    await sentinelSeen();
+
+    expect(fetchFeedPage).toHaveBeenCalledTimes(3);
+    expect(fetchFeedPage.mock.calls[2]?.[0]).toBe(cursorAfterPage1);
+    const titles = [...document.querySelectorAll('.c-card .c-title')].map((e) => e.textContent);
+    expect(titles).toHaveLength(40);
+    expect(new Set(titles).size).toBe(40);
   });
 });

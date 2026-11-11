@@ -99,10 +99,20 @@ const FeedList = ({ authorId, deletable, tag, player, user }: ListProps): JSX.El
     [key],
   );
 
+  // 언마운트 뒤에 끝난 페이지는 버린다. 진행 중이던 페이지는 복원 뒤 센티널이 다시 받는다 (R14)
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
+
   const loadMore = useCallback(async (): Promise<boolean> => {
     try {
       const page = await fetchFeedPage(cursor.current, { authorId, tag });
       const c = await fetchLikeCounts(canonicalIds(page));
+      if (!alive.current) return false;
       // 커서는 페이지가 화면에 반영될 때만 전진 — 카운트 조회 실패 시 재시도가 같은 페이지를 다시 받는다
       cursor.current = page.at(-1)?.created_at ?? cursor.current;
       setCounts((prev) => new Map([...prev, ...c]));
