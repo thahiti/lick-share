@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "active": null,
+  "active": "feed-cache",
   "stages": [
     "intake",
     "plan",
@@ -367,12 +367,23 @@
       "deps": [
         "community"
       ],
-      "stage": "intake",
-      "approved": {},
+      "stage": "plan",
+      "approved": {
+        "plan": {
+          "date": "2026-11-11",
+          "note": ""
+        }
+      },
       "history": [
         {
           "date": "2026-11-11",
           "stage": "intake"
+        },
+        {
+          "date": "2026-11-11",
+          "stage": "plan",
+          "model": "fable",
+          "note": ""
         }
       ]
     },
