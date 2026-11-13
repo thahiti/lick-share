@@ -1,5 +1,6 @@
+import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { parseRoute } from './routing';
+import { lastNavKind, navigate, parseRoute, useRoute } from './routing';
 
 describe('parseRoute', () => {
   it('mode=view 쿼리는 레거시 열람 (경로 무관, 하위 호환)', () => {
@@ -42,5 +43,22 @@ describe('parseRoute', () => {
     expect(parseRoute('/search', '?q=%23bebop')).toEqual({ name: 'search', query: '#bebop' });
     expect(parseRoute('/search', '')).toEqual({ name: 'search', query: '' });
     expect(parseRoute('/search', '?q=')).toEqual({ name: 'search', query: '' });
+  });
+});
+
+describe('lastNavKind', () => {
+  it('AC-7 첫 로드와 popstate 는 history, navigate() 는 navigate 로 기록된다', () => {
+    window.history.pushState(null, '', '/');
+    const { result } = renderHook(useRoute);
+    expect(lastNavKind()).toBe('history');
+
+    act(() => navigate('/tag/jazz'));
+    expect(result.current).toEqual({ name: 'tag', tag: 'jazz' });
+    expect(lastNavKind()).toBe('navigate');
+
+    act(() => {
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    });
+    expect(lastNavKind()).toBe('history');
   });
 });

@@ -1,13 +1,15 @@
 /** 최신 피드 — 첫 페이지 마운트 로드, 좋아요 수는 원본 기준, 유사릭 배지 (설계 §8.2, §7). */
 import { StrictMode } from 'react';
 import { act, fireEvent, render, screen } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 import { createFakeAudioSink } from '../../adapters/fakes/fake-audio-sink';
 import { createFakeClock } from '../../adapters/fakes/fake-clock';
 import { createPlayer } from '../../adapters/player';
 import { encodeSong } from '../../core/codec';
 import { demoSong } from '../../core/demo-song';
 import type { LickRow } from '../api/licks';
+import { feedStore, type FeedSnapshot } from '../feed-store';
+import type { NavKind } from '../routing';
 
 // 오버레이가 실제로 재생하므로 가짜 싱크와 시계로 만든 진짜 player 를 쓴다
 const fakePlayer = createPlayer({ sink: createFakeAudioSink(), clock: createFakeClock() });
@@ -57,7 +59,20 @@ vi.mock('../api/likes', () => ({
   removeLike: async (_id: string) => {},
 }));
 
+// 전환 종류는 테스트마다 정한다 (feed-cache R3, R5)
+const navKind = vi.fn<() => NavKind>();
+vi.mock('../routing', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../routing')>()),
+  lastNavKind: () => navKind(),
+}));
+
 import { Feed } from './Feed';
+
+// 저장소는 모듈 수준이라 앞 테스트의 언마운트가 남긴 스냅샷을 지운다
+beforeEach(() => {
+  feedStore.clear();
+  navKind.mockReturnValue('history');
+});
 
 describe('Feed 최신 피드', () => {
   beforeEach(() => {
@@ -292,5 +307,201 @@ describe('Feed: 넘기기 재생 오버레이 (swipe-play R4)', () => {
       });
       view.unmount();
     }
+  });
+});
+
+describe('Feed: 목록 복원 (feed-cache)', () => {
+  let scrollTo: MockInstance<typeof window.scrollTo>;
+  let raf: MockInstance<typeof window.requestAnimationFrame>;
+
+  const stored = (over: Partial<FeedSnapshot> = {}): FeedSnapshot => ({
+    rows: [original, similar],
+    counts: new Map([['orig-1', 7]]),
+    cursor: similar.created_at,
+    done: false,
+    total: null,
+    scrollY: 1200,
+    ...over,
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fetchFeedPage.mockResolvedValue([original, similar]);
+    fetchLikeCounts.mockResolvedValue(new Map([['orig-1', 7]]));
+    scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    raf = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(() => 0);
+    Object.defineProperty(window, 'scrollY', { value: 0, configurable: true });
+  });
+
+  afterEach(() => {
+    scrollTo.mockRestore();
+    raf.mockRestore();
+    vi.unstubAllGlobals();
+  });
+
+  it('AC-8 history 전환에 스냅샷이 있으면 첫 렌더에 행을 그리고 요청 없이 스크롤을 되살린다', () => {
+    feedStore.set('|', stored());
+    navKind.mockReturnValue('history');
+
+    render(<Feed player={fakePlayer} user={null} />);
+
+    expect(document.querySelectorAll('.c-card')).toHaveLength(2);
+    expect(screen.getAllByText('♥ 7')).toHaveLength(2);
+    expect(fetchFeedPage).not.toHaveBeenCalled();
+    expect(countLicks).not.toHaveBeenCalled();
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+    expect(scrollTo).toHaveBeenLastCalledWith(0, 1200);
+
+    // 카드 악보 폭이 실측으로 다시 그려진 뒤의 보정 (E1)
+    for (const [cb] of raf.mock.calls) cb(0);
+    expect(scrollTo).toHaveBeenCalledTimes(2);
+    expect(scrollTo).toHaveBeenLastCalledWith(0, 1200);
+  });
+
+  it('AC-9 navigate 전환이면 스냅샷이 있어도 첫 페이지를 새로 받고 스크롤을 건드리지 않는다', async () => {
+    feedStore.set('|', stored());
+    navKind.mockReturnValue('navigate');
+
+    render(<Feed player={fakePlayer} user={null} />);
+    await screen.findByText('Original lick');
+
+    expect(fetchFeedPage).toHaveBeenCalledTimes(1);
+    expect(fetchFeedPage.mock.calls[0]?.[0]).toBeNull();
+    expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('AC-10 언마운트하면 행, counts, 커서, done, total, 떠나는 순간의 scrollY 를 저장한다', async () => {
+    navKind.mockReturnValue('navigate');
+    const view = render(<Feed player={fakePlayer} user={null} />);
+    await screen.findByText('Original lick');
+    Object.defineProperty(window, 'scrollY', { value: 777, configurable: true });
+
+    view.unmount();
+
+    expect(feedStore.get('|')).toEqual({
+      rows: [original, similar],
+      counts: new Map([['orig-1', 7]]),
+      cursor: similar.created_at,
+      done: true,
+      total: null,
+      scrollY: 777,
+    });
+  });
+
+  it('AC-11 태그 피드의 총 개수를 저장하고 복원 때 countLicks 없이 바로 보인다', async () => {
+    countLicks.mockResolvedValue(12);
+    navKind.mockReturnValue('navigate');
+    const first = render(<Feed player={fakePlayer} user={null} tag="jazz" />);
+    expect(await screen.findByText('12 licks')).toBeTruthy();
+    await screen.findByText('Original lick');
+    first.unmount();
+
+    navKind.mockReturnValue('history');
+    render(<Feed player={fakePlayer} user={null} tag="jazz" />);
+
+    expect(feedStore.get('|jazz')?.total).toBe(12);
+    expect(screen.getByText('12 licks')).toBeTruthy();
+    expect(countLicks).toHaveBeenCalledTimes(1);
+  });
+
+  it('AC-12 첫 페이지가 실패한 채 언마운트하면 그 키의 옛 스냅샷을 지운다', async () => {
+    feedStore.set('|', stored());
+    navKind.mockReturnValue('navigate');
+    fetchFeedPage.mockRejectedValueOnce(new Error('network down'));
+    const view = render(<Feed player={fakePlayer} user={null} />);
+    expect(await screen.findByText("Couldn't load the list")).toBeTruthy();
+
+    view.unmount();
+
+    expect(feedStore.get('|')).toBeUndefined();
+  });
+
+  it('AC-14 done 이 false 인 스냅샷을 복원하면 센티널을 그리고 에러 문구가 없다', () => {
+    feedStore.set('|', stored({ done: false }));
+    navKind.mockReturnValue('history');
+
+    render(<Feed player={fakePlayer} user={null} />);
+
+    expect(document.querySelector('.c-sentinel')).not.toBeNull();
+    expect(screen.queryByText("Couldn't load the list")).toBeNull();
+  });
+
+  it('AC-15 deletable 목록에서 삭제가 끝나면 저장소에서도 그 릭을 뺀다', async () => {
+    const remove = vi.spyOn(feedStore, 'remove');
+    fetchFeedPage.mockResolvedValue([original]);
+    navKind.mockReturnValue('navigate');
+    render(<Feed player={fakePlayer} user={null} authorId="author-1" deletable />);
+    await screen.findByText('Original lick');
+
+    fireEvent.click(screen.getByRole('button', { name: 'More actions' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Delete lick' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    await vi.waitFor(() => expect(deleteLick).toHaveBeenCalledWith('orig-1'));
+    await vi.waitFor(() => expect(remove).toHaveBeenCalledWith('orig-1'));
+    remove.mockRestore();
+  });
+
+  it('AC-13 떠날 때 진행 중이던 다음 페이지는 버리고 복원 뒤 센티널이 같은 커서로 다시 받는다', async () => {
+    // 센티널 관찰자의 콜백을 꺼내 수동으로 부른다 (PlayOverlay.test.tsx 와 같은 방식)
+    type IoCb = (entries: IntersectionObserverEntry[]) => void;
+    const observers: IoCb[] = [];
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        constructor(cb: IoCb) {
+          observers.push(cb);
+        }
+        observe(): void {}
+        unobserve(): void {}
+        disconnect(): void {}
+        takeRecords(): IntersectionObserverEntry[] {
+          return [];
+        }
+      },
+    );
+    const sentinelSeen = async (): Promise<void> => {
+      await act(async () => {
+        observers.at(-1)?.([{ isIntersecting: true } as IntersectionObserverEntry]);
+      });
+    };
+    const at = (sec: number): string => `2026-01-01T00:00:${String(sec).padStart(2, '0')}.000Z`;
+    const page1 = Array.from({ length: 20 }, (_, i) =>
+      lick({ id: 'p1-' + i, title: 'First ' + i, created_at: at(59 - i) }),
+    );
+    const page2 = Array.from({ length: 20 }, (_, i) =>
+      lick({ id: 'p2-' + i, title: 'Second ' + i, created_at: at(39 - i) }),
+    );
+    const cursorAfterPage1 = page1[19]?.created_at;
+    let resolveSecond: (rows: LickRow[]) => void = () => {};
+    fetchFeedPage
+      .mockResolvedValueOnce(page1)
+      .mockReturnValueOnce(new Promise((resolve) => (resolveSecond = resolve)));
+    fetchLikeCounts.mockResolvedValue(new Map());
+    navKind.mockReturnValue('navigate');
+
+    const first = render(<Feed player={fakePlayer} user={null} />);
+    await screen.findByText('First 19');
+    await vi.waitFor(() => expect(document.querySelector('.c-sentinel')).not.toBeNull());
+    await sentinelSeen();
+    expect(fetchFeedPage).toHaveBeenCalledTimes(2);
+
+    first.unmount();
+    await act(async () => resolveSecond(page2));
+
+    const snap = feedStore.get('|');
+    expect(snap?.rows).toHaveLength(20);
+    expect(snap?.cursor).toBe(cursorAfterPage1);
+
+    navKind.mockReturnValue('history');
+    fetchFeedPage.mockResolvedValueOnce(page2);
+    render(<Feed player={fakePlayer} user={null} />);
+    await sentinelSeen();
+
+    expect(fetchFeedPage).toHaveBeenCalledTimes(3);
+    expect(fetchFeedPage.mock.calls[2]?.[0]).toBe(cursorAfterPage1);
+    const titles = [...document.querySelectorAll('.c-card .c-title')].map((e) => e.textContent);
+    expect(titles).toHaveLength(40);
+    expect(new Set(titles).size).toBe(40);
   });
 });

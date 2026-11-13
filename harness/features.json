@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "active": "feed-cache",
+  "active": null,
   "stages": [
     "intake",
     "plan",
@@ -367,7 +367,7 @@
       "deps": [
         "community"
       ],
-      "stage": "spec",
+      "stage": "done",
       "approved": {
         "plan": {
           "date": "2026-11-11",
@@ -375,7 +375,7 @@
         },
         "spec": {
           "date": "2026-11-11",
-          "note": ""
+          "note": "S9 목록 요청 1건을 1건 이상으로. 사이드바의 인기 태그 집계가 같은 URL 로 받는다"
         }
       },
       "history": [
@@ -393,6 +393,24 @@
           "date": "2026-11-11",
           "stage": "spec",
           "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-11",
+          "stage": "implement",
+          "model": "opus",
+          "note": ""
+        },
+        {
+          "date": "2026-11-11",
+          "stage": "verify",
+          "model": "opus",
+          "note": ""
+        },
+        {
+          "date": "2026-11-13",
+          "stage": "done",
+          "model": "opus",
           "note": ""
         }
       ]

@@ -12,6 +12,7 @@ import { Score } from '../../ui/components/edit/Score';
 import { publishLick } from '../api/licks';
 import { ScoreToolbar } from '../components/ScoreToolbar';
 import { TagInput } from '../components/TagInput';
+import { feedStore } from '../feed-store';
 import { melodyHash } from '../melody-hash';
 import { navigate } from '../routing';
 import { normalizeTags } from '../tags';
@@ -158,6 +159,8 @@ export const Publish = ({ user, player }: Props): JSX.Element => {
         normalizeTags(tags),
       );
       if (result.ok) {
+        // 새 릭이 어느 목록 복원본에도 빠지지 않게 스냅샷을 모두 버린다 (R9)
+        feedStore.clear();
         navigate('/lick/' + result.id);
         return;
       }

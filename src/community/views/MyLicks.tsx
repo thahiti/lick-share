@@ -4,6 +4,7 @@ import type { User } from '@supabase/supabase-js';
 import type { Player } from '../../adapters/player';
 import { fetchProfileById, updateDisplayName, type RenameResult } from '../api/profiles';
 import { NameEditor } from '../components/NameEditor';
+import { feedKey, feedStore } from '../feed-store';
 import { Feed } from './Feed';
 
 interface Props {
@@ -35,6 +36,9 @@ const MyLicksView = ({ user, player }: { readonly user: User; readonly player: P
     const result = await updateDisplayName(user.id, next);
     if (result.ok) {
       setName(next);
+      // 리마운트는 popstate 없이 일어나 lastNavKind 가 history 로 남아 있을 수 있다.
+      // 옛 이름이 박힌 스냅샷이 복원되지 않게 먼저 비운다 (R12, E8)
+      feedStore.invalidate(feedKey(user.id, undefined));
       setRenames((n) => n + 1);
     }
     return result;

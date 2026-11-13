@@ -20,6 +20,7 @@ import { OverflowMenu } from '../components/OverflowMenu';
 import { ScoreFrame } from '../components/ScoreFrame';
 import { ScoreToolbar } from '../components/ScoreToolbar';
 import { TagChips } from '../components/TagChips';
+import { feedStore } from '../feed-store';
 import { navigate } from '../routing';
 
 interface Props {
@@ -261,8 +262,12 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
     setLikeBusy(true);
     setLiked(next);
     setCount((c) => c + (next ? 1 : -1));
+    // 뒤로 가기로 복원될 목록 카드의 수도 맞춘다. single-flight 라 count 가 누르기 전 값이다 (R11)
+    feedStore.setCount(target, count + (next ? 1 : -1));
     void (next ? addLike(target) : removeLike(target))
       .catch(() => {
+        // 저장소는 이 화면을 떠난 뒤에도 남으므로 언마운트 여부와 무관하게 되돌린다
+        feedStore.setCount(target, count);
         if (!alive.current) return;
         setLiked(!next);
         setCount((c) => c + (next ? -1 : 1));
@@ -278,6 +283,8 @@ const LickDetailView = ({ id, user, player }: Props): JSX.Element => {
     setDeleteErr(null);
     try {
       await deleteLick(lick.id);
+      // 뒤로 가기로 닿는 목록 복원본에도 남지 않게 모든 스냅샷에서 뺀다 (R10)
+      feedStore.remove(lick.id);
       player.stop();
       setToast('Lick deleted');
       navigate('/me');

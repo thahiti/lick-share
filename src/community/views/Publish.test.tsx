@@ -6,6 +6,7 @@ import type { Player } from '../../adapters/player';
 import { encodeSong } from '../../core/codec';
 import { demoSong } from '../../core/demo-song';
 import type { PublishResult } from '../api/licks';
+import { feedStore } from '../feed-store';
 
 const publishLick =
   vi.fn<
@@ -173,5 +174,45 @@ describe('Publish 게시 화면 (해시 기반)', () => {
     renderAt('#' + validHash);
     fireEvent.click(screen.getByText(/Back to editor/));
     expect(navigate).toHaveBeenCalledWith('/edit#' + validHash);
+  });
+});
+
+describe('Publish: 목록 스냅샷 비우기 (feed-cache R9)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('AC-18 게시가 ok 면 /lick/:id 로 가기 전에 저장소를 비운다', async () => {
+    const clear = vi.spyOn(feedStore, 'clear');
+    publishLick.mockResolvedValue({ ok: true, id: 'abc' });
+    renderAt('#' + validHash);
+
+    fireEvent.click(screen.getByText('Publish'));
+
+    await vi.waitFor(() => expect(navigate).toHaveBeenCalledWith('/lick/abc'));
+    expect(clear).toHaveBeenCalledTimes(1);
+    const [clearedAt] = clear.mock.invocationCallOrder;
+    const [navigatedAt] = navigate.mock.invocationCallOrder;
+    expect(clearedAt).toBeLessThan(navigatedAt ?? 0);
+  });
+
+  it('AC-18 duplicate 나 error 면 저장소를 비우지 않는다', async () => {
+    const clear = vi.spyOn(feedStore, 'clear');
+    publishLick.mockResolvedValueOnce({ ok: false, reason: 'duplicate' });
+    const first = renderAt('#' + validHash);
+    fireEvent.click(screen.getByText('Publish'));
+    expect(await screen.findByText('You already published this lick')).toBeTruthy();
+    first.unmount();
+
+    publishLick.mockResolvedValueOnce({ ok: false, reason: 'error', message: 'Server down' });
+    renderAt('#' + validHash);
+    fireEvent.click(screen.getByText('Publish'));
+    expect(await screen.findByText('Server down')).toBeTruthy();
+
+    expect(clear).not.toHaveBeenCalled();
   });
 });

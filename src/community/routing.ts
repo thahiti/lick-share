@@ -34,9 +34,22 @@ export function parseRoute(pathname: string, search: string): Route {
   return { name: 'notfound' };
 }
 
+/** 마지막 라우트 전환의 종류. history 는 뒤로 가기, 앞으로 가기, 첫 로드다 (feed-cache R3) */
+export type NavKind = 'history' | 'navigate';
+
+// navigate() 가 pending 을 세우고 popstate 핸들러가 last 로 옮긴다.
+// navigate() 를 거치지 않은 합성 popstate 는 history 로 남는다
+let pending: NavKind = 'history';
+let last: NavKind = 'history';
+
+export function lastNavKind(): NavKind {
+  return last;
+}
+
 /** SPA 네비게이션. hash(곡 blob)는 인자로 함께 넘길 수 있다 (예: '/edit#v1.…'). */
 export function navigate(path: string): void {
   history.pushState(null, '', path);
+  pending = 'navigate';
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
@@ -45,8 +58,11 @@ export function useRoute(): Route {
     parseRoute(window.location.pathname, window.location.search),
   );
   useEffect(() => {
-    const onPop = (): void =>
+    const onPop = (): void => {
+      last = pending;
+      pending = 'history';
       setRoute(parseRoute(window.location.pathname, window.location.search));
+    };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);

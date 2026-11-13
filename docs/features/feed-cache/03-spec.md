@@ -140,6 +140,7 @@ E14. `history.scrollRestoration` 을 지원하지 않는 환경은 없다(iOS Sa
 `.claude/skills/verify/SKILL.md` 방식으로 개발 서버(5199)에서 Playwright 로 실행한다. 데이터는 운영 DB 다. 운영 DB 에는 아무것도 넣지 않는다.
 폰 폭은 390x844(isMobile, hasTouch), 데스크톱은 1280x800.
 "목록 요청" 은 `/rest/v1/licks` 요청 중 URL 에 `id=eq.` 가 없는 것이다. 첫 페이지, 다음 페이지, 태그 총 개수 조회가 여기 들고 상세의 단건 조회는 들지 않는다. 좋아요 수 조회(`/rest/v1/likes`)는 세지 않는다.
+사이드바(`src/community/components/Sidebar.tsx`)는 인기 태그를 세려고 Latest 첫 페이지와 같은 URL 로 앱이 뜰 때 한 번(개발 모드 StrictMode 는 두 번) 받는다(이 기능 이전부터). 사이드바는 라우트 전환에 다시 마운트되지 않아 뒤로 가기 뒤 수에는 들지 않고, 새로고침(S9)에는 든다.
 "첫 프레임 측정" 은 뒤로 가기 전에 `page.evaluate` 로 `window.addEventListener('popstate', () => requestAnimationFrame(() => { window.__probe = { cards: document.querySelectorAll('.c-card').length, y: window.scrollY }; }))` 를 심고, 뒤로 가기 뒤 `window.__probe` 를 읽는 것이다. popstate 는 React 가 동기 우선순위로 처리하므로 그 rAF 때 복원 커밋이 끝나 있다.
 로그인이 필요한 S5 의 내 릭, S6, S7, S8, S10 은 Playwright 로 로그인할 수 없다(Google OAuth). 이들은 단위 기준으로 저장소에 미치는 효과를 고정하고, verify 에서는 휴대폰에서 확인해 `verdict.md` 의 휴대폰 확인 표에 적는다.
 
@@ -151,7 +152,7 @@ S5. Given 폰 폭 `/user/JSztbE7e`(시드 계정)를 두 페이지 내린 상태
 S6. (휴대폰, 로그인) Given Latest 에서 좋아요 0 인 카드를 기억하고 상세로 간다. When 좋아요를 눌러 1 이 된 뒤 뒤로 가기. Then 그 카드의 좋아요 수가 1 이다. 다시 상세에서 눌러 0 으로 만들고 돌아오면 0 이다. 증거: `verdict.md` 휴대폰 확인 표.
 S7. (휴대폰, 로그인) Given 내 릭을 내려 아래쪽 카드로 상세에 간다. When 오버플로 메뉴로 삭제한다. Then `/me` 가 새로 받아져 그 릭이 없다. 이어서 뒤로 가기를 두 번 눌러(삭제된 릭의 상세는 "Lick not found") 내 릭 복원본에 닿아도 그 릭이 없다. 증거: `verdict.md` 휴대폰 확인 표.
 S8. (휴대폰, 로그인) Given Latest 를 내려 둔 상태에서 Create 로 릭을 만들어 게시해 `/lick/:new` 에 있다. When 탭 바 Latest 를 누른다. Then 새 릭이 맨 위다. 다시 그 릭을 게시하지 않고, 뒤로 가기를 거듭해 처음의 Latest 항목에 닿으면 역시 새 릭이 보인다(새로 받은 목록). 증거: `verdict.md` 휴대폰 확인 표.
-S9. Given S1 끝 상태. When `page.reload()`. Then 목록 요청이 1건 나가고 카드가 20장이며 scrollY 가 0 이다. 증거: `s9-reload.png`.
+S9. Given S1 끝 상태. When `page.reload()`. Then 목록 요청이 1건 이상 나가고(복원이 아니라 새로 받는다) 카드가 20장이며 scrollY 가 0 이다. Feed 가 보내는 요청이 정확히 1건인 것은 S3 과 AC-9 가 고정한다. 증거: `s9-reload.png`. (2026-11-11 개정: 사이드바의 같은 URL 요청 때문에 "1건" 을 "1건 이상" 으로 바꿨다.)
 S10. (휴대폰, 로그인) Given 내 릭에서 표시 이름을 바꾼다. Then 목록이 다시 받아져 카드의 작성자 이름이 새 이름이다. 증거: `verdict.md` 휴대폰 확인 표.
 S11. Given 데스크톱 1280x800 Latest 를 두 페이지 내려 scrollY 를 기록한 상태. When 카드로 상세에 간 뒤 `page.goBack()`. Then S1 의 Then 과 같다(첫 프레임 측정 포함). 증거: `s11-desktop.png`.
 S12. Given 폰 폭 Latest 를 두 페이지 내려 카드 40장이 있고 `window.scrollTo(0, document.body.scrollHeight)` 로 맨 아래(센티널이 보이는 위치)에 둔 상태. 응답 본문의 제목 순서를 페이지마다 기록해 둔다. When 보이는 마지막 카드로 상세에 간 뒤 `page.goBack()` 하고 2초 기다린다. Then 뒤로 가기 뒤 목록 요청이 정확히 1건(셋째 페이지)이고, 카드 수가 40 더하기 셋째 페이지 행 수이며, 카드 제목 순서가 세 페이지 응답의 제목을 이은 것과 같다(중복 없음). 증거: `s12-bottom.png`.

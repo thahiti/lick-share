@@ -6,6 +6,7 @@ import { demoSong } from '../../core/demo-song';
 import { total } from '../../core/geometry';
 import type { Player } from '../../adapters/player';
 import type { LickRow } from '../api/licks';
+import { feedStore } from '../feed-store';
 
 const blob = encodeSong(demoSong);
 
@@ -308,5 +309,66 @@ describe('LickDetail 릭 상세', () => {
 
     unmount();
     expect(player.stop).toHaveBeenCalled();
+  });
+});
+
+describe('LickDetail: 목록 스냅샷 반영 (feed-cache R10, R11)', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fetchLikeCounts.mockResolvedValue(new Map([['orig-1', 7]]));
+    fetchMyLikedSet.mockResolvedValue(new Set());
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  const clickLike = async (container: HTMLElement): Promise<void> => {
+    const likeBtn = container.querySelector('.c-like');
+    if (!likeBtn) throw new Error('좋아요 버튼 없음');
+    await waitFor(() => expect(likeBtn.textContent).toContain('♥ 7'));
+    fireEvent.click(likeBtn);
+  };
+
+  it('AC-16 좋아요를 누르면 바뀐 수를, 요청이 실패해 되돌리면 되돌린 수를 저장소에 넣는다', async () => {
+    const setCount = vi.spyOn(feedStore, 'setCount');
+    fetchLick.mockResolvedValue(original);
+    addLike.mockRejectedValueOnce(new Error('down'));
+    const { container } = render(<LickDetail id="orig-1" user={user2} player={fakePlayer()} />);
+    await screen.findByText('Original lick');
+
+    await clickLike(container);
+
+    expect(setCount).toHaveBeenCalledWith('orig-1', 8);
+    await waitFor(() => expect(setCount).toHaveBeenCalledTimes(2));
+    expect(setCount).toHaveBeenLastCalledWith('orig-1', 7);
+  });
+
+  it('AC-16 유사 릭에서는 원본(canonical_id)을 대상으로 넣는다', async () => {
+    const setCount = vi.spyOn(feedStore, 'setCount');
+    fetchLick.mockResolvedValue(similar);
+    const { container } = render(<LickDetail id="sim-1" user={user2} player={fakePlayer()} />);
+    await screen.findByText(/This is a similar lick/);
+
+    await clickLike(container);
+
+    expect(setCount).toHaveBeenCalledWith('orig-1', 8);
+  });
+
+  it('AC-17 삭제가 끝나면 /me 로 가기 전에 저장소에서 그 릭을 뺀다', async () => {
+    const remove = vi.spyOn(feedStore, 'remove');
+    fetchLick.mockResolvedValue(original);
+    render(<LickDetail id="orig-1" user={user1} player={fakePlayer()} />);
+    await screen.findByText('Original lick');
+
+    fireEvent.click(screen.getByLabelText('More actions'));
+    fireEvent.click(await screen.findByText('Delete lick'));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete' }));
+
+    await waitFor(() => expect(navigate).toHaveBeenCalledWith('/me'));
+    expect(remove).toHaveBeenCalledWith('orig-1');
+    const [removedAt] = remove.mock.invocationCallOrder;
+    const [navigatedAt] = navigate.mock.invocationCallOrder;
+    expect(removedAt).toBeLessThan(navigatedAt ?? 0);
   });
 });

@@ -1,0 +1,29 @@
+
+> scorelink@0.1.0 typecheck
+> tsc --noEmit && tsc -p tsconfig.pure.json --noEmit
+
+
+> scorelink@0.1.0 lint
+> eslint src scripts
+
+
+> scorelink@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.10 /Users/randy/claude_code/lick_share/scorelink
+
+
+ Test Files  72 passed (72)
+      Tests  717 passed (717)
+   Start at  15:46:40
+   Duration  14.88s (transform 3.76s, setup 7.80s, import 7.07s, tests 23.10s, environment 53.50s)
+
+
+> scorelink@0.1.0 check-smp
+> node scripts/check-no-smp.js
+
+check-no-smp: OK
+통과. .last-check = 7730955
+
+HEAD 77309559c6d23baf4c6845b2aad5dc6651124735

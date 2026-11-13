@@ -48,6 +48,12 @@ export const Root = ({ player, hashStore }: Props): JSX.Element => {
     return onAuthChange(setUser);
   }, []);
 
+  // 목록 스크롤은 Feed 가 스냅샷으로 직접 되살린다 (feed-cache R4).
+  // 브라우저 자동 복원이 켜져 있으면 그 복원과 겹치고, 떠날 때 읽는 scrollY 가 틀어진다
+  useEffect(() => {
+    history.scrollRestoration = 'manual';
+  }, []);
+
   const onSignIn = useCallback(() => void signInWithGoogle(), []);
   const onSignOut = useCallback(() => {
     void signOut().then(() => navigate('/'));
