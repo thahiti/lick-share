@@ -425,9 +425,13 @@
         "swipe-play",
         "feed-cache"
       ],
-      "stage": "plan",
+      "stage": "design",
       "approved": {
         "plan": {
+          "date": "2026-11-13",
+          "note": ""
+        },
+        "design": {
           "date": "2026-11-13",
           "note": ""
         }
@@ -440,6 +444,12 @@
         {
           "date": "2026-11-13",
           "stage": "plan",
+          "model": "fable",
+          "note": ""
+        },
+        {
+          "date": "2026-11-13",
+          "stage": "design",
           "model": "fable",
           "note": ""
         }
