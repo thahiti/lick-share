@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "active": null,
+  "active": "lick-page",
   "stages": [
     "intake",
     "plan",
@@ -425,12 +425,23 @@
         "swipe-play",
         "feed-cache"
       ],
-      "stage": "intake",
-      "approved": {},
+      "stage": "plan",
+      "approved": {
+        "plan": {
+          "date": "2026-11-13",
+          "note": ""
+        }
+      },
       "history": [
         {
           "date": "2026-11-11",
           "stage": "intake"
+        },
+        {
+          "date": "2026-11-13",
+          "stage": "plan",
+          "model": "fable",
+          "note": ""
         }
       ]
     }
