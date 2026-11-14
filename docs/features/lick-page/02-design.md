@@ -1,6 +1,6 @@
 # lick-page: 릭 상세와 넘기기 플레이어를 /lick/:id 한 화면으로 통합 디자인
 
-작성일: 2026-11-13. 모델: opus (Fable 사용량 한도로 대행). 상태: 승인됨 (2026-11-13).
+작성일: 2026-11-13. 모델: opus (Fable 사용량 한도로 대행). 상태: 승인됨 (2026-11-13), 취소됨 (2026-11-14).
 시안: `docs/features/lick-page/mockup.html` (Artifact 링크: https://claude.ai/artifact/PwLTBgge51JrSQoVNoTz7m)
 
 시안은 상태마다 `<section>` 하나이고 세로 스냅이라 휴대폰에서 위로 넘기면 상태가 순서대로 나온다.

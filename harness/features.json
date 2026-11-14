@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "active": "lick-page",
+  "active": null,
   "stages": [
     "intake",
     "plan",
@@ -411,46 +411,6 @@
           "date": "2026-11-13",
           "stage": "done",
           "model": "opus",
-          "note": ""
-        }
-      ]
-    },
-    {
-      "id": "lick-page",
-      "title": "릭 상세와 넘기기 플레이어를 /lick/:id 한 화면으로 통합",
-      "ref": "docs/features/INTAKE.md 개정 3",
-      "track": "full",
-      "deps": [
-        "community",
-        "swipe-play",
-        "feed-cache"
-      ],
-      "stage": "design",
-      "approved": {
-        "plan": {
-          "date": "2026-11-13",
-          "note": ""
-        },
-        "design": {
-          "date": "2026-11-13",
-          "note": ""
-        }
-      },
-      "history": [
-        {
-          "date": "2026-11-11",
-          "stage": "intake"
-        },
-        {
-          "date": "2026-11-13",
-          "stage": "plan",
-          "model": "fable",
-          "note": ""
-        },
-        {
-          "date": "2026-11-13",
-          "stage": "design",
-          "model": "fable",
           "note": ""
         }
       ]

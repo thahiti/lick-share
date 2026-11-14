@@ -8,11 +8,12 @@
 - 운영: https://lickshare.pages.dev (Cloudflare Pages 프로젝트 `lickshare`). 2026-11-13 배포본은 main `4071284`(feed-cache 머지까지)의 빌드다. 미리보기 `preview-swipe-play`, `preview-feed-cache` 브랜치 배포는 남아 있으나 운영본과 무관하다. 번들은 앱, react, supabase 세 덩어리.
 - DB: Supabase 프로젝트 `tejndnivhbdxfstgybmm`. 2026-11-10 에 표시 이름 unique 인덱스, 길이 제약, 가입 trigger, 열 권한을 적용했다. 저장소 `supabase/schema.sql` 과 같은 상태. 같은 날 시드 계정 Lick Library(`public_id` JSztbE7e)로 릭 383건을 넣었다. 스키마 변경은 없다.
 - 테스트: 72 파일 717개 통과. 게이트는 `harness/check.sh`.
-- 진행 중 기능: 없음. 다음은 `lick-page`(full, intake 단계). `seed-licks`(light), `swipe-play`(full), `feed-cache`(light)가 하네스 파이프라인을 끝까지(intake, plan, design, spec, implement, verify, done) 거쳤다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
+- 진행 중 기능: 없음. `seed-licks`(light), `swipe-play`(full), `feed-cache`(light)가 하네스 파이프라인을 끝까지(intake, plan, design, spec, implement, verify, done) 거쳤다. 레지스트리에는 하네스 이전 기능 12개가 done 으로만 등록돼 있다.
 - 기준 커밋: 없음.
 
 ## 마지막 작업
 
+- 2026-11-13 ~ 14: `lick-page`(상세와 넘기기 플레이어 통합) 기획과 디자인을 승인받고 명세 초안까지 썼으나 사용자 요청으로 취소했다. 레지스트리에서 지우고 문서는 `docs/features/lick-page/` 에 취소됨 표시로 남겼다. 코드 변경은 없다.
 - 2026-11-09: Cloudflare API 토큰 배포 전환, 데스크톱 피드 한 열, 표시 이름 편집과 유일성(`feature/nickname-edit`).
 - 2026-11-10: 표시 이름 DB 마이그레이션 실행과 배포. 아바타 메뉴가 항목 선택 뒤 안 닫히던 버그 수정과 배포. 부채 정리(`.wrangler/` 무시, README 갱신, React 와 supabase-js 덩어리 분리). 문서를 성격별, 기능별 폴더로 재편하고 릭 모음을 `content/licks/` 로 분리해 커밋. 청음 훈련 기획 초안 커밋. whooing 방식 하네스 도입. 저장소 밖 잔재(handoff 폴더, 옛 프로토타입, lick_gen, lick_like, .superpowers, AGENTS.md, .agents)를 휴지통으로 이동. 하네스 머지본 배포.
 - 2026-11-10: 모바일 앱 바 좌우 여백 12px 추가와 돋보기 버튼 지름을 아바타와 같은 34px 로 통일(`fix/mobile-appbar-spacing`). 로고와 아바타가 카드 모서리에 정렬된다. main `2dd4391` 로 머지, 푸시, 배포 완료.
@@ -47,6 +48,7 @@
 
 ## 남은 작업 후보
 
+- `feed-cache` 의 `feedStore.appendPage` 는 `lick-page` 용으로 넣었는데 그 기능이 취소돼 부르는 곳이 없다. 지울지 다음 기능에 쓸지 정한다.
 - `feed-cache` 휴대폰 확인 미완(2026-11-13 사용자 승인으로 done). 로그인이 필요한 S5(내 릭), S6(좋아요), S7(삭제), S8(게시), S10(이름 바꾸기)은 Playwright 로 돌릴 수 없어 단위 기준 AC-15~AC-19 만 저장소 효과를 고정한다. `harness/evidence/feed-cache/verdict.md` 의 휴대폰 확인 표가 미확인이다.
 - 사람이 실기기에서: `docs/checklists/e2e-checklist.md` 5절(iOS Safari 해시 길이, 청감, Lighthouse), `docs/checklists/community-e2e-checklist.md`(로그인, 승계, 좋아요). 체크 표시가 없어 실제로 했는지 알 수 없다.
 - 의도적 보류: 패드 플레이헤드, 열람 재생 중 자동 스크롤, lookahead 스케줄러, 화면 단위 지연 로딩.
